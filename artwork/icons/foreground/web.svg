@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="wG" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="#7CC0FF"/><stop offset="0.55" stop-color="#2F7BEA"/><stop offset="1" stop-color="#1747A8"/></radialGradient><linearGradient id="wHi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient></defs><g filter="url(#sh)">
+<circle cx="64" cy="62" r="36" fill="url(#wG)"/>
+<g fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2">
+<ellipse cx="64" cy="62" rx="15" ry="36"/><path d="M28 62h72"/><path d="M33 44h62M33 80h62"/><path d="M64 26v72"/></g>
+<circle cx="64" cy="62" r="36" fill="none" stroke="#0E3784" stroke-opacity="0.35" stroke-width="1.5"/>
+<ellipse cx="52" cy="42" rx="15" ry="8" fill="#FFFFFF" opacity="0.38" transform="rotate(-25 52 42)"/>
+</g></svg>

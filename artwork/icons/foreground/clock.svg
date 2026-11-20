@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="kBezel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAFAFC"/><stop offset="1" stop-color="#A9ABB6"/></linearGradient><radialGradient id="kFace" cx="0.5" cy="0.4" r="0.65"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E8E9EE"/></radialGradient></defs><g filter="url(#sh)">
+<circle cx="64" cy="64" r="36" fill="#6E707C"/>
+<circle cx="64" cy="62" r="36" fill="url(#kBezel)"/>
+<circle cx="64" cy="62" r="31" fill="url(#kFace)"/>
+<line x1="64.00" y1="35.00" x2="64.00" y2="40.00" stroke="#2A2930" stroke-width="2.6" stroke-linecap="round"/><line x1="77.50" y1="38.62" x2="76.00" y2="41.22" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="87.38" y1="48.50" x2="84.78" y2="50.00" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="91.00" y1="62.00" x2="86.00" y2="62.00" stroke="#2A2930" stroke-width="2.6" stroke-linecap="round"/><line x1="87.38" y1="75.50" x2="84.78" y2="74.00" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="77.50" y1="85.38" x2="76.00" y2="82.78" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="64.00" y1="89.00" x2="64.00" y2="84.00" stroke="#2A2930" stroke-width="2.6" stroke-linecap="round"/><line x1="50.50" y1="85.38" x2="52.00" y2="82.78" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="40.62" y1="75.50" x2="43.22" y2="74.00" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="37.00" y1="62.00" x2="42.00" y2="62.00" stroke="#2A2930" stroke-width="2.6" stroke-linecap="round"/><line x1="40.62" y1="48.50" x2="43.22" y2="50.00" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/><line x1="50.50" y1="38.62" x2="52.00" y2="41.22" stroke="#2A2930" stroke-width="1.6" stroke-linecap="round"/>
+<g filter="url(#sh2)">
+<path d="M64 62L64 46" stroke="#1E1D23" stroke-width="3.8" stroke-linecap="round" transform="rotate(-88 64 62)"/>
+<path d="M64 62L64 38" stroke="#1E1D23" stroke-width="3" stroke-linecap="round" transform="rotate(24 64 62)"/>
+<path d="M64 70L64 37" stroke="#F25C2A" stroke-width="1.6" stroke-linecap="round" transform="rotate(200 64 62)"/>
+</g>
+<circle cx="64" cy="62" r="3" fill="#F25C2A"/><circle cx="64" cy="62" r="1.2" fill="#FFFFFF"/>
+<ellipse cx="54" cy="44" rx="16" ry="7" fill="#FFFFFF" opacity="0.45" transform="rotate(-20 54 44)"/>
+</g></svg>

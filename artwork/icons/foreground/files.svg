@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="fBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3E0FF"/><stop offset="1" stop-color="#AFC4F5"/></linearGradient><linearGradient id="fFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4ECFE"/></linearGradient><linearGradient id="fPaper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F1F4FA"/></linearGradient></defs><g filter="url(#sh)">
+<path d="M28 38a5 5 0 0 1 5-5h20l7 7h35a5 5 0 0 1 5 5v47H28z" fill="url(#fBack)"/>
+<g transform="rotate(-5 64 60)"><rect x="36" y="42" width="54" height="34" rx="3" fill="url(#fPaper)"/>
+<path d="M44 52h30M44 58h38M44 64h22" stroke="#C9D3E6" stroke-width="2.4" stroke-linecap="round"/></g>
+<rect x="25" y="56" width="78" height="42" rx="6" fill="#8FA9E4"/>
+<rect x="25" y="52" width="78" height="42" rx="6" fill="url(#fFront)"/>
+<path d="M31 52.8h66" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/>
+</g></svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="uN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFE3EC"/></linearGradient></defs><g filter="url(#sh)">
+<g transform="translate(0 3)" fill="#A3164A">
+<path d="M50 40l38-9v46h-7V42l-24 5.7V86h-7z"/>
+<ellipse cx="45" cy="86" rx="11" ry="8.5" transform="rotate(-18 45 86)"/>
+<ellipse cx="76" cy="78" rx="11" ry="8.5" transform="rotate(-18 76 78)"/>
+</g>
+<g fill="url(#uN)">
+<path d="M50 40l38-9v46h-7V42l-24 5.7V86h-7z"/>
+<ellipse cx="45" cy="86" rx="11" ry="8.5" transform="rotate(-18 45 86)"/>
+<ellipse cx="76" cy="78" rx="11" ry="8.5" transform="rotate(-18 76 78)"/>
+</g>
+<path d="M51.5 40.8l35-8.3" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+</g></svg>
