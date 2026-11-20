@@ -18,4 +18,4 @@ mOS is the operating system from the M&C Tech mPhone, made for laptops and PCs. 
 
 ## Credits
 
-mOS is made by M&C Tech and is based on Debian. Debian is a registered trademark of Software in the Public Interest, Inc. mOS is not affiliated with Debian, Google or Apple.
+mOS is made by Bruno Woznicki and is based on Debian. Debian is a registered trademark of Software in the Public Interest, Inc. mOS is not affiliated with Debian, Google or Apple.
