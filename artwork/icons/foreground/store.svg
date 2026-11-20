@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="sBag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E2FF"/></linearGradient><linearGradient id="sSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFC2FA"/><stop offset="1" stop-color="#B3A2F0"/></linearGradient></defs><g filter="url(#sh)">
+<path d="M50 42v-4a14 14 0 0 1 28 0v4" fill="none" stroke="#2E1A85" stroke-opacity="0.35" stroke-width="5" stroke-linecap="round" transform="translate(0 2)"/>
+<path d="M50 42v-4a14 14 0 0 1 28 0v4" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+<path d="M33 46h62l-4 50a5 5 0 0 1-5 4.6H42a5 5 0 0 1-5-4.6z" fill="#8C78DA" transform="translate(0 3)"/>
+<path d="M33 46h62l-4 50a5 5 0 0 1-5 4.6H42a5 5 0 0 1-5-4.6z" fill="url(#sBag)"/>
+<path d="M36 47.2h56" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+<circle cx="50" cy="56" r="3" fill="#6A50D8"/><circle cx="78" cy="56" r="3" fill="#6A50D8"/>
+<path d="M51 88V75a6.5 6.5 0 0 1 13 0v13M64 75a6.5 6.5 0 0 1 13 0v13" fill="none" stroke="#6A50D8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g></svg>

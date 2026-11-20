@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="2880" height="1800" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1A1240"/>
+      <stop offset="0.6" stop-color="#241866"/>
+      <stop offset="1" stop-color="#140E33"/>
+    </linearGradient>
+    <linearGradient id="b1" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#4B2FD1"/>
+      <stop offset="1" stop-color="#7B5CFF"/>
+    </linearGradient>
+    <linearGradient id="b2" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#8E73FF"/>
+      <stop offset="1" stop-color="#B9A6FF"/>
+    </linearGradient>
+    <linearGradient id="b3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D9CEFF"/>
+      <stop offset="1" stop-color="#F1ECFF"/>
+    </linearGradient>
+    <linearGradient id="b4" x1="0" y1="0" x2="1" y2="0.3">
+      <stop offset="0" stop-color="#2E8FA8"/>
+      <stop offset="1" stop-color="#5FD6CC"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.25"/>
+    </linearGradient>
+    <filter id="dof" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1840" height="1400">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="drop" filterUnits="userSpaceOnUse" x="-200" y="-200" width="1840" height="1400">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+      <feOffset dy="-14"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1440" height="900" fill="url(#base)"/>
+  <!-- back band, soft focus -->
+  <path d="M-80 300 C 200 140, 460 460, 780 330 S 1240 80, 1540 200 L 1540 980 L -80 980 Z" fill="url(#b1)" opacity="0.85" filter="url(#dof)"/>
+  <!-- teal band -->
+  <path d="M-80 470 C 240 330, 540 620, 880 480 S 1280 300, 1540 400 L 1540 980 L -80 980 Z" fill="url(#b4)" filter="url(#drop)"/>
+  <!-- light violet band -->
+  <path d="M-80 590 C 300 470, 620 760, 960 620 S 1320 470, 1540 540 L 1540 980 L -80 980 Z" fill="url(#b2)" filter="url(#drop)"/>
+  <!-- palest band -->
+  <path d="M-80 740 C 360 640, 660 860, 1020 760 S 1340 650, 1540 700 L 1540 980 L -80 980 Z" fill="url(#b3)" filter="url(#drop)"/>
+  <rect width="1440" height="900" fill="url(#shade)" opacity="0.4"/>
+</svg>

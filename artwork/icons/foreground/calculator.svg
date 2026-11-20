@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="qBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ECEDF2"/><stop offset="1" stop-color="#CFD1D9"/></linearGradient><linearGradient id="qScreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B3A33"/><stop offset="1" stop-color="#1C2622"/></linearGradient></defs><g filter="url(#sh)">
+<rect x="32" y="27" width="64" height="76" rx="10" fill="#8E909B"/>
+<rect x="32" y="24" width="64" height="76" rx="10" fill="url(#qBody)"/>
+<rect x="38" y="30" width="52" height="20" rx="5" fill="url(#qScreen)"/>
+<path d="M41 32.5h32" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="2" stroke-linecap="round"/>
+<path d="M76 37v8M80 41h0" stroke="#7CF2B0" stroke-width="0"/>
+<rect x="66" y="35" width="3" height="10" rx="1" fill="#8BF5C0"/><rect x="72" y="35" width="3" height="10" rx="1" fill="#8BF5C0"/><rect x="78" y="35" width="3" height="10" rx="1" fill="#8BF5C0"/><rect x="84" y="35" width="3" height="10" rx="1" fill="#8BF5C0"/>
+<rect x="40" y="59.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="40" y="58" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="57" y="59.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="57" y="58" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="74" y="59.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="74" y="58" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="40" y="72.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="40" y="71" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="57" y="72.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="57" y="71" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="74" y="72.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="74" y="71" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="40" y="85.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="40" y="84" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="57" y="85.6" width="14" height="10" rx="3" fill="#B7B9C3"/><rect x="57" y="84" width="14" height="10" rx="3" fill="#FFFFFF"/><rect x="74" y="85.6" width="14" height="10" rx="3" fill="#C76A00"/><rect x="74" y="84" width="14" height="10" rx="3" fill="#FF9F2E"/>
+<path d="M38 25.4h52" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+</g></svg>

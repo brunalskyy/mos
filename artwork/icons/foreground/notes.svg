@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"><defs><filter id="sh" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="3.2"/><feOffset dy="3.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="sh2" x="-40%" y="-40%" width="180%" height="190%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.6"/><feOffset dy="1.5"/>
+<feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="nSheet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF2"/><stop offset="1" stop-color="#FFF3C9"/></linearGradient><linearGradient id="nStrip" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A2B"/><stop offset="1" stop-color="#E26B10"/></linearGradient><linearGradient id="nCurl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9D9A3"/><stop offset="1" stop-color="#FFF6D8"/></linearGradient></defs><g filter="url(#sh)">
+<path d="M32 36h64v58a6 6 0 0 1-6 6H38a6 6 0 0 1-6-6z" fill="#D9C68C"/>
+<path d="M32 34h64v44l-18 18H38a6 6 0 0 1-6-6z" fill="url(#nSheet)"/>
+<path d="M40 52h48M40 61h48M40 70h40M40 79h28" stroke="#E9CF7A" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M96 78L78 96c0-10 6-18 18-18z" fill="url(#nCurl)"/>
+<path d="M96 78L78 96" stroke="#D8C281" stroke-width="1"/>
+<rect x="30" y="26" width="68" height="14" rx="5" fill="#B8560A"/>
+<rect x="30" y="24" width="68" height="13" rx="5" fill="url(#nStrip)"/>
+<path d="M36 25.2h56" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="1.3" stroke-linecap="round"/>
+</g></svg>

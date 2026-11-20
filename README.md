@@ -1,13 +1,20 @@
 # mOS
 
-mOS is the operating system from the M&C Tech mPhone, made for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes and a liquid glass look. It runs from a live USB stick or in VMware.
+mOS is the operating system from the M&C Tech mPhone, made for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes, a stacked lock screen clock and a liquid glass look. It runs from a live USB stick or in VMware.
 
-**Status:** in development. mOS 1.0 is coming soon.
+**mOS 1 codename:** Amber 🌅
+**Status:** in development. Next milestone: 0.1, first boot.
 
 ## This repository
 
-- `index.html`: the mOS website
-- `assets/`: the mOS logo (SVG and PNG)
+| Folder or file | What's in it |
+|---|---|
+| `index.html`, `assets/` | The mOS website |
+| `artwork/logo/` | The mOS logo (SVG and PNG) |
+| `artwork/wallpapers/` | Wallpapers |
+| `artwork/icons/` | The mOS icon set, plus `make-icons.py` to rebuild it |
+| `docs/PLAN.md` | The full plan, milestones and the day 1 build plan |
+| `build/` (coming) | The live-build setup that makes the ISO |
 
 ## Credits
 
