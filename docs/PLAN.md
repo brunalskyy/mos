@@ -1,6 +1,6 @@
 # mOS for PC: project plan
 
-mOS is the operating system from the M&C Tech mPhone, made into a real, bootable OS for laptops and PCs. It runs as a live USB on a MacBook Air (2017) and in VMware.
+mOS is a real, bootable desktop operating system for laptops and PCs. It runs as a live USB on a MacBook Air (2017) and in VMware.
 
 **Status:** planning done, building starts with milestone 0.1.
 
@@ -10,7 +10,7 @@ mOS is the operating system from the M&C Tech mPhone, made into a real, bootable
 - Based on **Debian 13** with the **GNOME** desktop, fully reskinned as mOS (like One UI on Android).
 - Design: **Material 3**, with about **80% Material and 20% liquid glass**.
 - Layout: a desktop with windows, a top bar, a dock, and a phone-style control centre and notification centre that drop down from the top right.
-- Boot: a real-length mOS boot animation that plays while the computer loads. The fixed 6-second screen was only for Roblox.
+- Boot: a real-length mOS boot animation that plays while the computer loads.
 - Debian branding is removed everywhere a normal user looks. A small credit stays in Settings > About > Legal: "mOS is based on Debian".
 
 ### Codenames (sunset theme)

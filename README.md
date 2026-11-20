@@ -1,6 +1,6 @@
 # mOS
 
-mOS is the operating system from the M&C Tech mPhone, made for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes, a stacked lock screen clock and a liquid glass look. It runs from a live USB stick or in VMware.
+mOS is a desktop operating system for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes, a stacked lock screen clock and a liquid glass look. It runs from a live USB stick or in VMware.
 
 **mOS 1 codename:** Amber 🌅
 **Status:** in development. Next milestone: 0.1, first boot.
