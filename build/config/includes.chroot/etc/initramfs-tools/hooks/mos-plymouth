@@ -1,0 +1,27 @@
+#!/bin/sh
+# mOS: put the mOS logo back into the boot animation.
+# Debian's plymouth hook swaps the theme's watermark for the Debian logo
+# ("debian 13") when it builds the initramfs. This runs after it and undoes that.
+PREREQ="plymouth"
+
+prereqs()
+{
+	echo "${PREREQ}"
+}
+
+case "${1}" in
+	prereqs)
+		prereqs
+		exit 0
+		;;
+esac
+
+THEME=/usr/share/plymouth/themes/mos
+if [ -d "${DESTDIR}${THEME}" ]; then
+	cp -f "${THEME}/watermark.png" "${DESTDIR}${THEME}/watermark.png"
+	rm -f "${DESTDIR}${THEME}/bgrt-fallback.png" "${DESTDIR}${THEME}/header-image.png"
+fi
+if [ -e "${DESTDIR}/usr/share/plymouth/debian-logo.png" ]; then
+	cp -f "${THEME}/watermark.png" "${DESTDIR}/usr/share/plymouth/debian-logo.png"
+fi
+exit 0
