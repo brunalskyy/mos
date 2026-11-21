@@ -10,5 +10,6 @@
     "Taskbar your way: Windows, Centred or Dock, floating, size, position, spacing",
     "Material You colours in every app, glass pop-ups and menus",
     "macOS-style animations and bouncing app icons; Spotlight on Win + Space"
-  ]
+  ],
+  "prerelease": true
 }
