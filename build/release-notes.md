@@ -1,22 +1,21 @@
-**mOS 1.0 Amber (0.6 preview)**
+**mOS 1.0 Amber (0.6.1 preview)**
 
-New in 0.6:
-- **Pixel widgets**: the flower clock (4 petals, 12 · 3 · 6 · 9, two hands) and a battery ring for laptops, in your Material colours
-- **Windows 10 window buttons**: minimise, maximise and close on the right; close goes red. Title bars go dark in dark mode
-- **Themed icons** (Settings → Icon shape): one colour on tinted shapes, like a Pixel, following your wallpaper and light/dark
-- **New squircle** shaped like Samsung One UI
-- **Every app gets your icon shape**: store apps, .deb downloads and apt installs
-- **Auto dark mode**: Light, Dark, Auto (sunset to sunrise) or your own times
-- **Night Shift**: sunset to sunrise or set times, with warmth
-- **Dark mode text fixed**: light text everywhere in dark mode
-- **Setup wizard** the first time you log in after installing: language, Wi-Fi, mOS Account, look, taskbar
-- **Cleaner taskbar**: tidy tray with the notification centre (bell), smaller clock, no show-desktop box
-- **mOS-style pop-ups**: round Material buttons, fields and highlights in notifications, tray pop-ups and the Start menu
-- **No more KDE Wallet** pop-ups
-- **Settings**: Startup apps, Effects (glass, zoom, genie, wobbly) and Appearance
+Everything that missed 0.6:
+- **Control Centre**: one button in the taskbar showing Wi-Fi, sound and battery. Click it for Material tiles (Wi-Fi, Bluetooth, Dark mode, Night Shift, Do not disturb, Power mode) and big brightness and volume sliders. Press and hold a tile for its settings
+- **Notification centre on the clock**: click the clock for your notifications (clear one or all) with the calendar underneath
+- **mOS Store** (Discover is gone):
+  - Today, with an App and a Game of the day, What's new and mOS essentials
+  - Apps and Games tabs, with categories and rankings
+  - App pages with screenshots, the developer, ratings, and reviews showing each reviewer's name and picture. Write your own review too
+  - Installs show %, MB/s (or Mbps) and time left
+  - All of Flathub, on an iOS 27-style capsule tab bar
+- **At a glance** on the desktop: the date and the weather where you are
+- **Material buttons inside apps**: round buttons, fields and menus in your colours in Files, Terminal and more. Switch it in Settings → Wallpaper & style
+- **mOS Account**: daily backup of your look, taskbar, effects, Night Shift and app list, and Restore on a new computer. There's an mOS Insider switch too
+- **Settings → General**: new Fonts, Keyboard shortcuts and Printers pages
 
 Download all the parts (.7z.001, .7z.002…) into one folder, open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract the .iso.
-Already on 0.5 and installed? Settings → General → Software update.
+Already installed? Settings → General → Software update. Your taskbar and desktop update by themselves the next time you log in.
 
 How to try it:
 - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI, Accelerate 3D graphics on

@@ -4,7 +4,7 @@
 set -e
 echo "I: mOS: removing KDE Wallet"
 if dpkg -s kwalletmanager >/dev/null 2>&1; then
-	apt-get purge -y kwalletmanager || { mkdir -p /var/lib/mos; echo kwalletmanager >> /var/lib/mos/cleanup; systemctl start --no-block mos-cleanup.service 2>/dev/null || true; }
+	apt-get purge -y kwalletmanager || { mkdir -p /var/lib/mos; echo kwalletmanager >> /var/lib/mos/cleanup; systemctl daemon-reload 2>/dev/null; systemctl start --no-block mos-cleanup.service 2>/dev/null || true; }
 fi
 # The PAM module would still try to open a wallet at login
 for f in /etc/pam.d/sddm /etc/pam.d/sddm-autologin /etc/pam.d/kde; do

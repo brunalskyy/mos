@@ -1,15 +1,16 @@
 {
-  "version": "0.6",
-  "build": 6,
+  "version": "0.6.1",
+  "build": 7,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.6)",
+  "name": "mOS 1.0 Amber (0.6.1)",
   "notes": [
-    "Pixel-style desktop widgets: the flower clock and a battery ring",
-    "Windows 10-style window buttons (minimise, maximise, close on the right)",
-    "Themed icons like a Pixel, and a One UI-style squircle",
-    "Every app gets your icon shape, however you install it",
-    "Auto dark mode (sunset to sunrise) and Night Shift schedules",
-    "Setup wizard, cleaner taskbar with the notification centre, no more KDE Wallet"
+    "Control Centre: Wi-Fi, Bluetooth, dark mode, Night Shift, Do not disturb, power mode, brightness and volume",
+    "Click the clock for your notifications and the calendar",
+    "The mOS Store replaces Discover: Today, categories, screenshots, reviews and install progress with speed and time left",
+    "At a glance on the desktop: the date and the weather",
+    "Round Material buttons, fields and menus inside apps, in your colours",
+    "mOS Account: back up and restore your settings and apps, and join mOS Insider",
+    "New in Settings: Fonts, Keyboard shortcuts and Printers"
   ],
   "prerelease": true
 }

@@ -21,7 +21,7 @@ PlasmoidItem {
         onTriggered: root.now = new Date()
     }
 
-    function mix(a, b, t) { return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1) }
+    function mix(a, b, t) { a = Qt.lighter(a, 1.0); b = Qt.lighter(b, 1.0); return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1) }
     readonly property bool dark: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.backgroundColor) === Kirigami.ColorUtils.Dark
     readonly property color accent: dark ? mix(Kirigami.Theme.highlightColor, "white", 0.3) : Kirigami.Theme.highlightColor
     readonly property color onAccent: dark ? mix(Kirigami.Theme.highlightColor, "black", 0.78) : "white"
@@ -58,7 +58,7 @@ PlasmoidItem {
             spacing: 0
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatTime(root.now, Qt.locale().timeFormat(Locale.ShortFormat))
+                text: Qt.formatTime(root.now, Qt.locale().timeFormat(Locale.ShortFormat).replace(":ss", ""))
                 color: root.textColour
                 font.pixelSize: Math.round(Math.min(compact.height * 0.3, Kirigami.Units.gridUnit * 0.8))
                 font.weight: Font.DemiBold

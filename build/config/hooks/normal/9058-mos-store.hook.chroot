@@ -9,7 +9,7 @@ if dpkg -s plasma-discover >/dev/null 2>&1; then
         # dpkg is busy (we're being run by an mOS update): finish the job afterwards
         mkdir -p /var/lib/mos
         echo "plasma-discover plasma-discover-backend-flatpak plasma-discover-common" >> /var/lib/mos/cleanup
-        systemctl start --no-block mos-cleanup.service 2>/dev/null || true
+        systemctl daemon-reload 2>/dev/null; systemctl start --no-block mos-cleanup.service 2>/dev/null || true
     fi
 fi
 # Hide Discover from menus even before it's gone

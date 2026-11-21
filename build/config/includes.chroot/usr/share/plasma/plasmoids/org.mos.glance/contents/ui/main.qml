@@ -114,7 +114,7 @@ PlasmoidItem {
                     font.weight: Font.Medium
                 }
             }
-            layer.enabled: true
+            layer.enabled: GraphicsInfo.api !== GraphicsInfo.Software   // shadow needs the GPU
             layer.effect: MultiEffect {
                 shadowEnabled: true
                 shadowColor: Qt.rgba(0, 0, 0, 0.45)

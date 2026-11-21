@@ -1,0 +1,6 @@
+[Unit]
+Description=mOS Account: daily backup (only if you turned it on)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/lib/mos-settings/mos_settings.py --backup

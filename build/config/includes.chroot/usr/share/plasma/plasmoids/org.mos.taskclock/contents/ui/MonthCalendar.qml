@@ -55,7 +55,7 @@ Rectangle {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     // weeks start on the locale's first day (Monday in the UK)
-                    text: Qt.locale().dayName((Qt.locale().firstDayOfWeek + index) % 7, Locale.NarrowFormat)
+                    text: Qt.locale().dayName((Qt.locale().firstDayOfWeek + index) % 7, Locale.ShortFormat).slice(0, 2)
                     color: cal.textColour; opacity: 0.6
                     font.pixelSize: Kirigami.Units.gridUnit * 0.62; font.weight: Font.DemiBold
                 }

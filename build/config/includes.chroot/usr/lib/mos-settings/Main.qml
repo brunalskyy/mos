@@ -35,7 +35,7 @@ ApplicationWindow {
         { section: "System" },
         { id: "notifications", title: "Notifications", icon: "bell", tone: "#F4511E", keys: "do not disturb alerts" },
         { id: "privacy", title: "Privacy & security", icon: "shield", tone: "#3949AB", keys: "camera microphone permissions" },
-        { id: "general", title: "General", icon: "general", tone: "#616161", keys: "about update storage apps language date time users accessibility reset startup login" }
+        { id: "general", title: "General", icon: "general", tone: "#616161", keys: "about update storage apps language date time users accessibility reset startup login fonts shortcuts keys printers printing" }
     ]
     // Pages that live inside General (they get a back button)
     readonly property var generalPages: [
@@ -47,6 +47,9 @@ ApplicationWindow {
         { id: "datetime", title: "Date & time", icon: "clock", tone: "#3949AB", sub: "Time zone, 24-hour clock" },
         { id: "keyboard", title: "Keyboard", icon: "keyboard", tone: "#6D4C41", sub: "Layouts" },
         { id: "mouse", title: "Mouse & trackpad", icon: "mouse", tone: "#546E7A", sub: "Speed, scrolling, tap to click" },
+        { id: "fonts", title: "Fonts", icon: "font", tone: "#8D6E63", sub: "Font and text size in apps" },
+        { id: "shortcuts", title: "Keyboard shortcuts", icon: "shortcut", tone: "#5C6BC0", sub: "Spotlight, screenshots, windows" },
+        { id: "printers", title: "Printers", icon: "printer", tone: "#546E7A", sub: "Add and manage printers" },
         { id: "startup", title: "Startup apps", icon: "update", tone: "#43A047", sub: "Apps that open when you log in" },
         { id: "users", title: "Users", icon: "person", tone: "#5E35B1", sub: "People who use this computer" },
         { id: "accessibility", title: "Accessibility", icon: "access", tone: "#00897B", sub: "Text size, motion, colour filters" },

@@ -46,7 +46,7 @@ ListView {
                         font.pixelSize: Kirigami.Units.gridUnit * 0.66
                     }
                     Text {
-                        text: item.model.created ? Qt.formatTime(item.model.created, Qt.locale().timeFormat(Locale.ShortFormat)) : ""
+                        text: item.model.created ? Qt.formatTime(item.model.created, Qt.locale().timeFormat(Locale.ShortFormat).replace(":ss", "")) : ""
                         color: list.textColour; opacity: 0.6
                         font.pixelSize: Kirigami.Units.gridUnit * 0.62
                     }
