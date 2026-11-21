@@ -1,5 +1,4 @@
-# <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/1042680f-d7fa-4c0a-88ce-391d04a4b41f" />
-mOS
+# <img src="https://github.com/user-attachments/assets/1042680f-d7fa-4c0a-88ce-391d04a4b41f" width="38" align="center" alt="mOS Logo"> mOS
 
 mOS is a desktop operating system for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes, a stacked lock screen clock and a liquid glass look. It runs from a live USB stick or in VMware.
 
@@ -17,6 +16,6 @@ mOS is a desktop operating system for laptops and PCs. It has a Material 3 desig
 | `docs/PLAN.md` | The full plan, milestones and the day 1 build plan |
 | `build/` (coming) | The live-build setup that makes the ISO |
 
-## Credits
+## <img src="https://github.com/user-attachments/assets/1042680f-d7fa-4c0a-88ce-391d04a4b41f" width="28" align="center" alt="mOS Logo"> Credits
 
 mOS is made by Bruno Woznicki and is based on Debian. Debian is a registered trademark of Software in the Public Interest, Inc. mOS is not affiliated with Debian, Google or Apple.
