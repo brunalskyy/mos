@@ -1,6 +1,6 @@
 # Building the mOS ISO
 
-GitHub builds the ISO automatically on every push to `main` that touches `build/`. Download it from the **Actions** tab: open the latest "Build mOS ISO" run and grab the `mos-amber-0.1` artifact.
+GitHub builds the ISO automatically on every push to `main` that touches `build/`. Download it from the **Actions** tab: open the latest "Build mOS ISO" run and grab the ISO from the Releases page (or the artifact).
 
 To build it yourself on Debian 13 (as root):
 
@@ -22,5 +22,8 @@ lb build
 | `config/hooks/normal/9010-*` | Boot animation |
 | `config/hooks/normal/9020-*` | Flathub |
 | `config/hooks/normal/9030-*` | MacBook Air Wi-Fi driver |
+| `config/hooks/normal/9040-*` | Installer branding (Install mOS) |
+| `config/hooks/normal/9050-*` | mOS desktop on KDE Plasma: top bar, dock, desktop icons, wallpaper |
+| `config/hooks/normal/9900-*` | Build check: fails if Debian branding is left or the mOS desktop is missing |
 | `config/hooks/normal/9100-*` | Boot menu names and splash images |
 | `config/mos/` | Boot menu splash images |

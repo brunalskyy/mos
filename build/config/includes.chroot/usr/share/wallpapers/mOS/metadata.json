@@ -1,0 +1,8 @@
+{
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Id": "mOS",
+        "License": "CC-BY-SA-4.0",
+        "Name": "mOS Dusk"
+    }
+}

@@ -8,19 +8,35 @@ locales
 console-setup
 keyboard-configuration
 
-# Desktop
-gnome-core
-gdm3
-network-manager-gnome
+# Desktop: KDE Plasma 6
+kde-plasma-desktop
+sddm
+plasma-nm
+plasma-pa
+kscreen
+kinfocenter
+systemsettings
+powerdevil
+bluedevil
+xdg-desktop-portal-kde
+breeze-gtk-theme
+kde-config-gtk-style
 fonts-cantarell
 
 # Apps
 chromium
-gnome-software
-gnome-software-plugin-flatpak
+dolphin
+konsole
+kwrite
+kcalc
+gwenview
+kclock
+ark
+plasma-discover
+plasma-discover-backend-flatpak
 flatpak
 
-# Installer (mOS branding comes in 0.5)
+# Installer
 calamares
 calamares-settings-debian
 
@@ -36,6 +52,3 @@ wireless-tools
 # VMware
 open-vm-tools
 open-vm-tools-desktop
-
-# Dock (always visible, mOS style)
-gnome-shell-extension-dashtodock

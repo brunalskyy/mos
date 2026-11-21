@@ -1,0 +1,54 @@
+#!/bin/sh
+# mOS desktop on KDE Plasma: an "mOS" global theme (look-and-feel) based on Breeze,
+# with the mOS layout (top bar + floating dock + desktop icons) and wallpaper.
+set -e
+
+echo "I: mOS Plasma desktop"
+
+LNF=/usr/share/plasma/look-and-feel
+SRC="${LNF}/org.kde.breeze.desktop"
+DEST="${LNF}/org.mos.desktop"
+MOS=/usr/share/mos/plasma
+
+if [ ! -d "${SRC}" ]; then
+	echo "E: Breeze look-and-feel not found at ${SRC}" >&2
+	exit 1
+fi
+
+rm -rf "${DEST}"
+cp -a "${SRC}" "${DEST}"
+
+# Identity (edit the JSON properly so it stays valid)
+python3 - "${DEST}/metadata.json" <<'PY'
+import json, sys
+path = sys.argv[1]
+with open(path, encoding="utf-8") as f:
+    data = json.load(f)
+plugin = data.setdefault("KPlugin", {})
+for key in list(plugin):
+    if key.startswith("Name[") or key.startswith("Description["):
+        del plugin[key]
+plugin["Id"] = "org.mos.desktop"
+plugin["Name"] = "mOS"
+plugin["Description"] = "The mOS desktop: top bar, floating dock and desktop icons"
+plugin["Authors"] = [{"Name": "Bruno Woznicki"}]
+plugin["Website"] = "https://github.com/brunalskyy/mos"
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=4, ensure_ascii=False)
+PY
+grep -q '"Id": "org.mos.desktop"' "${DEST}/metadata.json"
+
+# Layout, defaults and preview
+mkdir -p "${DEST}/contents/layouts"
+rm -f "${DEST}/contents/layouts/"*
+cp "${MOS}/org.kde.plasma.desktop-layout.js" "${DEST}/contents/layouts/org.kde.plasma.desktop-layout.js"
+cp "${MOS}/defaults" "${DEST}/contents/defaults"
+
+# Debian's KDE wallpaper alternative points at the Debian theme; point it at mOS too.
+if update-alternatives --query desktop-plasma5-wallpaper >/dev/null 2>&1; then
+	update-alternatives --install /usr/share/wallpapers/DebianTheme desktop-plasma5-wallpaper /usr/share/wallpapers/mOS 500
+	update-alternatives --set desktop-plasma5-wallpaper /usr/share/wallpapers/mOS
+fi
+
+echo "I: look-and-feel files:"
+find "${DEST}" -maxdepth 3 -type f | sort | head -n 40
