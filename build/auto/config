@@ -1,0 +1,28 @@
+#!/bin/sh
+# mOS 1.0 Amber (0.1 preview): live-build configuration.
+# Run from the build/ folder: `lb config`, then `lb build` (as root).
+set -e
+
+lb config noauto \
+	--mode debian \
+	--distribution trixie \
+	--architecture amd64 \
+	--archive-areas "main contrib non-free non-free-firmware" \
+	--security true \
+	--updates true \
+	--binary-image iso-hybrid \
+	--bootloaders "syslinux grub-efi" \
+	--debian-installer none \
+	--firmware-binary true \
+	--firmware-chroot true \
+	--linux-packages "linux-image linux-headers" \
+	--memtest none \
+	--win32-loader false \
+	--checksums sha256 \
+	--image-name "mos-amber-0.1" \
+	--iso-application "mOS" \
+	--iso-publisher "mOS by Bruno Woznicki; https://github.com/brunalskyy/mos" \
+	--iso-volume "mOS 0.1 Amber" \
+	--bootappend-live "boot=live components quiet splash hostname=mos username=mos user-fullname=mOS locales=en_GB.UTF-8 keyboard-layouts=gb timezone=Europe/London" \
+	--chroot-squashfs-compression-type xz \
+	"${@}"

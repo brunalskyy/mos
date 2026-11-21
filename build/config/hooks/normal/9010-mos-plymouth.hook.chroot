@@ -1,0 +1,23 @@
+#!/bin/sh
+# mOS boot animation: the mOS logo with the standard spinner frames.
+set -e
+
+echo "I: mOS boot animation"
+
+THEME_DIR=/usr/share/plymouth/themes/mos
+SPINNER_DIR=/usr/share/plymouth/themes/spinner
+
+if [ ! -d "${SPINNER_DIR}" ]; then
+	echo "E: ${SPINNER_DIR} is missing; is plymouth-themes installed?" >&2
+	exit 1
+fi
+
+# Reuse the spinner theme's animation frames and dialog images; keep our watermark (the logo).
+for f in "${SPINNER_DIR}"/*.png; do
+	name="$(basename "${f}")"
+	[ "${name}" = "watermark.png" ] && continue
+	cp -f "${f}" "${THEME_DIR}/${name}"
+done
+
+plymouth-set-default-theme mos
+update-initramfs -u -k all
