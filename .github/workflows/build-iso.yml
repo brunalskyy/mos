@@ -73,8 +73,9 @@ jobs:
           if [ "${size}" -lt 2147483648 ]; then
             cp "${iso}" out/release/
           else
-            echo "The ISO is 2 GiB or more, so the release gets a compressed copy (.iso.xz)."
-            xz -T0 -3 -k -c "${iso}" > "out/release/$(basename "${iso}").xz"
+            echo "The ISO is 2 GiB or more, so the release gets it as a 7-Zip archive in parts."
+            command -v 7z >/dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y p7zip-full; }
+            7z a -t7z -mx=1 -v1900m "out/release/$(basename "${iso}" .iso).7z" "${iso}"
           fi
           cd out/release
           sha256sum ./* > SHA256SUMS
@@ -108,7 +109,7 @@ jobs:
           notes=$(cat <<'NOTES'
           **mOS 1.0 Amber, 0.2 preview.** The first bootable mOS. This is a preview, not a finished release.
 
-          If the file ends in .iso.xz, extract it first (7-Zip on Windows, or double-click on a Mac). balenaEtcher can flash the .xz directly.
+          The ISO is split into parts (.7z.001, .7z.002). Download all of them into one folder, then open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract: you get the .iso.
 
           What's in it:
           - KDE Plasma 6 desktop with the mOS layout: top bar (mOS menu, clock in the middle, system tray), a floating dock that is always visible, and icons on the desktop
