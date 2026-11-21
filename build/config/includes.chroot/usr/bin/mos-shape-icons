@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""mos-shape-icons: put every app icon into the mOS icon shape.
+
+Apps that don't have an mOS icon keep their own picture, but it is placed on a
+light tile in the chosen shape (circle, squircle or rounded square), the same
+way Pixel phones handle old icons. Runs at build time for the apps in the ISO
+(system icons) and after you install apps (your own icons folder).
+
+  mos-shape-icons            system apps -> /usr/share/icons/mOS*
+  mos-shape-icons --user     all apps, incl. Flatpak -> ~/.local/share/icons/mOS*
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import configparser
+import glob
+import io
+import os
+import subprocess
+import sys
+
+from PIL import Image, ImageDraw, ImageFilter
+
+SIZES = [16, 22, 24, 32, 48, 64, 96, 128, 256]
+THEMES = ["mOS", "mOS-Squircle", "mOS-Rounded"]
+TILE = (246, 243, 250, 255)  # light Material surface
+
+APP_DIRS = ["/usr/share/applications"]
+USER_APP_DIRS = [
+    "/var/lib/flatpak/exports/share/applications",
+    os.path.expanduser("~/.local/share/flatpak/exports/share/applications"),
+    os.path.expanduser("~/.local/share/applications"),
+]
+ICON_ROOTS = [
+    "/usr/share/icons/hicolor",
+    "/usr/share/icons/breeze/apps",
+    "/usr/share/icons/breeze",
+    "/usr/share/pixmaps",
+    "/var/lib/flatpak/exports/share/icons/hicolor",
+    os.path.expanduser("~/.local/share/flatpak/exports/share/icons/hicolor"),
+    os.path.expanduser("~/.local/share/icons/hicolor"),
+]
+
+
+def shape_mask(theme, size):
+    """Mask of the tile shape at 4x, scaled down for smooth edges."""
+    big = size * 4
+    m = Image.new("L", (big, big), 0)
+    d = ImageDraw.Draw(m)
+    if theme == "mOS":
+        d.ellipse((0, 0, big - 1, big - 1), fill=255)
+    elif theme == "mOS-Rounded":
+        d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * 28 / 128), fill=255)
+    else:  # squircle: superellipse n=5
+        n = 5.0
+        pts = []
+        import math
+        for i in range(720):
+            t = 2 * math.pi * i / 720
+            c, s = math.cos(t), math.sin(t)
+            x = (abs(c) ** (2 / n)) * (1 if c >= 0 else -1)
+            y = (abs(s) ** (2 / n)) * (1 if s >= 0 else -1)
+            pts.append(((x + 1) * (big - 1) / 2, (y + 1) * (big - 1) / 2))
+        d.polygon(pts, fill=255)
+    return m.resize((size, size), Image.LANCZOS)
+
+
+def has_mos_icon(theme_dirs, name):
+    return any(os.path.exists(os.path.join(d, "48x48", "apps", name + ".png")) for d in theme_dirs)
+
+
+def find_source(name):
+    """Best picture for an icon name: a big PNG or an SVG."""
+    if os.path.isabs(name):
+        return name if os.path.exists(name) else None
+    best, best_size = None, 0
+    for root in ICON_ROOTS:
+        if not os.path.isdir(root):
+            continue
+        for ext in ("svg", "png", "svgz"):
+            for p in glob.glob(f"{root}/**/{name}.{ext}", recursive=True):
+                if "/symbolic/" in p or p.endswith("-symbolic.svg"):
+                    continue
+                if ext.startswith("svg"):
+                    size = 10000
+                else:
+                    try:
+                        size = Image.open(p).size[0]
+                    except OSError:
+                        continue
+                if size > best_size:
+                    best, best_size = p, size
+    return best
+
+
+def load(path, px):
+    if path.endswith((".svg", ".svgz")):
+        out = subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), "--keep-aspect-ratio", path],
+                             capture_output=True)
+        if out.returncode != 0:
+            return None
+        img = Image.open(io.BytesIO(out.stdout))
+    else:
+        img = Image.open(path)
+    img = img.convert("RGBA")
+    img.thumbnail((px, px), Image.LANCZOS)
+    return img
+
+
+def make_tile(src, theme, size):
+    tile = Image.new("RGBA", (size, size), TILE)
+    inner = int(size * 0.64)
+    pic = load(src, inner * 2)
+    if pic is None:
+        return None
+    pic = pic.resize((inner, int(inner * pic.size[1] / pic.size[0])), Image.LANCZOS)
+    # soft shadow under the picture
+    shadow = Image.new("RGBA", tile.size, (0, 0, 0, 0))
+    a = pic.split()[3].point(lambda v: int(v * 0.18))
+    shadow.paste((40, 30, 60, 255), ((size - pic.size[0]) // 2, (size - pic.size[1]) // 2 + max(1, size // 64)), a)
+    shadow = shadow.filter(ImageFilter.GaussianBlur(max(1, size // 64)))
+    tile.alpha_composite(shadow)
+    tile.alpha_composite(pic, ((size - pic.size[0]) // 2, (size - pic.size[1]) // 2))
+    tile.putalpha(shape_mask(theme, size))
+    return tile
+
+
+def desktop_icons(dirs):
+    names = set()
+    for d in dirs:
+        for f in glob.glob(os.path.join(d, "*.desktop")):
+            cp = configparser.ConfigParser(interpolation=None, strict=False)
+            cp.optionxform = str
+            try:
+                cp.read(f, encoding="utf-8")
+                e = cp["Desktop Entry"]
+            except (configparser.Error, KeyError, UnicodeDecodeError):
+                continue
+            if e.get("NoDisplay", "false").lower() == "true" or e.get("Type", "Application") != "Application":
+                continue
+            icon = e.get("Icon", "").strip()
+            if icon:
+                names.add(icon)
+    return sorted(names)
+
+
+def main():
+    user = "--user" in sys.argv
+    sys_root = "/usr/share/icons"
+    out_root = os.path.expanduser("~/.local/share/icons") if user else sys_root
+    dirs = APP_DIRS + (USER_APP_DIRS if user else [])
+    done = skipped = 0
+    for name in desktop_icons(dirs):
+        if os.path.isabs(name):
+            continue  # a fixed file path can't be swapped by the icon theme
+        key = name
+        if has_mos_icon([os.path.join(sys_root, "mOS")], key):
+            continue  # already has a real mOS icon
+        if user and has_mos_icon([os.path.join(out_root, "mOS")], key):
+            continue
+        src = find_source(name)
+        if not src:
+            skipped += 1
+            continue
+        for theme in THEMES:
+            for size in SIZES:
+                tile = make_tile(src, theme, size)
+                if tile is None:
+                    break
+                dest = os.path.join(out_root, theme, f"{size}x{size}", "apps", key + ".png")
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                tile.save(dest)
+        done += 1
+    if not user:
+        for theme in THEMES:
+            subprocess.run(["gtk-update-icon-cache", "-f", "-q", os.path.join(sys_root, theme)], check=False)
+    print(f"mos-shape-icons: shaped {done} app icons, {skipped} had no picture")
+
+
+if __name__ == "__main__":
+    main()

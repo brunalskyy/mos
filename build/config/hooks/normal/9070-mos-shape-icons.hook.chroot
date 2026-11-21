@@ -1,0 +1,10 @@
+#!/bin/sh
+# mOS: every app icon in the mOS shape.
+# Apps without an mOS icon get their picture on a tile in each shape
+# (circle, squircle, rounded square). Apps installed later are done by a
+# small user service that watches for new apps.
+set -e
+
+echo "I: mOS icon shapes for every app"
+/usr/bin/mos-shape-icons
+systemctl --global enable mos-shape-icons.path

@@ -45,7 +45,7 @@ tasks.writeConfig("launchers", [
     "applications:chromium.desktop",
     "applications:org.kde.dolphin.desktop",
     "applications:org.kde.discover.desktop",
-    "applications:systemsettings.desktop",
+    "applications:mos-settings.desktop",
     "applications:org.kde.konsole.desktop",
     "applications:calamares-install-debian.desktop"
 ]);

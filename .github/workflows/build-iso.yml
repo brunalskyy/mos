@@ -106,16 +106,19 @@ jobs:
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.3.1-amber-preview
+          TAG: v0.4.0-amber-preview
         run: |
           notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.3.1 preview.** This is a preview, not a finished release.
+          **mOS 1.0 Amber, 0.4 preview.** This is a preview, not a finished release.
 
-          New in 0.3.1:
-          - New Amber sunset wallpaper with the mOS logo in the top left
-          - Boot screen fixed: no more Debian logo while it loads
-          - Shutdown no longer looks stuck on the logo (the live "remove the USB and press Enter" prompt is off)
-          - Desktop icons on the right, widgets on the left, so the logo corner stays clear
+          New in 0.4:
+          - New Settings app in Material 3 style: Wallpaper & style, Icon shape, Wi-Fi, Bluetooth, Display, Sound, About mOS and more
+          - Pixel-style lock screen clock: big stacked numbers, minutes in your accent colour
+          - Icon shapes: circle (default), squircle or rounded square; pick one in Settings
+          - Every app icon follows the shape, including apps you install later
+          - Icons now have clean edges (no square corners)
+          - 3 new wallpapers mixing macOS and Windows styles: Horizon, Glow and Amber Night
+          - mOS Account app (sign in with Google, email or phone)
 
           The ISO is split into parts (.7z.001, .7z.002). Download all of them into one folder, then open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract: you get the .iso.
 
@@ -145,6 +148,6 @@ jobs:
             gh release create "${TAG}" out/release/* \
               --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.3.1 preview)" \
+              --title "mOS 1.0 Amber (0.4 preview)" \
               --notes "${notes}"
           fi

@@ -42,6 +42,29 @@ for initrd in /boot/initrd.img-*; do
 	rm -rf "${work}"
 done
 
+# mOS 0.4: lock screen clock, Settings app, icon shapes
+if ! grep -q 'MosClock {' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/LockScreenUi.qml; then
+	echo "E: the mOS lock screen clock is not in place" >&2
+	fail=1
+fi
+if ! python3 -c "import PySide6.QtQuick, PySide6.QtQml" 2>/dev/null; then
+	echo "E: mOS Settings cannot start (PySide6 is missing)" >&2
+	fail=1
+fi
+if ! python3 -m py_compile /usr/lib/mos-settings/mos_settings.py; then
+	echo "E: mOS Settings has a Python error" >&2
+	fail=1
+fi
+for t in mOS mOS-Squircle mOS-Rounded; do
+	if [ ! -f "/usr/share/icons/${t}/48x48/apps/system-file-manager.png" ]; then
+		echo "E: the ${t} icon theme is missing" >&2
+		fail=1
+	fi
+done
+if ! fc-list | grep -qi 'Inter'; then
+	echo "W: the Inter font is not installed" >&2
+fi
+
 # System name
 if ! grep -q '^NAME="mOS"' /usr/lib/os-release; then
 	echo "E: os-release does not say mOS" >&2
