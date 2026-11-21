@@ -26,7 +26,9 @@ Each major version follows the sun going down, and gets its own wallpaper in tho
 | mOS 6 | Midnight | dark navy, moon |
 | Big reboot | Dawn | sunrise |
 
-Updates inside a version keep its name (mOS 1.1 is still Amber). The violet wallpaper made so far is saved as `artwork/wallpapers/dusk`.
+Updates inside a version keep its name (mOS 1.1 is still Amber).
+
+**Logo per version:** the glass **m** symbol never changes. For each full release, only the logo's background changes to that version's sunset colours. mOS 1.0 Amber gets a warm gold-to-orange background. Previews (0.x) keep the current logo. The violet wallpaper made so far is saved as `artwork/wallpapers/dusk`.
 
 ### Colour themes (Pixel style)
 - Settings > Wallpaper & style: **wallpaper colours** (picked from the wallpaper) or **basic colours** (presets).
