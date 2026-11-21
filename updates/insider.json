@@ -11,6 +11,6 @@
     "macOS-style animations and bouncing app icons; Spotlight on Win + Space"
   ],
   "deb": "https://github.com/brunalskyy/mos/releases/download/v0.5.0-amber/mos-desktop_0.5_all.deb",
-  "sha256": "115a60265bfa9397deb56dcbc697aea177c91169a03de005677387bfdc520fb2",
-  "size": 6646612
+  "sha256": "aa2b74678ea86bd987824cc5a5c2f2651f61a94cecf6e6c25478547465d0d3b8",
+  "size": 6646820
 }
