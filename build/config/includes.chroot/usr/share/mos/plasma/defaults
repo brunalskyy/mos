@@ -9,7 +9,7 @@ accentColorFromWallpaper=true
 Theme=mOS
 
 [plasmarc][Theme]
-name=default
+name=mOS
 
 [Wallpaper]
 Image=mOS
