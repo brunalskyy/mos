@@ -17,11 +17,29 @@ if [ ! -d "${SPINNER_DIR}" ]; then
 	exit 1
 fi
 
-# Reuse the spinner theme's animation frames and dialog images; keep our watermark (the logo).
-for f in "${SPINNER_DIR}"/*.png; do
-	name="$(basename "${f}")"
-	[ "${name}" = "watermark.png" ] && continue
-	cp -f "${f}" "${THEME_DIR}/${name}"
+# Reuse only the spinner theme's animation frames and dialog images.
+# Never copy watermark.png, bgrt-fallback.png or header-image.png: on Debian those are the
+# "debian 13" logo, which is what showed up on the 0.2 boot screen.
+for f in "${SPINNER_DIR}"/throbber-*.png "${SPINNER_DIR}"/animation-*.png; do
+	if [ -e "${f}" ]; then
+		cp -fL "${f}" "${THEME_DIR}/"
+	fi
+done
+for name in bullet entry lock box capslock keyboard keymap-render; do
+	if [ -e "${SPINNER_DIR}/${name}.png" ]; then
+		cp -fL "${SPINNER_DIR}/${name}.png" "${THEME_DIR}/"
+	fi
+done
+rm -f "${THEME_DIR}/bgrt-fallback.png" "${THEME_DIR}/header-image.png"
+echo "I: mOS boot animation files: $(ls "${THEME_DIR}" | tr '\n' ' ')"
+
+# Debian's own logo files: swap them for the mOS logo, so nothing can fall back to them.
+LOGO=/usr/share/icons/hicolor/256x256/apps/mos-logo.png
+for f in /usr/share/plymouth/debian-logo.png /usr/share/desktop-base/debian-logos/logo*.png; do
+	[ -f "${f}" ] || continue
+	rm -f "${f}"
+	cp "${LOGO}" "${f}"
+	echo "I: replaced ${f} with the mOS logo"
 done
 
 # 1. The Debian way: the default.plymouth alternative, at a priority above desktop-base's.
