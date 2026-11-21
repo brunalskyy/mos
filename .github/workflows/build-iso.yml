@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: build-iso
@@ -29,6 +30,14 @@ jobs:
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/.ghcup
           sudo docker image prune --all --force
           df -h /
+
+      - name: Build the mOS update package (mos-desktop .deb)
+        run: |
+          build/make-deb.sh out/deb
+          # Put it in the ISO too, so installed computers know which mOS they have
+          mkdir -p build/config/packages.chroot
+          cp out/deb/*.deb build/config/packages.chroot/
+          echo "MOS_VERSION=$(python3 -c 'import json;print(json.load(open("build/config/includes.chroot/usr/share/mos/version"))["version"])')" >> "$GITHUB_ENV"
 
       - name: Build the ISO in a Debian 13 container
         run: |
@@ -72,6 +81,7 @@ jobs:
           echo "Non-zero bytes in the last 64 MiB (0 means it is padding):"
           tail -c 67108864 "${iso}" | tr -d '\000' | wc -c
           mkdir -p out/release
+          cp out/deb/*.deb out/release/
           if [ "${size}" -lt 2147483648 ]; then
             cp "${iso}" out/release/
           else
@@ -102,56 +112,48 @@ jobs:
           path: out/build.log
           retention-days: 14
 
-      - name: Publish the pre-release
+      - name: Publish the release
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.4.1-amber-preview
         run: |
-          notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.4.1 preview.** This is a preview, not a finished release.
-
-          New in 0.4.1:
-          - No more "Plasma made by KDE" loading screen after the mOS boot screen
-          - New mOS login screen: Amber wallpaper and the Pixel-style stacked clock
-
-          New in 0.4:
-          - New Settings app in Material 3 style: Wallpaper & style, Icon shape, Wi-Fi, Bluetooth, Display, Sound, About mOS and more
-          - Pixel-style lock screen clock: big stacked numbers, minutes in your accent colour
-          - Icon shapes: circle (default), squircle or rounded square; pick one in Settings
-          - Every app icon follows the shape, including apps you install later
-          - Icons now have clean edges (no square corners)
-          - 3 new wallpapers mixing macOS and Windows styles: Horizon, Glow and Amber Night
-          - mOS Account app (sign in with Google, email or phone)
-
-          The ISO is split into parts (.7z.001, .7z.002). Download all of them into one folder, then open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract: you get the .iso.
-
-          What's in it:
-          - KDE Plasma 6 with a Windows 10-style taskbar: mOS Start button, apps, system tray, time and date, show-desktop corner
-          - macOS-style windows with round red, yellow and green buttons on the left
-          - Colours that follow your wallpaper (accent colour from the wallpaper)
-          - Desktop icons and desktop widgets (clock, calendar, notes)
-          - New liquid glass mOS icons
-          - mOS name, logo, wallpaper, boot menu, boot animation and installer
-          - Chromium, Dolphin (files), Discover with Flathub (app store), Konsole, KWrite, KCalc, Gwenview, KClock
-          - Wi-Fi driver for the MacBook Air (2017), VMware tools
-
-          Not in it yet: the full mOS Settings pages, the mOS Store, software updates, the setup wizard.
-
-          How to try it:
-          - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
-          - USB: write the ISO with balenaEtcher, then on a Mac hold Option at startup and pick the EFI Boot drive
-
-          It runs live: nothing on your computer changes, and nothing is kept after a reboot.
-          NOTES
-          )
+          TAG="v${MOS_VERSION}.0-amber"
+          TITLE="$(python3 -c 'import json;print(json.load(open("build/config/includes.chroot/usr/share/mos/version"))["name"])')"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
           if gh release view "${TAG}" >/dev/null 2>&1; then
             gh release upload "${TAG}" out/release/* --clobber
-            gh release edit "${TAG}" --prerelease --notes "${notes}"
+            gh release edit "${TAG}" --title "${TITLE}" --notes-file build/release-notes.md
           else
             gh release create "${TAG}" out/release/* \
-              --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.4.1 preview)" \
-              --notes "${notes}"
+              --title "${TITLE}" \
+              --notes-file build/release-notes.md
           fi
+
+      - name: Publish the update list (Software update reads this)
+        if: success() && github.ref == 'refs/heads/main'
+        run: |
+          deb=$(ls out/deb/*.deb)
+          python3 - "${deb}" <<'PY'
+          import hashlib, json, os, sys
+          deb = sys.argv[1]
+          v = json.load(open("build/config/includes.chroot/usr/share/mos/version"))
+          entry = {
+              "version": v["version"], "build": v["build"], "name": v["name"], "notes": v.get("notes", []),
+              "deb": f"https://github.com/brunalskyy/mos/releases/download/{os.environ['TAG']}/{os.path.basename(deb)}",
+              "sha256": hashlib.sha256(open(deb, "rb").read()).hexdigest(),
+              "size": os.path.getsize(deb),
+          }
+          os.makedirs("updates", exist_ok=True)
+          for channel in ("stable", "insider"):
+              json.dump(entry, open(f"updates/{channel}.json", "w"), indent=2)
+          print(json.dumps(entry, indent=2))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/
+          git commit -m "Update list: ${MOS_VERSION}" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
+          # Pushes made by this workflow don't start a Pages build on their own, so ask for one
+          GH_TOKEN="${{ github.token }}" gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || true

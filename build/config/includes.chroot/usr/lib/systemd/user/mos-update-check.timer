@@ -1,0 +1,10 @@
+[Unit]
+Description=mOS: check for updates at login and every 6 hours
+
+[Timer]
+OnStartupSec=3min
+OnUnitActiveSec=6h
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

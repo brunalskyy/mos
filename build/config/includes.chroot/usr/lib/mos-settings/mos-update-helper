@@ -1,0 +1,141 @@
+#!/usr/bin/python3
+"""mOS update helper: installs updates as root (started through pkexec).
+
+It never trusts anything from the user side: it reads the mOS update list
+itself over HTTPS, only downloads mOS updates from the mOS GitHub releases,
+and checks the SHA-256 before installing. Progress goes to stdout:
+  PHASE <text>
+  PROGRESS <percent> <bytes done> <bytes total> <text>
+  ERROR <text>
+  DONE ok|fail
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.request
+
+UPDATES_URL = "https://brunalskyy.github.io/mos/updates/{channel}.json"
+ALLOWED = "https://github.com/brunalskyy/mos/releases/download/"
+CACHE = "/var/cache/mos-update"
+ENV = dict(os.environ, DEBIAN_FRONTEND="noninteractive", LC_ALL="C.UTF-8", PATH="/usr/sbin:/usr/bin:/sbin:/bin")
+
+
+def say(*parts):
+    print(*parts, flush=True)
+
+
+def local_build():
+    try:
+        with open("/usr/share/mos/version") as f:
+            return int(json.load(f).get("build", 0))
+    except (OSError, ValueError):
+        return 0
+
+
+def apt_run(args, phase, total_bytes=0, base=0, span=100):
+    """Run apt-get with machine-readable progress on fd 3."""
+    r, w = os.pipe()
+    cmd = ["apt-get", "-y", "-o", "APT::Status-Fd=3", "-o", "Dpkg::Options::=--force-confold",
+           "-o", "Dpkg::Options::=--force-confdef"] + args
+    p = subprocess.Popen(cmd, env=ENV, pass_fds=(w,), stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
+                         preexec_fn=lambda: os.dup2(w, 3))
+    os.close(w)
+    with os.fdopen(r) as status:
+        for line in status:
+            parts = line.strip().split(":", 3)
+            if len(parts) < 4:
+                continue
+            kind, pct = parts[0], float(parts[2] or 0)
+            if kind == "dlstatus":
+                done = int(total_bytes * pct / 100)
+                say("PROGRESS", int(base + span * pct / 200), done, total_bytes, "Downloading " + phase)
+            elif kind == "pmstatus":
+                say("PROGRESS", int(base + span / 2 + span * pct / 200), 0, 0, "Installing " + phase)
+    err = p.stderr.read().decode(errors="ignore")
+    return p.wait() == 0, err
+
+
+def mos_update(channel):
+    with urllib.request.urlopen(UPDATES_URL.format(channel=channel), timeout=20) as r:
+        latest = json.loads(r.read().decode())
+    if int(latest.get("build", 0)) <= local_build():
+        return True
+    url, sha = latest.get("deb", ""), latest.get("sha256", "").lower()
+    if not url.startswith(ALLOWED) or not re.fullmatch(r"[0-9a-f]{64}", sha) or not url.endswith(".deb"):
+        say("ERROR The mOS update list looks wrong, so nothing was installed.")
+        return False
+    say("PHASE Downloading " + latest.get("name", "mOS update"))
+    os.makedirs(CACHE, mode=0o755, exist_ok=True)
+    dest = os.path.join(CACHE, "mos-desktop.deb")
+    h = hashlib.sha256()
+    with urllib.request.urlopen(url, timeout=60) as r, open(dest, "wb") as f:
+        total = int(r.headers.get("Content-Length", latest.get("size", 0)) or 0)
+        done = 0
+        while True:
+            chunk = r.read(256 * 1024)
+            if not chunk:
+                break
+            f.write(chunk)
+            h.update(chunk)
+            done += len(chunk)
+            say("PROGRESS", int(30 * done / total) if total else 0, done, total, "Downloading mOS update")
+    if h.hexdigest() != sha:
+        os.remove(dest)
+        say("ERROR The mOS update didn't download properly (checksum mismatch). Try again.")
+        return False
+    say("PHASE Installing " + latest.get("name", "mOS update"))
+    ok, err = apt_run(["install", "--allow-downgrades", dest], "mOS update", base=30, span=20)
+    if not ok:
+        say("ERROR Installing the mOS update failed: " + err.strip().splitlines()[-1] if err.strip() else "ERROR Installing the mOS update failed.")
+    return ok
+
+
+def system_updates():
+    say("PHASE Checking system updates")
+    subprocess.run(["apt-get", "update", "-qq"], env=ENV, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    uris = subprocess.run(["apt-get", "--print-uris", "-qq", "dist-upgrade"], env=ENV, capture_output=True,
+                          text=True).stdout
+    total = sum(int(p[2]) for p in (l.split() for l in uris.splitlines()) if len(p) >= 3 and p[2].isdigit())
+    say("PHASE Updating mOS system")
+    ok, err = apt_run(["dist-upgrade"], "system updates", total_bytes=total, base=50, span=35)
+    if not ok:
+        say("ERROR System update failed: " + (err.strip().splitlines()[-1] if err.strip() else "unknown error"))
+    return ok
+
+
+def app_updates():
+    if not os.path.exists("/usr/bin/flatpak"):
+        return True
+    say("PHASE Updating apps")
+    p = subprocess.Popen(["flatpak", "update", "--system", "-y", "--noninteractive"], env=ENV,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    for line in p.stdout:
+        m = re.search(r"(\d+)%", line)
+        if m:
+            say("PROGRESS", 85 + int(m.group(1)) * 15 // 100, 0, 0, "Updating apps")
+    return p.wait() == 0
+
+
+def main():
+    channel = "stable"
+    if "--channel" in sys.argv:
+        c = sys.argv[sys.argv.index("--channel") + 1]
+        channel = c if c in ("stable", "insider") else "stable"
+    try:
+        ok = mos_update(channel) and system_updates() and app_updates()
+    except Exception as e:
+        say("ERROR", str(e))
+        ok = False
+    say("PROGRESS", 100 if ok else 0, 0, 0, "Done")
+    say("DONE", "ok" if ok else "fail")
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

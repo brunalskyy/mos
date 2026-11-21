@@ -75,6 +75,28 @@ if [ -f /usr/share/sddm/themes/breeze/Main.qml ] && ! grep -q 'MosClock {' /usr/
 	fail=1
 fi
 
+# 0.5: full Settings, updates, Material colours
+for f in /usr/lib/mos-settings/mos_settings.py /usr/lib/mos-settings/mos_account.py /usr/lib/mos-settings/mos_update.py /usr/lib/mos-settings/mos-update-helper /usr/bin/mos-update-check; do
+	if ! python3 -m py_compile "${f}" 2>/dev/null; then
+		echo "E: ${f} has a Python error" >&2
+		fail=1
+	fi
+done
+find /usr/lib/mos-settings -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
+for f in /usr/share/color-schemes/mOSLight.colors /usr/share/color-schemes/mOSDark.colors /usr/share/mos/version /usr/share/polkit-1/actions/org.mos.update.policy; do
+	if [ ! -f "${f}" ]; then
+		echo "E: ${f} is missing" >&2
+		fail=1
+	fi
+done
+if [ "$(ls /usr/lib/mos-settings/pages/*.qml | wc -l)" -lt 20 ]; then
+	echo "E: mOS Settings pages are missing" >&2
+	fail=1
+fi
+if ! dpkg -s mos-desktop >/dev/null 2>&1; then
+	echo "W: the mos-desktop package is not installed (updates will still work)" >&2
+fi
+
 # System name
 if ! grep -q '^NAME="mOS"' /usr/lib/os-release; then
 	echo "E: os-release does not say mOS" >&2

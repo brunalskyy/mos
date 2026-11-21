@@ -70,3 +70,17 @@ fonts-inter
 # mos-shape-icons (shapes every app icon)
 python3-pil
 librsvg2-bin
+
+# mOS Settings pages (0.5): tools each page uses
+qml6-module-qtquick-effects
+network-manager
+bluez
+brightnessctl
+power-profiles-daemon
+upower
+pulseaudio-utils
+libnotify-bin
+xdg-utils
+pciutils
+pkexec
+polkitd

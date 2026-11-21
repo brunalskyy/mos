@@ -5,199 +5,110 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import "components"
 
 ApplicationWindow {
     id: win
-    width: 1080
-    height: 720
-    minimumWidth: 820
-    minimumHeight: 560
+    width: 1100
+    height: 740
+    minimumWidth: 860
+    minimumHeight: 580
     visible: true
     title: "Settings"
-    font.family: "Inter"
+    font.family: Theme.font
+    color: Theme.surface
 
-    // ---------- Material You colours from the accent ----------
-    function mix(a, b, t) {
-        // Qt.lighter(x, 1) turns a colour name like "#FFFFFF" into a real colour
-        var ca = Qt.lighter(a, 1.0), cb = Qt.lighter(b, 1.0)
-        return Qt.rgba(ca.r + (cb.r - ca.r) * t, ca.g + (cb.g - ca.g) * t, ca.b + (cb.b - ca.b) * t, 1)
-    }
-    readonly property bool dark: backend.dark
-    readonly property color accent: backend.accent
-    readonly property color primary: dark ? mix(accent, "#FFFFFF", 0.35) : mix(accent, "#000000", 0.12)
-    readonly property color onPrimary: dark ? mix(accent, "#000000", 0.8) : "#FFFFFF"
-    readonly property color primaryContainer: dark ? mix(accent, "#000000", 0.6) : mix(accent, "#FFFFFF", 0.78)
-    readonly property color onPrimaryContainer: dark ? mix(accent, "#FFFFFF", 0.8) : mix(accent, "#000000", 0.7)
-    readonly property color surface: dark ? mix(accent, "#141218", 0.94) : mix(accent, "#FFFBFF", 0.96)
-    readonly property color surfaceContainer: dark ? mix(accent, "#1D1B20", 0.9) : mix(accent, "#F7F2FA", 0.9)
-    readonly property color surfaceHigh: dark ? mix(accent, "#2B2930", 0.9) : "#FFFFFF"
-    readonly property color onSurface: dark ? "#E6E0E9" : "#1D1B20"
-    readonly property color onSurfaceVariant: dark ? "#CAC4D0" : "#49454F"
-    readonly property color outline: dark ? "#49454F" : mix(accent, "#CAC4D0", 0.85)
-
-    property string page: startPage
-    property string query: ""
-
-    color: surface
-
-    // Sidebar items: id, title, subtitle, icon, colour, KDE module (empty = built in)
-    readonly property var items: [
-        { section: "Personalise" },
-        { id: "style", title: "Wallpaper & style", sub: "Wallpaper, colours, dark mode", icon: "palette", tone: "#E8833A", module: "" },
-        { id: "icons", title: "Icon shape", sub: "Circle, squircle or rounded", icon: "shapes", tone: "#D9488B", module: "" },
-        { id: "lock", title: "Lock screen", sub: "Clock, timeout, password", icon: "lock", tone: "#7C5CFF", module: "kcm_screenlocker" },
+    // Sidebar: id, title, icon, colour. Pages live in pages/<id>.qml
+    readonly property var sections: [
         { section: "Connections" },
-        { id: "wifi", title: "Wi-Fi & internet", sub: "Networks, VPN, hotspot", icon: "wifi", tone: "#2F7BEA", module: "kcm_networkmanagement" },
-        { id: "bt", title: "Bluetooth", sub: "Headphones, mice, phones", icon: "bluetooth", tone: "#1E88E5", module: "kcm_bluetooth" },
+        { id: "wifi", title: "Wi-Fi & internet", icon: "wifi", tone: "#2F7BEA", keys: "network wireless ethernet internet" },
+        { id: "bluetooth", title: "Bluetooth", icon: "bluetooth", tone: "#1E88E5", keys: "headphones devices pair" },
+        { section: "Personalise" },
+        { id: "style", title: "Wallpaper & style", icon: "palette", tone: "#E8833A", keys: "background colour dark mode accent theme material" },
+        { id: "icons", title: "Icon shape", icon: "shapes", tone: "#D9488B", keys: "circle squircle rounded" },
+        { id: "taskbar", title: "Taskbar", icon: "taskbar", tone: "#5C6BC0", keys: "dock panel floating pinned" },
+        { id: "lock", title: "Lock screen", icon: "lockscreen", tone: "#7C5CFF", keys: "password clock timeout" },
         { section: "Device" },
-        { id: "display", title: "Display", sub: "Resolution, scale, Night Light", icon: "display", tone: "#00897B", module: "kcm_kscreen" },
-        { id: "sound", title: "Sound", sub: "Volume, speakers, microphone", icon: "sound", tone: "#E53935", module: "kcm_pulseaudio" },
-        { id: "power", title: "Battery & power", sub: "Sleep, battery saver", icon: "battery", tone: "#43A047", module: "kcm_powerdevilprofilesconfig" },
-        { id: "keyboard", title: "Keyboard", sub: "Layouts, shortcuts", icon: "keyboard", tone: "#6D4C41", module: "kcm_keyboard" },
-        { id: "mouse", title: "Mouse & trackpad", sub: "Speed, scrolling, gestures", icon: "mouse", tone: "#546E7A", module: "kcm_touchpad" },
+        { id: "display", title: "Display", icon: "display", tone: "#00897B", keys: "screen brightness resolution scale night light" },
+        { id: "sound", title: "Sound", icon: "sound", tone: "#E53935", keys: "volume speakers microphone audio" },
+        { id: "power", title: "Battery & power", icon: "battery", tone: "#43A047", keys: "sleep power mode energy" },
         { section: "System" },
-        { id: "notifications", title: "Notifications", sub: "Do not disturb, pop-ups", icon: "bell", tone: "#F4511E", module: "kcm_notifications" },
-        { id: "apps", title: "Default apps", sub: "Browser, email, files", icon: "apps", tone: "#8E24AA", module: "kcm_componentchooser" },
-        { id: "time", title: "Date & time", sub: "Time zone, clock", icon: "clock", tone: "#3949AB", module: "kcm_clock" },
-        { id: "language", title: "Language & region", sub: "Language, formats", icon: "globe", tone: "#00ACC1", module: "kcm_regionandlang" },
-        { id: "users", title: "Users", sub: "Accounts on this computer", icon: "person", tone: "#5E35B1", module: "kcm_users" },
-        { id: "about", title: "About mOS", sub: "Version, this computer", icon: "info", tone: "#757575", module: "" },
-        { id: "more", title: "More settings", sub: "Every KDE setting", icon: "more", tone: "#616161", module: "systemsettings" }
+        { id: "notifications", title: "Notifications", icon: "bell", tone: "#F4511E", keys: "do not disturb alerts" },
+        { id: "privacy", title: "Privacy & security", icon: "shield", tone: "#3949AB", keys: "camera microphone permissions" },
+        { id: "general", title: "General", icon: "general", tone: "#616161", keys: "about update storage apps language date time users accessibility reset" }
     ]
-    function itemFor(id) {
-        for (var i = 0; i < items.length; i++)
-            if (items[i].id === id) return items[i]
-        return items[1]
+    // Pages that live inside General (they get a back button)
+    readonly property var generalPages: [
+        { id: "about", title: "About", icon: "info", tone: "#757575", sub: "mOS version, this computer" },
+        { id: "update", title: "Software update", icon: "update", tone: "#1E88E5", sub: "mOS, system and app updates" },
+        { id: "storage", title: "Storage", icon: "storage", tone: "#8E24AA", sub: "What's using space" },
+        { id: "apps", title: "Apps", icon: "apps", tone: "#F4511E", sub: "Installed apps, default apps" },
+        { id: "language", title: "Language & region", icon: "globe", tone: "#00ACC1", sub: "Language, formats" },
+        { id: "datetime", title: "Date & time", icon: "clock", tone: "#3949AB", sub: "Time zone, 24-hour clock" },
+        { id: "keyboard", title: "Keyboard", icon: "keyboard", tone: "#6D4C41", sub: "Layouts" },
+        { id: "mouse", title: "Mouse & trackpad", icon: "mouse", tone: "#546E7A", sub: "Speed, scrolling, tap to click" },
+        { id: "users", title: "Users", icon: "person", tone: "#5E35B1", sub: "People who use this computer" },
+        { id: "accessibility", title: "Accessibility", icon: "access", tone: "#00897B", sub: "Text size, motion, colour filters" },
+        { id: "reset", title: "Reset", icon: "reset", tone: "#E53935", sub: "Put mOS back to how it started" }
+    ]
+    readonly property var extraPages: [
+        { id: "account", title: "mOS Account" }
+    ]
+    function titleFor(id) {
+        var all = sections.concat(generalPages).concat(extraPages)
+        for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i].title
+        return ""
     }
-    function icon(name) { return Qt.resolvedUrl("icons/" + name + ".svg") }
-    function ink(name) { return Qt.resolvedUrl("icons/" + name + (win.dark ? "-inkdark" : "-ink") + ".svg") }
-
-    // ---------- small Material pieces ----------
-    component ToneIcon: Rectangle {
-        property string name
-        property color tone
-        property int size: 36
-        width: size; height: size; radius: size / 2
-        color: tone
-        Image {
-            anchors.centerIn: parent
-            source: win.icon(parent.name)
-            width: parent.size * 0.56; height: width
-            sourceSize: Qt.size(width * 2, height * 2)
-        }
+    function isGeneral(id) {
+        for (var i = 0; i < generalPages.length; i++) if (generalPages[i].id === id) return true
+        return false
     }
+    property string query: ""
+    // Opened straight on a page inside General (e.g. from an update notification): back goes to General
+    Component.onCompleted: if (isGeneral(Nav.page)) Nav.trail = ["general"]
 
-    component M3Switch: Item {
-        id: sw
-        property bool checked: false
-        signal toggled(bool value)
-        implicitWidth: 52; implicitHeight: 32
-        Rectangle {
-            anchors.fill: parent; radius: 16
-            color: sw.checked ? win.primary : win.surfaceContainer
-            border.width: sw.checked ? 0 : 2
-            border.color: win.outline
-            Behavior on color { ColorAnimation { duration: 150 } }
-        }
-        Rectangle {
-            readonly property int d: sw.checked ? 24 : 16
-            width: d; height: d; radius: d / 2
-            anchors.verticalCenter: parent.verticalCenter
-            x: sw.checked ? parent.width - d - 4 : 8
-            color: sw.checked ? win.onPrimary : win.onSurfaceVariant
-            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-            Behavior on width { NumberAnimation { duration: 150 } }
-            Behavior on height { NumberAnimation { duration: 150 } }
-        }
-        MouseArea {
-            anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-            onClicked: { sw.checked = !sw.checked; sw.toggled(sw.checked) }
+    // Short message at the bottom ("Connected to Home Wi-Fi")
+    function toast(text) { toastLabel.text = text; toastBox.opacity = 1; toastTimer.restart() }
+    Connections { target: backend; function onToast(t) { win.toast(t) } }
+    Connections {
+        target: backend
+        function onJobDone(key, ok, msg) {
+            if (msg && msg !== "ok" && msg.length < 120 && msg.indexOf("\n") < 0) win.toast(msg)
+            else if (!ok) win.toast("That didn't work")
         }
     }
 
-    component Card: Rectangle {
-        default property alias content: inner.data
-        property int pad: 20
-        Layout.fillWidth: true
-        implicitHeight: inner.implicitHeight + pad * 2
-        radius: 24
-        color: win.surfaceHigh
-        border.width: win.dark ? 0 : 1
-        border.color: Qt.rgba(0, 0, 0, 0.05)
-        ColumnLayout {
-            id: inner
-            anchors { left: parent.left; right: parent.right; top: parent.top; margins: parent.pad }
-            spacing: 14
-        }
-    }
-
-    component SettingRow: RowLayout {
-        property string title
-        property string sub
-        spacing: 16
-        Layout.fillWidth: true
-        ColumnLayout {
-            spacing: 2
-            Layout.fillWidth: true
-            Label { text: title; color: win.onSurface; font.pixelSize: 16; font.weight: Font.Medium }
-            Label { text: sub; color: win.onSurfaceVariant; font.pixelSize: 13; visible: sub !== ""; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-        }
-    }
-
-    component PillButton: Rectangle {
-        property string text
-        property bool tonal: false
-        signal clicked()
-        implicitWidth: lbl.implicitWidth + 48
-        implicitHeight: 44
-        radius: 22
-        color: tonal ? win.primaryContainer : win.primary
-        opacity: ma.pressed ? 0.85 : 1
-        Label {
-            id: lbl; anchors.centerIn: parent; text: parent.text
-            color: parent.tonal ? win.onPrimaryContainer : win.onPrimary
-            font.pixelSize: 15; font.weight: Font.DemiBold
-        }
-        MouseArea { id: ma; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: parent.clicked() }
-    }
-
-    // ---------- layout ----------
     RowLayout {
         anchors.fill: parent
         spacing: 0
 
-        // Sidebar (inset, macOS-style, Material colours)
+        // ---------- sidebar (inset, Material colours)
         Rectangle {
             Layout.fillHeight: true
             Layout.preferredWidth: 300
             Layout.margins: 10
             Layout.rightMargin: 0
-            radius: 22
-            color: win.surfaceContainer
+            radius: 24
+            color: Theme.surfaceContainer
 
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 12
                 spacing: 10
 
-                // Search
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: 48
                     radius: 24
-                    color: win.surfaceHigh
+                    color: Theme.surfaceHigh
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 16; anchors.rightMargin: 16; spacing: 10
-                        Image {
-                            source: win.ink("search"); sourceSize: Qt.size(40, 40)
-                            Layout.preferredWidth: 20; Layout.preferredHeight: 20
-                        }
+                        Image { source: Theme.ink("search"); sourceSize: Qt.size(40, 40); Layout.preferredWidth: 20; Layout.preferredHeight: 20 }
                         TextField {
-                            id: search
                             Layout.fillWidth: true
                             placeholderText: "Search settings"
-                            placeholderTextColor: win.onSurfaceVariant
-                            color: win.onSurface
+                            placeholderTextColor: Theme.onSurfaceVariant
+                            color: Theme.onSurface
                             font.pixelSize: 15
                             background: null
                             onTextChanged: win.query = text.toLowerCase()
@@ -205,12 +116,12 @@ ApplicationWindow {
                     }
                 }
 
-                // mOS Account card
+                // mOS Account
                 Rectangle {
                     Layout.fillWidth: true
                     implicitHeight: 72
-                    radius: 20
-                    color: accMa.containsMouse ? Qt.darker(win.primaryContainer, 1.03) : win.primaryContainer
+                    radius: 22
+                    color: accMa.containsMouse || Nav.page === "account" ? Qt.darker(Theme.primaryContainer, 1.04) : Theme.primaryContainer
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 12; spacing: 12
                         Rectangle {
@@ -220,19 +131,30 @@ ApplicationWindow {
                                 GradientStop { position: 0.5; color: "#FF9A3C" }
                                 GradientStop { position: 1; color: "#E8505B" }
                             }
-                            Image { anchors.centerIn: parent; source: win.icon("account"); width: 26; height: 26; sourceSize: Qt.size(52, 52) }
+                            Image {
+                                anchors.centerIn: parent
+                                visible: backend.accountApi.photo === ""
+                                source: Theme.icon("account"); width: 26; height: 26; sourceSize: Qt.size(52, 52)
+                            }
+                            RoundImage { anchors.fill: parent; visible: backend.accountApi.photo !== ""; source: backend.accountApi.photo }
                         }
                         ColumnLayout {
                             spacing: 1; Layout.fillWidth: true
-                            Label { text: "mOS Account"; color: win.onPrimaryContainer; font.pixelSize: 16; font.weight: Font.DemiBold }
-                            Label { text: "Sign in, sync and more"; color: win.onPrimaryContainer; opacity: 0.8; font.pixelSize: 13 }
+                            Label {
+                                text: backend.accountApi.signedIn ? backend.accountApi.name : "mOS Account"
+                                color: Theme.onPrimaryContainer; font.pixelSize: 16; font.weight: Font.DemiBold
+                                elide: Text.ElideRight; Layout.fillWidth: true
+                            }
+                            Label {
+                                text: backend.accountApi.signedIn ? "mOS Account" : "Sign in, sync and more"
+                                color: Theme.onPrimaryContainer; opacity: 0.8; font.pixelSize: 13
+                            }
                         }
-                        Image { source: win.ink("chevron"); Layout.preferredWidth: 18; Layout.preferredHeight: 18; sourceSize: Qt.size(36, 36); opacity: 0.7 }
+                        Image { source: Theme.ink("chevron"); Layout.preferredWidth: 18; Layout.preferredHeight: 18; sourceSize: Qt.size(36, 36); opacity: 0.7 }
                     }
-                    MouseArea { id: accMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: backend.launch("mos-account") }
+                    MouseArea { id: accMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Nav.top("account") }
                 }
 
-                // List
                 ListView {
                     id: list
                     Layout.fillWidth: true
@@ -240,44 +162,56 @@ ApplicationWindow {
                     clip: true
                     spacing: 2
                     boundsBehavior: Flickable.StopAtBounds
-                    model: win.items.filter(function (it) {
-                        if (win.query === "") return true
-                        if (it.section) return false
-                        return (it.title + " " + it.sub).toLowerCase().indexOf(win.query) !== -1
-                    })
+                    model: {
+                        if (win.query === "") return win.sections
+                        var hits = []
+                        var all = win.sections.concat(win.generalPages)
+                        for (var i = 0; i < all.length; i++) {
+                            var it = all[i]
+                            if (it.section) continue
+                            if ((it.title + " " + (it.keys || "") + " " + (it.sub || "")).toLowerCase().indexOf(win.query) !== -1) hits.push(it)
+                        }
+                        return hits
+                    }
                     delegate: Item {
+                        id: row
                         required property var modelData
                         width: list.width
-                        height: modelData.section ? 36 : 52
+                        height: modelData.section ? 34 : 50
+                        readonly property bool current: Nav.page === modelData.id || (modelData.id === "general" && win.isGeneral(Nav.page))
                         Label {
-                            visible: !!modelData.section
-                            text: modelData.section || ""
+                            visible: !!row.modelData.section
+                            text: row.modelData.section || ""
                             anchors.left: parent.left; anchors.leftMargin: 14
                             anchors.bottom: parent.bottom; anchors.bottomMargin: 6
-                            color: win.onSurfaceVariant
+                            color: Theme.onSurfaceVariant
                             font.pixelSize: 12; font.weight: Font.DemiBold; font.letterSpacing: 0.4
                         }
                         Rectangle {
-                            visible: !modelData.section
+                            visible: !row.modelData.section
                             anchors.fill: parent
-                            radius: 26
-                            color: win.page === modelData.id ? win.primaryContainer
-                                 : rowMa.containsMouse ? Qt.rgba(win.onSurface.r, win.onSurface.g, win.onSurface.b, 0.06) : "transparent"
+                            radius: 25
+                            color: row.current ? Theme.primaryContainer
+                                 : rowMa.containsMouse ? Theme.alpha(Theme.onSurface, 0.06) : "transparent"
+                            Behavior on color { ColorAnimation { duration: 140 } }
                             RowLayout {
-                                anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 14; spacing: 14
-                                ToneIcon { name: modelData.icon || "info"; tone: modelData.tone || "#757575"; size: 34 }
+                                anchors.fill: parent; anchors.leftMargin: 9; anchors.rightMargin: 14; spacing: 14
+                                ToneIcon { name: row.modelData.icon || "info"; tone: row.modelData.tone || "#757575"; size: 32 }
                                 Label {
-                                    text: modelData.title || ""
+                                    text: row.modelData.title || ""
                                     Layout.fillWidth: true
                                     elide: Text.ElideRight
-                                    color: win.page === modelData.id ? win.onPrimaryContainer : win.onSurface
+                                    color: row.current ? Theme.onPrimaryContainer : Theme.onSurface
                                     font.pixelSize: 15
-                                    font.weight: win.page === modelData.id ? Font.DemiBold : Font.Normal
+                                    font.weight: row.current ? Font.DemiBold : Font.Normal
                                 }
                             }
                             MouseArea {
                                 id: rowMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                                onClicked: win.page = modelData.id
+                                onClicked: {
+                                    if (win.isGeneral(row.modelData.id)) { Nav.top("general"); Nav.go(row.modelData.id) }
+                                    else Nav.top(row.modelData.id)
+                                }
                             }
                         }
                     }
@@ -285,7 +219,7 @@ ApplicationWindow {
             }
         }
 
-        // Content
+        // ---------- page
         ScrollView {
             id: scroller
             Layout.fillWidth: true
@@ -294,220 +228,56 @@ ApplicationWindow {
             clip: true
 
             ColumnLayout {
-                width: Math.min(scroller.availableWidth - 64, 760)
-                x: 32
+                id: pageColumn
+                width: Math.min(scroller.availableWidth - 64, 780)
+                x: Math.max(32, (scroller.availableWidth - width) / 2)
                 spacing: 18
 
-                Item { implicitHeight: 18 }
+                Item { implicitHeight: 14 }
 
-                Label {
-                    text: win.itemFor(win.page).title
-                    color: win.onSurface
-                    font.pixelSize: 34; font.weight: Font.DemiBold
+                RowLayout {
+                    spacing: 6
+                    Rectangle {
+                        visible: Nav.canGoBack
+                        width: 44; height: 44; radius: 22
+                        color: backMa.containsMouse ? Theme.alpha(Theme.onSurface, 0.07) : "transparent"
+                        Image { anchors.centerIn: parent; source: Theme.ink("back"); width: 22; height: 22; sourceSize: Qt.size(44, 44) }
+                        MouseArea { id: backMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Nav.back() }
+                    }
+                    Label {
+                        text: win.titleFor(Nav.page)
+                        color: Theme.onSurface
+                        font.pixelSize: 34; font.weight: Font.DemiBold
+                    }
                 }
 
                 Loader {
+                    id: pageLoader
                     Layout.fillWidth: true
-                    sourceComponent: win.page === "style" ? stylePage
-                                   : win.page === "icons" ? iconsPage
-                                   : win.page === "about" ? aboutPage
-                                   : modulePage
+                    source: "pages/" + Nav.page + ".qml"
+                    onLoaded: fade.restart()
+                    NumberAnimation { id: fade; target: pageLoader; property: "opacity"; from: 0; to: 1; duration: 220; easing.type: Easing.OutCubic }
                 }
 
-                Item { implicitHeight: 24 }
+                Item { implicitHeight: 32 }
             }
         }
     }
 
-    // ---------- pages ----------
-    Component {
-        id: stylePage
-        ColumnLayout {
-            spacing: 18
-            Card {
-                Label { text: "Wallpaper"; color: win.onSurface; font.pixelSize: 18; font.weight: Font.DemiBold }
-                GridLayout {
-                    Layout.fillWidth: true
-                    columns: 3
-                    columnSpacing: 14; rowSpacing: 14
-                    Repeater {
-                        model: backend.wallpapers
-                        delegate: ColumnLayout {
-                            required property var modelData
-                            spacing: 8
-                            Layout.fillWidth: true
-                            Rectangle {
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: width * 10 / 16
-                                radius: 18
-                                color: win.surfaceContainer
-                                clip: true
-                                Image {
-                                    anchors.fill: parent
-                                    source: modelData.preview
-                                    fillMode: Image.PreserveAspectCrop
-                                    asynchronous: true
-                                    sourceSize.width: 480
-                                    layer.enabled: true
-                                }
-                                Rectangle { anchors.fill: parent; radius: 18; color: "transparent"; border.width: wpMa.containsMouse ? 3 : 0; border.color: win.primary }
-                                MouseArea { id: wpMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: backend.setWallpaper(modelData.image) }
-                            }
-                            Label { text: modelData.name; color: win.onSurfaceVariant; font.pixelSize: 13; Layout.alignment: Qt.AlignHCenter }
-                        }
-                    }
-                }
-            }
-            Card {
-                SettingRow {
-                    title: "Colours from wallpaper"
-                    sub: "Buttons, highlights and widgets match your wallpaper, like Material You"
-                    M3Switch { checked: backend.accentFromWallpaper; onToggled: function (v) { backend.setAccentFromWallpaper(v) } }
-                }
-                Rectangle { Layout.fillWidth: true; height: 1; color: win.outline; opacity: 0.6 }
-                SettingRow {
-                    title: "Dark mode"
-                    sub: "Dark backgrounds in mOS and your apps"
-                    M3Switch { checked: backend.dark; onToggled: function (v) { backend.setDark(v) } }
-                }
-            }
-            Card {
-                SettingRow {
-                    title: "Accent colour"
-                    sub: backend.accentFromWallpaper ? "Picked from your wallpaper" : "Fixed colour"
-                    Row {
-                        spacing: 6
-                        Repeater {
-                            model: [win.primary, win.primaryContainer, win.accent, win.surfaceContainer]
-                            delegate: Rectangle { required property color modelData; width: 28; height: 28; radius: 14; color: modelData; border.width: 1; border.color: Qt.rgba(0, 0, 0, 0.08) }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: iconsPage
-        ColumnLayout {
-            spacing: 18
-            Label {
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                text: "Pick the shape for app icons. It changes every app on the taskbar, Start menu and desktop."
-                color: win.onSurfaceVariant; font.pixelSize: 15
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 14
-                Repeater {
-                    model: [
-                        { shape: "circle", name: "Circle", theme: "mOS" },
-                        { shape: "squircle", name: "Squircle", theme: "mOS-Squircle" },
-                        { shape: "rounded", name: "Rounded square", theme: "mOS-Rounded" }
-                    ]
-                    delegate: Rectangle {
-                        id: shapeCard
-                        required property var modelData
-                        readonly property bool chosen: backend.iconShape === modelData.shape
-                        Layout.fillWidth: true
-                        implicitHeight: 220
-                        radius: 24
-                        color: chosen ? win.primaryContainer : win.surfaceHigh
-                        border.width: chosen ? 2 : 1
-                        border.color: chosen ? win.primary : Qt.rgba(0, 0, 0, 0.06)
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: 14
-                            Grid {
-                                Layout.alignment: Qt.AlignHCenter
-                                columns: 2; spacing: 10
-                                Repeater {
-                                    model: ["system-file-manager", "org.gnome.Epiphany", "org.gnome.Music", "utilities-terminal"]
-                                    delegate: Image {
-                                        required property string modelData
-                                        width: 52; height: 52
-                                        sourceSize: Qt.size(104, 104)
-                                        source: "file:///usr/share/icons/" + shapeCard.modelData.theme + "/128x128/apps/" + modelData + ".png"
-                                    }
-                                }
-                            }
-                            RowLayout {
-                                Layout.alignment: Qt.AlignHCenter
-                                spacing: 6
-                                Image { visible: chosen; source: win.ink("check"); Layout.preferredWidth: 18; Layout.preferredHeight: 18; sourceSize: Qt.size(36, 36) }
-                                Label { text: modelData.name; color: chosen ? win.onPrimaryContainer : win.onSurface; font.pixelSize: 15; font.weight: Font.DemiBold }
-                            }
-                        }
-                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: backend.setIconShape(modelData.shape) }
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: aboutPage
-        ColumnLayout {
-            spacing: 18
-            Card {
-                pad: 28
-                RowLayout {
-                    spacing: 22
-                    Image { source: "file:///usr/share/icons/hicolor/256x256/apps/mos-logo.png"; width: 96; height: 96; sourceSize: Qt.size(192, 192) }
-                    ColumnLayout {
-                        spacing: 4
-                        Label { text: "mOS"; color: win.onSurface; font.pixelSize: 30; font.weight: Font.Bold }
-                        Label { text: backend.about.version || "mOS"; color: win.onSurfaceVariant; font.pixelSize: 15 }
-                        Label { text: "Made by Bruno Woznicki"; color: win.onSurfaceVariant; font.pixelSize: 13 }
-                    }
-                }
-            }
-            Card {
-                Repeater {
-                    model: [
-                        { k: "Computer", v: backend.about.model },
-                        { k: "Processor", v: backend.about.cpu },
-                        { k: "Memory", v: backend.about.memory }
-                    ]
-                    delegate: RowLayout {
-                        required property var modelData
-                        visible: modelData.v !== ""
-                        Layout.fillWidth: true
-                        Label { text: modelData.k; color: win.onSurfaceVariant; font.pixelSize: 15; Layout.preferredWidth: 140 }
-                        Label { text: modelData.v; color: win.onSurface; font.pixelSize: 15; font.weight: Font.Medium; Layout.fillWidth: true; wrapMode: Text.WordWrap }
-                    }
-                }
-            }
-            RowLayout {
-                spacing: 12
-                PillButton { text: "More about this computer"; tonal: true; onClicked: backend.openModule("kcm_about-distro") }
-                PillButton { text: "mOS website"; tonal: true; onClicked: Qt.openUrlExternally("https://brunalskyy.github.io/mos/") }
-            }
-        }
-    }
-
-    Component {
-        id: modulePage
-        ColumnLayout {
-            spacing: 18
-            readonly property var it: win.itemFor(win.page)
-            Card {
-                pad: 28
-                RowLayout {
-                    spacing: 20
-                    ToneIcon { name: it.icon; tone: it.tone; size: 64 }
-                    ColumnLayout {
-                        spacing: 4; Layout.fillWidth: true
-                        Label { text: it.title; color: win.onSurface; font.pixelSize: 20; font.weight: Font.DemiBold }
-                        Label { text: it.sub; color: win.onSurfaceVariant; font.pixelSize: 15; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-                    }
-                }
-                PillButton {
-                    text: it.module === "systemsettings" ? "Open all settings" : "Open " + it.title.toLowerCase() + " settings"
-                    onClicked: it.module === "systemsettings" ? backend.launch("systemsettings") : backend.openModule(it.module)
-                }
-            }
-        }
+    // ---------- toast
+    Rectangle {
+        id: toastBox
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 24
+        width: toastLabel.implicitWidth + 40
+        height: 48
+        radius: 24
+        color: Theme.dark ? "#E6E0E9" : "#322F35"
+        opacity: 0
+        visible: opacity > 0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+        Label { id: toastLabel; anchors.centerIn: parent; color: Theme.dark ? "#322F35" : "#F5EFF7"; font.pixelSize: 14 }
+        Timer { id: toastTimer; interval: 3200; onTriggered: toastBox.opacity = 0 }
     }
 }

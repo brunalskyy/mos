@@ -2,7 +2,7 @@
 widgetStyle=Breeze
 
 [kdeglobals][General]
-ColorScheme=BreezeLight
+ColorScheme=mOSLight
 accentColorFromWallpaper=true
 
 [kdeglobals][Icons]

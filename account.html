@@ -126,6 +126,17 @@ Continue with phone number
 <p class="small">By continuing you agree to the <a href="privacy.html">mOS privacy notice</a>.</p>
 </section>
 
+<!-- Signed in, and mOS (this computer) asked to sign in -->
+<section id="handoff" hidden>
+<div class="top">
+<img src="assets/mos-logo.svg" alt="">
+<h1>Sign in to mOS</h1>
+<p class="sub" id="handoffText">Use this account on your computer?</p>
+</div>
+<button class="btn" id="handoffGo" type="button">Continue</button>
+<button class="btn text" id="handoffOther" type="button">Use a different account</button>
+</section>
+
 <!-- Signed in -->
 <section id="signedIn" hidden>
 <div class="top">
@@ -321,10 +332,29 @@ $("checkCode").onclick = async () => {
   finally { $("checkCode").disabled = false; }
 };
 
+// mOS asks: ?mos=<port>&state=<one-time code> (only ever sent to this computer, 127.0.0.1)
+const q = new URLSearchParams(location.search);
+const mosPort = /^\d{4,5}$/.test(q.get("mos") || "") ? q.get("mos") : null;
+const mosState = /^[A-Za-z0-9_-]{20,64}$/.test(q.get("state") || "") ? q.get("state") : null;
+const fromMos = !!(mosPort && mosState);
+
+$("handoffGo").onclick = () => {
+  const u = auth.currentUser;
+  if (!u || !fromMos) return;
+  location.href = "http://127.0.0.1:" + mosPort + "/callback#state=" + encodeURIComponent(mosState)
+    + "&rt=" + encodeURIComponent(u.refreshToken);
+};
+$("handoffOther").onclick = () => signOut(auth);
+
 function render(user) {
   $("loading").hidden = true;
   $("signedOut").hidden = !!user;
-  $("signedIn").hidden = !user;
+  $("signedIn").hidden = !user || fromMos;
+  $("handoff").hidden = !user || !fromMos;
+  if (user && fromMos) {
+    const who = user.displayName || user.email || user.phoneNumber || "your account";
+    $("handoffText").textContent = "Sign in to mOS on this computer as " + who + "?";
+  }
   if (!user) return;
   const name = user.displayName || (user.email ? user.email.split("@")[0] : "there");
   $("hello").textContent = "Hey " + name + "!";

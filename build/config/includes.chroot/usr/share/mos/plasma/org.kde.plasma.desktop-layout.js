@@ -53,6 +53,8 @@ tasks.writeConfig("launchers", [
 tasks.writeConfig("showOnlyCurrentDesktop", "false");
 tasks.writeConfig("indicateAudioStreams", "true");
 tasks.writeConfig("fill", "false");
+// Spread the apps out a bit
+tasks.writeConfig("iconSpacing", "2");
 
 taskbar.addWidget("org.kde.plasma.marginsseparator");
 taskbar.addWidget("org.kde.plasma.systemtray");

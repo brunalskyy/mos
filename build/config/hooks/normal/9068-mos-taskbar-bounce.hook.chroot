@@ -12,7 +12,12 @@ if [ ! -f "${UI}" ]; then
 	exit 0
 fi
 
-cp "${UI}" /tmp/Task.qml.mos
+# Always start from the original file, so running this again is safe
+if [ -f "${UI}.debian" ]; then
+	cp "${UI}.debian" /tmp/Task.qml.mos
+else
+	cp "${UI}" /tmp/Task.qml.mos
+fi
 if python3 - /tmp/Task.qml.mos <<'PY'
 import re, sys
 path = sys.argv[1]

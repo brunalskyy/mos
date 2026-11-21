@@ -1,0 +1,48 @@
+#!/usr/bin/python3
+"""Check for mOS, system and app updates in the background and show a
+notification if there are some. Runs at login and every 6 hours
+(mos-update-check.timer). Tapping the notification opens Settings > Software update.
+"""
+import json
+import os
+import subprocess
+import sys
+import time
+
+sys.path.insert(0, "/usr/lib/mos-settings")
+from mos_update import Updates  # noqa: E402
+
+STATE = os.path.expanduser("~/.config/mos/update-notified.json")
+
+
+def main():
+    u = Updates()
+    u._check()
+    s = u._s
+    count = (1 if s["mos"] else 0) + len(s["system"]) + len(s["apps"])
+    if not count:
+        return
+    key = f"{s['mos'].get('version', '') if s['mos'] else ''}:{count}"
+    try:
+        last = json.load(open(STATE))
+    except (OSError, ValueError):
+        last = {}
+    # Don't nag: same updates -> remind at most once a day
+    if last.get("key") == key and time.time() - last.get("at", 0) < 86400:
+        return
+    os.makedirs(os.path.dirname(STATE), exist_ok=True)
+    json.dump({"key": key, "at": time.time()}, open(STATE, "w"))
+    title = f"{s['mos']['name']} is ready" if s["mos"] else "Updates are ready"
+    body = f"{count} update{'s' if count != 1 else ''} for mOS and your apps."
+    try:
+        out = subprocess.run(["notify-send", "--app-name=mOS", "--icon=mos-logo", "--wait",
+                              "--action=open=See updates", title, body],
+                             capture_output=True, text=True, timeout=3600).stdout.strip()
+    except (OSError, subprocess.TimeoutExpired):
+        return
+    if out == "open":
+        subprocess.Popen(["mos-settings", "update"], start_new_session=True)
+
+
+if __name__ == "__main__":
+    main()
