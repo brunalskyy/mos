@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Category": "Date and Time",
+        "Description": "Pixel-style At a glance: the date and the weather",
+        "Icon": "weather-few-clouds",
+        "Id": "org.mos.glance",
+        "License": "GPL-3.0-or-later",
+        "Name": "At a glance",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

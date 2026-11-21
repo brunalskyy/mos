@@ -1,6 +1,6 @@
 // mOS default desktop layout (KDE Plasma 6)
 // Floating pill taskbar along the bottom (Windows 10 layout, iOS 27 shape): mOS Start button, pinned and open apps,
-// tidy system tray (with the notification bell) and a small clock with the date.
+// the Control Centre button (Wi-Fi, sound, battery) and a small clock (click it for notifications).
 // Desktop: the Amber wallpaper (mOS logo top left), icons on the right, widgets on the left.
 
 var wallpaper = "file:///usr/share/wallpapers/mOS/contents/images/2880x1800.png";
@@ -18,17 +18,18 @@ for (var j = 0; j < desktopsArray.length; j++) {
     desktop.writeConfig("alignment", 1);
     desktop.writeConfig("arrangement", 1);
 
-    // Pixel-style widgets down the left side, under the logo: the flower clock and the battery ring
+    // Pixel-style widgets down the left side, under the logo: At a glance, the flower clock and the battery ring
     // (the battery one stays hidden on computers without a battery)
     var unit = gridUnit;
     var left = unit * 2;
-    desktop.addWidget("org.mos.clock", left, unit * 8, unit * 12, unit * 12);
-    desktop.addWidget("org.mos.battery", left + unit * 2, unit * 21, unit * 8, unit * 8);
+    desktop.addWidget("org.mos.glance", left, unit * 7, unit * 20, unit * 5);
+    desktop.addWidget("org.mos.clock", left, unit * 13, unit * 12, unit * 12);
+    desktop.addWidget("org.mos.battery", left + unit * 2, unit * 26, unit * 8, unit * 8);
 }
 
 
-// Tidy system tray: Wi-Fi, sound, battery and the notification centre (bell) always show;
-// the rest go in the ^ menu
+// Tidy system tray: Wi-Fi, sound and battery live in the Control Centre and notifications
+// in the clock, so the tray only shows apps that put an icon there (the rest go in the ^ menu)
 function mosTidyTray(tray) {
     var id = tray.readConfig("SystrayContainmentId");
     var inner = id ? desktopById(id) : null;
@@ -36,24 +37,16 @@ function mosTidyTray(tray) {
         return;
     }
     inner.currentConfigGroup = ["General"];
-    inner.writeConfig("shownItems", ["org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
-                                     "org.kde.plasma.volume", "org.kde.plasma.battery"]);
+    inner.writeConfig("shownItems", []);
     inner.writeConfig("hiddenItems", ["org.kde.plasma.clipboard", "org.kde.kscreen", "org.kde.plasma.keyboardindicator",
                                       "org.kde.plasma.keyboardlayout", "org.kde.plasma.manage-inputmethod",
                                       "org.kde.plasma.printmanager", "org.kde.plasma.vault", "org.kde.kdeconnect",
                                       "org.kde.plasma.cameraindicator", "org.kde.plasma.brightness",
-                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth"]);
+                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth",
+                                      "org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
+                                      "org.kde.plasma.volume", "org.kde.plasma.battery"]);
 }
 
-// Smaller clock: time with the date in small text underneath
-function mosClock(clock, small) {
-    clock.currentConfigGroup = ["Appearance"];
-    clock.writeConfig("showDate", "true");
-    clock.writeConfig("dateDisplayFormat", small ? "BesideTime" : "BelowTime");
-    clock.writeConfig("dateFormat", "shortDate");
-    clock.writeConfig("autoFontAndSize", "false");
-    clock.writeConfig("fontSize", "9");
-}
 
 // Taskbar
 var taskbar = new Panel;
@@ -74,7 +67,7 @@ tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [
     "applications:chromium.desktop",
     "applications:org.kde.dolphin.desktop",
-    "applications:org.kde.discover.desktop",
+    "applications:mos-store.desktop",
     "applications:mos-settings.desktop",
     "applications:org.kde.konsole.desktop"
 ]);
@@ -88,5 +81,6 @@ taskbar.addWidget("org.kde.plasma.panelspacer");
 var tray = taskbar.addWidget("org.kde.plasma.systemtray");
 mosTidyTray(tray);
 
-var time = taskbar.addWidget("org.kde.plasma.digitalclock");
-mosClock(time, false);
+// Control Centre (Wi-Fi, sound, battery) and the clock (click it for notifications)
+taskbar.addWidget("org.mos.controlcentre");
+taskbar.addWidget("org.mos.taskclock");

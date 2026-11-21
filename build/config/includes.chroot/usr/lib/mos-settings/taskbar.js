@@ -2,8 +2,8 @@
 // Runs inside Plasma (org.kde.PlasmaShell.evaluateScript).
 var opts = __OPTIONS__;
 
-// Tidy system tray: Wi-Fi, sound, battery and the notification centre (bell) always show;
-// the rest go in the ^ menu
+// Tidy system tray: Wi-Fi, sound and battery live in the Control Centre and notifications
+// in the clock, so the tray only shows apps that put an icon there (the rest go in the ^ menu)
 function mosTidyTray(tray) {
     var id = tray.readConfig("SystrayContainmentId");
     var inner = id ? desktopById(id) : null;
@@ -11,28 +11,20 @@ function mosTidyTray(tray) {
         return;
     }
     inner.currentConfigGroup = ["General"];
-    inner.writeConfig("shownItems", ["org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
-                                     "org.kde.plasma.volume", "org.kde.plasma.battery"]);
+    inner.writeConfig("shownItems", []);
     inner.writeConfig("hiddenItems", ["org.kde.plasma.clipboard", "org.kde.kscreen", "org.kde.plasma.keyboardindicator",
                                       "org.kde.plasma.keyboardlayout", "org.kde.plasma.manage-inputmethod",
                                       "org.kde.plasma.printmanager", "org.kde.plasma.vault", "org.kde.kdeconnect",
                                       "org.kde.plasma.cameraindicator", "org.kde.plasma.brightness",
-                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth"]);
+                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth",
+                                      "org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
+                                      "org.kde.plasma.volume", "org.kde.plasma.battery"]);
 }
 
-// Smaller clock: time with the date in small text underneath
-function mosClock(clock, small) {
-    clock.currentConfigGroup = ["Appearance"];
-    clock.writeConfig("showDate", "true");
-    clock.writeConfig("dateDisplayFormat", small ? "BesideTime" : "BelowTime");
-    clock.writeConfig("dateFormat", "shortDate");
-    clock.writeConfig("autoFontAndSize", "false");
-    clock.writeConfig("fontSize", "9");
-}
 
 // Keep the apps that are pinned now
 var pinned = ["applications:chromium.desktop", "applications:org.kde.dolphin.desktop",
-              "applications:org.kde.discover.desktop", "applications:mos-settings.desktop",
+              "applications:mos-store.desktop", "applications:mos-settings.desktop",
               "applications:org.kde.konsole.desktop"];
 var old = panels();
 for (var i = 0; i < old.length; i++) {
@@ -91,6 +83,6 @@ if (opts.style === "centred") {
 var tray = p.addWidget("org.kde.plasma.systemtray");
 mosTidyTray(tray);
 
-var clock = p.addWidget("org.kde.plasma.digitalclock");
-mosClock(clock, opts.size === "small");
+p.addWidget("org.mos.controlcentre");
+p.addWidget("org.mos.taskclock");
 print("ok");
