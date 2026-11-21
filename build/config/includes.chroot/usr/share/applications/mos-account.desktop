@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=mOS Account
+GenericName=Sign in to mOS
+Comment=Sign in to your mOS Account or make one
+Exec=chromium --app=https://brunalskyy.github.io/mos/account.html --class=mos-account
+Icon=mos-logo
+StartupWMClass=mos-account
+Categories=System;Settings;
+Keywords=account;sign in;login;profile;mOS;
