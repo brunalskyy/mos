@@ -1,5 +1,7 @@
 [kdeglobals][KDE]
 widgetStyle=kvantum
+# Double-click to open files and folders, like Windows
+SingleClick=false
 
 [kdeglobals][General]
 ColorScheme=mOSLight
