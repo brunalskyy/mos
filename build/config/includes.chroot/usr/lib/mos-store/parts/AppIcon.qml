@@ -7,7 +7,9 @@ Item {
     id: ic
     property string source
     property int size: 64
-    width: size; height: size
+    implicitWidth: size; implicitHeight: size
+    // Without a GPU (software drawing) effects don't show, so draw things plainly instead
+    readonly property bool fx: GraphicsInfo.api !== GraphicsInfo.Software
     readonly property real r: store.iconShape === "circle" ? size / 2 : store.iconShape === "rounded" ? size * 0.22 : size * 0.3
     Rectangle {
         id: tile
@@ -21,15 +23,15 @@ Item {
         id: img
         anchors.centerIn: parent
         width: ic.size * 0.8; height: width
-        source: ic.source !== "" ? ic.source : "image://icon/application-x-executable"
+        source: ic.source !== "" ? ic.source : Theme.ink("apps")
         sourceSize: Qt.size(256, 256)
         fillMode: Image.PreserveAspectFit
         asynchronous: true; smooth: true; mipmap: true
-        visible: false
+        visible: !ic.fx
     }
     Item {
         id: mask; anchors.fill: img; visible: false; layer.enabled: true
         Rectangle { anchors.fill: parent; radius: ic.r * 0.8; color: "black" }
     }
-    MultiEffect { anchors.fill: img; source: img; maskEnabled: true; maskSource: mask }
+    MultiEffect { anchors.fill: img; source: img; maskEnabled: true; maskSource: mask; visible: ic.fx }
 }

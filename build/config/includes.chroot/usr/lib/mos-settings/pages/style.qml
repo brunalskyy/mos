@@ -106,6 +106,8 @@ ColumnLayout {
     }
     Card {
         SectionTitle { text: "Effects"; Layout.topMargin: 0 }
+        SettingRow { title: "Material buttons in apps"; sub: "Round buttons, fields and menus in your colours inside apps like Files and Terminal"
+                     MSwitch { checked: backend.appStyle; onToggled: function (v) { backend.setAppStyle(v) } } }
         SettingRow { title: "Liquid glass"; sub: "See-through frosted taskbar, menus and pop-ups"
                      MSwitch { checked: backend.effects.glass; onToggled: function (v) { backend.setEffect("glass", v) } } }
         SettingRow { title: "Zoom windows open and closed"

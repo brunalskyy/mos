@@ -34,7 +34,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 HERE = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_DIR = "/usr/lib/mos-settings"
 sys.path.insert(0, SETTINGS_DIR)
-from mos_settings import kread, is_dark, IconProvider  # noqa: E402
+from mos_settings import kread, is_dark  # noqa: E402
 
 HOME = os.path.expanduser("~")
 CACHE = os.path.join(HOME, ".cache", "mos-store")
@@ -50,7 +50,7 @@ try:
     gi.require_version("Flatpak", "1.0")
     from gi.repository import Flatpak, GLib, Gio
     HAVE_GI = True
-except (ImportError, ValueError):
+except Exception:  # noqa: BLE001  (no libflatpak: fall back to the flatpak command)
     HAVE_GI = False
 
 # Hand-picked apps for Today and the top of each list (only shown if they're on Flathub)
@@ -790,7 +790,6 @@ def main():
     store = Store(app)
     engine = QQmlApplicationEngine()
     engine.addImportPath(SETTINGS_DIR)
-    engine.addImageProvider("icon", IconProvider())
     ctx = engine.rootContext()
     ctx.setContextProperty("store", store)
     ctx.setContextProperty("backend", store)   # the shared Material theme reads backend.dark / backend.accent

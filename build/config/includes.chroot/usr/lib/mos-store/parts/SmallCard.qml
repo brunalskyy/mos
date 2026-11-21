@@ -12,18 +12,20 @@ Item {
     signal open(string id)
     implicitWidth: 300
     implicitHeight: 262
+    // Without a GPU (software drawing) effects don't show, so draw things plainly instead
+    readonly property bool fx: GraphicsInfo.api !== GraphicsInfo.Software
     scale: ma.pressed ? 0.98 : 1
     Behavior on scale { NumberAnimation { duration: 120 } }
     Item {
         id: shot
         width: parent.width; height: 168
-        visible: false; layer.enabled: true
+        visible: !c.fx; layer.enabled: c.fx
         Rectangle { anchors.fill: parent; color: Theme.surfaceContainer }
         Image { anchors.fill: parent; source: c.app.shot || ""; fillMode: Image.PreserveAspectCrop; asynchronous: true }
     }
     Item { id: m; width: shot.width; height: shot.height; visible: false; layer.enabled: true
            Rectangle { anchors.fill: parent; radius: 22; color: "black" } }
-    MultiEffect { width: shot.width; height: shot.height; source: shot; maskEnabled: true; maskSource: m }
+    MultiEffect { width: shot.width; height: shot.height; source: shot; maskEnabled: true; maskSource: m; visible: c.fx }
     RowLayout {
         y: shot.height + 12
         width: parent.width

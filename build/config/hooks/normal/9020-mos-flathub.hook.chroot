@@ -5,3 +5,7 @@ set -e
 echo "I: adding Flathub"
 flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak remotes --system
+
+# The app list for the mOS Store, so it works on first boot (refreshed daily after that)
+echo "I: getting the Flathub app list"
+flatpak update --appstream --system flathub || echo "W: no Flathub app list yet (the mOS Store gets it on first run)"

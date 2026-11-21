@@ -30,7 +30,11 @@ ApplicationWindow {
     function goTab(t) { stack = []; tab = t }
 
     Component.onCompleted: if (startApp) openApp(startApp)
-    Connections { target: store; function onToast(t) { win.toast(t) }; function onOpenApp(id) { win.openApp(id) } }
+    Connections {
+        target: store
+        function onToast(t) { win.toast(t) }
+        function onOpenApp(id) { win.openApp(id) }
+    }
 
     // ---- the tab page
     Loader {
@@ -91,7 +95,7 @@ ApplicationWindow {
                 color: Theme.alpha(Theme.surfaceHigh, 0.86)
                 border.width: 1
                 border.color: Theme.alpha(Theme.dark ? "#FFFFFF" : "#000000", Theme.dark ? 0.10 : 0.06)
-                layer.enabled: true
+                layer.enabled: win.fx
                 layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.8; shadowOpacity: 0.22; shadowVerticalOffset: 4 }
             }
             // the bubble that slides to the chosen tab
@@ -125,7 +129,7 @@ ApplicationWindow {
                             Image {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 source: Theme.ink(modelData.icon); sourceSize: Qt.size(48, 48); width: 22; height: 22
-                                layer.enabled: parent.parent.on
+                                layer.enabled: parent.parent.on && win.fx
                                 layer.effect: MultiEffect { colorization: 1; colorizationColor: Theme.primary }
                             }
                             Label {
@@ -156,7 +160,7 @@ ApplicationWindow {
             color: win.tab === "search" ? Theme.primary : Theme.alpha(Theme.surfaceHigh, 0.86)
             border.width: 1
             border.color: Theme.alpha(Theme.dark ? "#FFFFFF" : "#000000", Theme.dark ? 0.10 : 0.06)
-            layer.enabled: true
+            layer.enabled: win.fx
             layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.8; shadowOpacity: 0.22; shadowVerticalOffset: 4 }
             Image {
                 anchors.centerIn: parent
@@ -166,6 +170,9 @@ ApplicationWindow {
             MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: win.goTab("search") }
         }
     }
+    // Without a GPU (software drawing) effects don't show, so draw things plainly instead
+    readonly property bool fx: gfx.fx
+    Item { id: gfx; readonly property bool fx: GraphicsInfo.api !== GraphicsInfo.Software }
     readonly property var tabs: ["today", "apps", "games", "updates"]
 
     // ---- short messages

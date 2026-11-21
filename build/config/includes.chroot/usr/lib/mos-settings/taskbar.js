@@ -34,6 +34,10 @@ for (var i = 0; i < old.length; i++) {
         var l = tw[0].readConfig("launchers", "");
         if (l && l.length) {
             pinned = (typeof l === "string") ? l.split(",") : l;
+            // the mOS Store replaced KDE Discover
+            for (var k = 0; k < pinned.length; k++) {
+                if (pinned[k].indexOf("org.kde.discover") >= 0) pinned[k] = "applications:mos-store.desktop";
+            }
         }
     }
 }

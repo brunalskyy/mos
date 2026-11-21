@@ -158,6 +158,18 @@ def apply_dark(on):
     kwrite("kwinrc", "org.kde.kdecoration2", "theme", "__aurorae__svg__mOS-Dark" if on else "__aurorae__svg__mOS")
     kwin_reconfigure()
     refresh_themed_icons()
+    refresh_app_style()
+
+
+def app_style_on():
+    """Round Material buttons inside apps (the mOS Kvantum theme)."""
+    return kread("kdeglobals", "KDE", "widgetStyle", "kvantum").lower() == "kvantum"
+
+
+def refresh_app_style():
+    """The app style follows your accent colour and light/dark: remake it after a change."""
+    if app_style_on():
+        start(["mos-kvantum"])
 
 
 def themed_icons_on():
@@ -336,6 +348,7 @@ class Backend(QObject):
         kwrite("kdeglobals", "General", "LastUsedCustomAccentColor", rgb)
         start(["plasma-apply-colorscheme", "--accent-color", "#" + c])
         refresh_themed_icons()
+        refresh_app_style()
         self.changed.emit()
 
     @Property(bool, notify=changed)
@@ -1185,6 +1198,19 @@ class Backend(QObject):
             return kread("kwinrc", "Plugins", key, d).lower() == "true"
         return {"glass": on("blurEnabled", "true"), "genie": on("magiclampEnabled", "true"),
                 "zoom": on("scaleEnabled", "true"), "wobbly": on("wobblywindowsEnabled", "false")}
+
+    @Property(bool, notify=changed)
+    def appStyle(self):
+        return app_style_on()
+
+    @Slot(bool)
+    def setAppStyle(self, on):
+        if on:
+            self._job("appstyle", lambda: (sh(["mos-kvantum"], timeout=60)[0], "Open apps again to see the new look"))
+        else:
+            sh(["mos-kvantum", "--off"])
+            self.toast.emit("Open apps again to see the change")
+        self.changed.emit()
 
     @Slot(str, bool)
     def setEffect(self, name, on):

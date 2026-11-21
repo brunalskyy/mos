@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""mos-migrate: after an mOS update, bring your desktop up to date (once per version).
+
+0.6.1: the taskbar gets the Control Centre and the clock with notifications,
+the mOS Store replaces Discover, At a glance joins the desktop, and apps get
+round Material buttons.
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import json
+import os
+import sys
+import time
+
+sys.path.insert(0, "/usr/lib/mos-settings")
+import mos_settings as m  # noqa: E402
+
+MARK = os.path.join(m.MOS_CONFIG, "migrated")
+APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
+STEP = "0.6.1"
+
+GLANCE_JS = """
+var ds = desktops();
+for (var i = 0; i < ds.length; i++) {
+    if (ds[i].widgets("org.mos.glance").length === 0) {
+        ds[i].addWidget("org.mos.glance", gridUnit * 2, gridUnit * 7, gridUnit * 20, gridUnit * 5);
+    }
+}
+print("ok");
+"""
+
+
+def main():
+    try:
+        done = open(MARK).read().strip()
+    except OSError:
+        done = ""
+    if done == STEP:
+        return
+    time.sleep(8)   # let Plasma finish starting (and save a brand-new desktop) first
+    try:
+        layout = open(APPLETS).read()
+    except OSError:
+        layout = ""
+    if "org.mos.taskclock" not in layout:
+        # wait for Plasma to be ready
+        for _ in range(30):
+            ok, _ = m.plasma_script("print('ok')")
+            if ok:
+                break
+            time.sleep(2)
+        opts = dict(m.Backend.TASKBAR_DEFAULTS)
+        opts.update(m.load_json(os.path.join(m.MOS_CONFIG, "taskbar.json"), {}))
+        js = open(os.path.join(m.HERE, "taskbar.js")).read().replace("__OPTIONS__", json.dumps(opts))
+        m.plasma_script(js)
+        m.plasma_script(GLANCE_JS)
+    if m.app_style_on():
+        m.sh(["mos-kvantum"], timeout=60)
+    os.makedirs(m.MOS_CONFIG, exist_ok=True)
+    with open(MARK, "w") as f:
+        f.write(STEP)
+
+
+if __name__ == "__main__":
+    main()

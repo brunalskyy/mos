@@ -17,6 +17,8 @@ Rectangle {
     signal open(string id)
     signal back()
     color: Theme.surface
+    // Without a GPU (software drawing) effects don't show, so draw things plainly instead
+    readonly property bool fx: GraphicsInfo.api !== GraphicsInfo.Software
 
     readonly property var job: store.jobs[appId] || null
     readonly property string st: { store.jobs; store.updateCount; store.appCount; return store.stateOf(appId) }
@@ -67,7 +69,10 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 24
-                AppIcon { source: ap.app.icon || ""; size: 128; Layout.alignment: Qt.AlignTop }
+                Item {
+                    Layout.preferredWidth: 128; Layout.preferredHeight: 128; Layout.alignment: Qt.AlignTop
+                    AppIcon { source: ap.app.icon || ""; size: 128 }
+                }
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 6
@@ -78,7 +83,7 @@ Rectangle {
                         Label { text: ap.app.developer || "Unknown developer"; color: Theme.primary; font.pixelSize: 15; font.weight: Font.DemiBold }
                         Image { visible: ap.app.verified === true; source: Theme.ink("verified"); sourceSize: Qt.size(40, 40)
                                 width: 18; height: 18
-                                layer.enabled: true; layer.effect: MultiEffect { colorization: 1; colorizationColor: Theme.primary } }
+                                layer.enabled: ap.fx; layer.effect: MultiEffect { colorization: 1; colorizationColor: Theme.primary } }
                     }
                     Label { Layout.fillWidth: true; text: ap.app.summary || ""; color: Theme.textVariant; font.pixelSize: 15
                             wrapMode: Text.WordWrap }
@@ -174,12 +179,12 @@ Rectangle {
                     width: Math.max(200, img.implicitWidth > 0 ? 300 * img.implicitWidth / img.implicitHeight : 533)
                     height: 300
                     Image { id: img; anchors.fill: parent; source: modelData.thumb; fillMode: Image.PreserveAspectFit
-                            asynchronous: true; visible: false }
+                            asynchronous: true; visible: !ap.fx }
                     Item { id: sm; anchors.fill: parent; visible: false; layer.enabled: true
                            Rectangle { anchors.fill: parent; radius: 20; color: "black" } }
                     Rectangle { anchors.fill: parent; radius: 20; color: Theme.surfaceContainer; visible: img.status !== Image.Ready
                                 BusyIndicator { anchors.centerIn: parent; running: img.status === Image.Loading } }
-                    MultiEffect { anchors.fill: parent; source: img; maskEnabled: true; maskSource: sm }
+                    MultiEffect { anchors.fill: parent; source: img; maskEnabled: true; maskSource: sm; visible: ap.fx }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
                                 onClicked: { viewer.index = index; viewer.open() } }
                 }

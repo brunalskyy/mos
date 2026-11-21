@@ -11,14 +11,16 @@ Item {
     property string label
     signal open(string id)
     implicitHeight: 380
+    // Without a GPU (software drawing) effects don't show, so draw things plainly instead
+    readonly property bool fx: GraphicsInfo.api !== GraphicsInfo.Software
     scale: ma.pressed ? 0.985 : 1
     Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
 
     Item {
         id: content
         anchors.fill: parent
-        visible: false
-        layer.enabled: true
+        visible: !hero.fx
+        layer.enabled: hero.fx
         Rectangle { anchors.fill: parent; color: Theme.primaryContainer }
         Image {
             anchors.fill: parent
@@ -39,7 +41,7 @@ Item {
         id: mask; anchors.fill: parent; visible: false; layer.enabled: true
         Rectangle { anchors.fill: parent; radius: 32; color: "black" }
     }
-    MultiEffect { anchors.fill: parent; source: content; maskEnabled: true; maskSource: mask
+    MultiEffect { anchors.fill: parent; source: content; maskEnabled: true; maskSource: mask; visible: hero.fx
                   shadowEnabled: true; shadowBlur: 0.7; shadowOpacity: 0.25; shadowVerticalOffset: 6 }
 
     Label {

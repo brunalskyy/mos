@@ -1,5 +1,7 @@
 [KDE]
 LookAndFeelPackage=org.mos.desktop
+# Round Material buttons inside apps (mOS Kvantum theme; Settings > Wallpaper & style)
+widgetStyle=kvantum
 
 [General]
 ColorScheme=mOSLight

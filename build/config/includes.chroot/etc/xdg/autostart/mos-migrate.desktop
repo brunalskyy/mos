@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=mOS update helper
+Comment=Brings your desktop up to date after an mOS update
+Exec=mos-migrate
+NoDisplay=true
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE;
