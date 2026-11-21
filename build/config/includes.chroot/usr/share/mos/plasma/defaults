@@ -3,6 +3,7 @@ widgetStyle=Breeze
 
 [kdeglobals][General]
 ColorScheme=BreezeLight
+accentColorFromWallpaper=true
 
 [kdeglobals][Icons]
 Theme=mOS
@@ -20,8 +21,10 @@ cursorTheme=breeze_cursors
 LayoutName=org.kde.breeze.desktop
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.breeze
-theme=Breeze
+library=org.kde.kwin.aurorae
+theme=__aurorae__svg__mOS
+ButtonsOnLeft=XIA
+ButtonsOnRight=
 
 [ksplashrc][KSplash]
 Engine=none

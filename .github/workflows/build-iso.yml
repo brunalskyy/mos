@@ -61,6 +61,8 @@ jobs:
           cd out
           ls ./*.iso >/dev/null 2>&1 && sha256sum ./*.iso > SHA256SUMS || echo "No ISO was produced"
           ls -lh
+          name=$(find . -maxdepth 1 -name '*.iso' -printf '%f\n' | head -n 1 | sed 's/-amd64.hybrid.iso$//')
+          echo "ISO_NAME=${name:-mos-iso}" >> "$GITHUB_ENV"
 
       - name: Prepare release files (GitHub release files must be under 2 GiB)
         run: |
@@ -85,7 +87,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: mos-amber-0.1
+          name: ${{ env.ISO_NAME }}
           path: |
             out/*.iso
             out/SHA256SUMS
@@ -104,22 +106,24 @@ jobs:
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.2.0-amber-preview
+          TAG: v0.3.0-amber-preview
         run: |
           notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.2 preview.** The first bootable mOS. This is a preview, not a finished release.
+          **mOS 1.0 Amber, 0.3 preview.** The first bootable mOS. This is a preview, not a finished release.
 
           The ISO is split into parts (.7z.001, .7z.002). Download all of them into one folder, then open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract: you get the .iso.
 
           What's in it:
-          - KDE Plasma 6 desktop with the mOS layout: top bar (mOS menu, clock in the middle, system tray), a floating dock that is always visible, and icons on the desktop
-          - mOS name and logo (About this System says mOS 1.0 Amber)
-          - mOS wallpaper, mOS icons, mOS boot menu and boot animation
-          - Install mOS (installer with mOS branding)
+          - KDE Plasma 6 with a Windows 10-style taskbar: mOS Start button, apps, system tray, time and date, show-desktop corner
+          - macOS-style windows with round red, yellow and green buttons on the left
+          - Colours that follow your wallpaper (accent colour from the wallpaper)
+          - Desktop icons and desktop widgets (clock, calendar, notes)
+          - New liquid glass mOS icons
+          - mOS name, logo, wallpaper, boot menu, boot animation and installer
           - Chromium, Dolphin (files), Discover with Flathub (app store), Konsole, KWrite, KCalc, Gwenview, KClock
           - Wi-Fi driver for the MacBook Air (2017), VMware tools
 
-          Not in it yet: the Material 3 look and colour themes, control centre, liquid glass, lock screen and widgets, setup wizard.
+          Not in it yet: see-through sidebars in apps, the stacked lock screen clock, the setup wizard.
 
           How to try it:
           - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
@@ -135,6 +139,6 @@ jobs:
             gh release create "${TAG}" out/release/* \
               --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.2 preview)" \
+              --title "mOS 1.0 Amber (0.3 preview)" \
               --notes "${notes}"
           fi

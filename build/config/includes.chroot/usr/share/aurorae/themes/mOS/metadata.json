@@ -1,0 +1,10 @@
+{
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Description": "mOS window style with round coloured buttons",
+        "Id": "mOS",
+        "License": "GPL-2.0-or-later",
+        "Name": "mOS",
+        "Version": "0.3"
+    }
+}

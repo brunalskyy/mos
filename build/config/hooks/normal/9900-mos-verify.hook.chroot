@@ -60,6 +60,18 @@ if [ ! -f /usr/share/wallpapers/mOS/contents/images/2880x1800.png ]; then
 	echo "E: the mOS wallpaper is missing" >&2
 	fail=1
 fi
+if ! grep -q 'org.kde.plasma.showdesktop' "${LAYOUT}" 2>/dev/null; then
+	echo "E: the mOS taskbar layout is missing" >&2
+	fail=1
+fi
+if [ ! -f /usr/share/aurorae/themes/mOS/decoration.svg ] || ! grep -q '__aurorae__svg__mOS' /etc/xdg/kwinrc; then
+	echo "E: the mOS window style is missing" >&2
+	fail=1
+fi
+if ! find /usr/lib /usr/share/kwin -iname '*aurorae*' 2>/dev/null | grep -q .; then
+	echo "W: could not find the Aurorae engine files; the mOS window style may not load"
+fi
+find /usr/lib -iname '*aurorae*' 2>/dev/null | head -n 5
 if [ ! -x /usr/bin/plasmashell ] || [ ! -x /usr/bin/sddm ]; then
 	echo "E: KDE Plasma or SDDM is not installed" >&2
 	fail=1

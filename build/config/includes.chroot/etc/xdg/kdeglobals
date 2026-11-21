@@ -1,5 +1,8 @@
 [KDE]
 LookAndFeelPackage=org.mos.desktop
 
+[General]
+accentColorFromWallpaper=true
+
 [Icons]
 Theme=mOS
