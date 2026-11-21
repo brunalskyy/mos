@@ -1,4 +1,5 @@
-# mOS
+# <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/1042680f-d7fa-4c0a-88ce-391d04a4b41f" />
+mOS
 
 mOS is a desktop operating system for laptops and PCs. It has a Material 3 design, a control centre, Pixel-style colour themes, a stacked lock screen clock and a liquid glass look. It runs from a live USB stick or in VMware.
 
