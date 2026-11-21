@@ -1,5 +1,6 @@
 #!/bin/sh
-# Dock (GNOME favourites): Chromium, Files, Software, Settings, Terminal, Install mOS.
+# Dock: always visible at the bottom (Dash to Dock, mOS style) with Chromium, Files, Software,
+# Settings, Terminal and Install mOS.
 set -e
 
 echo "I: mOS dock"
@@ -33,9 +34,44 @@ if [ -n "${installer}" ]; then
 	add "$(basename "${installer}")"
 fi
 
+DOCK_UUID=dash-to-dock@micxgx.gmail.com
+if [ ! -d "/usr/share/gnome-shell/extensions/${DOCK_UUID}" ]; then
+	echo "E: Dash to Dock is missing (gnome-shell-extension-dashtodock)" >&2
+	exit 1
+fi
+
+# The dock's settings schema must be in the system schema folder for our defaults to apply.
+if [ ! -f /usr/share/glib-2.0/schemas/org.gnome.shell.extensions.dash-to-dock.gschema.xml ]; then
+	find "/usr/share/gnome-shell/extensions/${DOCK_UUID}" -name 'org.gnome.shell.extensions.dash-to-dock.gschema.xml' \
+		-exec cp {} /usr/share/glib-2.0/schemas/ \;
+fi
+
 cat > /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override <<EOF
 [org.gnome.shell]
 favorite-apps=[${apps}]
+enabled-extensions=['${DOCK_UUID}']
+
+[org.gnome.shell.extensions.dash-to-dock]
+dock-position='BOTTOM'
+dock-fixed=true
+autohide=false
+intellihide=false
+extend-height=false
+dash-max-icon-size=48
+icon-size-fixed=true
+show-trash=false
+show-mounts=false
+show-apps-at-top=false
+show-show-apps-button=true
+running-indicator-style='DOTS'
+apply-custom-theme=false
+custom-theme-shrink=true
+transparency-mode='FIXED'
+custom-background-color=true
+background-color='rgb(255,255,255)'
+background-opacity=0.28
+disable-overview-on-startup=true
+hot-keys=false
 EOF
 cat /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override
 glib-compile-schemas /usr/share/glib-2.0/schemas

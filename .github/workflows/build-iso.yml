@@ -103,10 +103,10 @@ jobs:
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.1.1-amber-preview
+          TAG: v0.1.2-amber-preview
         run: |
           notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.1.1 preview.** The first bootable mOS. This is a preview, not a finished release.
+          **mOS 1.0 Amber, 0.1.2 preview.** The first bootable mOS. This is a preview, not a finished release.
 
           If the file ends in .iso.xz, extract it first (7-Zip on Windows, or double-click on a Mac). balenaEtcher can flash the .xz directly.
 
@@ -118,8 +118,9 @@ jobs:
           - GNOME desktop, Chromium, and the app store with Flathub
           - Wi-Fi driver for the MacBook Air (2017)
           - VMware tools
+          - Always-visible dock at the bottom
 
-          Not in it yet: the Material 3 theme (0.2), control centre and dock (0.3), lock screen and widgets (0.4), setup wizard (0.5).
+          Not in it yet: the Material 3 theme (0.2), control centre and our own custom dock (0.3), lock screen and widgets (0.4), setup wizard (0.5).
 
           How to try it:
           - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
@@ -135,6 +136,6 @@ jobs:
             gh release create "${TAG}" out/release/* \
               --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.1.1 preview)" \
+              --title "mOS 1.0 Amber (0.1.2 preview)" \
               --notes "${notes}"
           fi
