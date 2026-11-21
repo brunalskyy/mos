@@ -1,0 +1,12 @@
+{
+    "KPackageStructure": "Plasma/Theme",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Description": "mOS: floating pill taskbar on top of Breeze",
+        "Id": "mOS",
+        "License": "LGPL",
+        "Name": "mOS",
+        "Version": "0.5"
+    },
+    "X-Plasma-API": "5.0"
+}
