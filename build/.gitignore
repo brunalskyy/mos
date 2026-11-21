@@ -1,0 +1,19 @@
+# live-build output and saved config
+.build/
+cache/
+chroot/
+binary/
+local/
+*.iso
+*.log
+*.contents
+*.files
+*.packages
+*.sha256*
+config/binary
+config/bootstrap
+config/chroot
+config/common
+config/source
+config/hooks/live/
+config/hooks/normal/*.hook.chroot.*

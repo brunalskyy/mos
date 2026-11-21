@@ -1,0 +1,38 @@
+# Live system
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+sudo
+locales
+console-setup
+keyboard-configuration
+
+# Desktop
+gnome-core
+gdm3
+network-manager-gnome
+fonts-cantarell
+
+# Apps
+chromium
+gnome-software
+gnome-software-plugin-flatpak
+flatpak
+
+# Installer (mOS branding comes in 0.5)
+calamares
+calamares-settings-debian
+
+# Boot animation
+plymouth
+plymouth-themes
+
+# MacBook Air Wi-Fi (Broadcom BCM4360) and kernel module building
+dkms
+broadcom-sta-dkms
+wireless-tools
+
+# VMware
+open-vm-tools
+open-vm-tools-desktop

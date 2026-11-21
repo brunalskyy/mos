@@ -1,0 +1,22 @@
+#!/bin/sh
+# Make sure the Broadcom "wl" Wi-Fi driver (MacBook Air 2017) is built for every kernel in the image.
+# The build runs in a container, so DKMS may not pick the image's kernel on its own.
+set -e
+
+echo "I: building the Broadcom wl driver"
+
+found=0
+for dir in /lib/modules/*; do
+	[ -d "${dir}/build" ] || continue
+	kver="$(basename "${dir}")"
+	echo "I: kernel ${kver}"
+	dkms autoinstall -k "${kver}" || echo "W: dkms autoinstall failed for ${kver}"
+	if find "${dir}" -name 'wl.ko*' | grep -q .; then
+		echo "I: wl driver present for ${kver}"
+		found=1
+	fi
+done
+
+if [ "${found}" -eq 0 ]; then
+	echo "W: the wl driver was not built; Wi-Fi on the MacBook Air will not work in this image"
+fi

@@ -1,0 +1,40 @@
+#!/bin/sh
+# mOS boot menu: rename the entries and use the mOS splash images.
+# Binary hooks run inside the binary/ folder of the build.
+set -e
+
+echo "I: mOS boot menu"
+
+ASSETS=""
+for candidate in ../config/mos config/mos; do
+	if [ -d "${candidate}" ]; then
+		ASSETS="${candidate}"
+		break
+	fi
+done
+
+if [ -z "${ASSETS}" ]; then
+	echo "W: mOS boot assets not found from $(pwd); leaving splash images unchanged"
+else
+	# isolinux (BIOS) needs 640x480; GRUB (UEFI, used by Macs) gets the full HD image.
+	find . -path ./live -prune -o -type f -name 'splash*.png' -print | while read -r img; do
+		case "${img}" in
+			./isolinux/*|./syslinux/*) cp -f "${ASSETS}/splash-640x480.png" "${img}" ;;
+			*) cp -f "${ASSETS}/splash-1920x1080.png" "${img}" ;;
+		esac
+		echo "I: replaced ${img}"
+	done
+fi
+
+# Menu labels
+find . -path ./live -prune -o -type f \( -name '*.cfg' -o -name 'theme.txt' \) -print | while read -r cfg; do
+	sed -i \
+		-e 's/Live system (\([^)]*\) fail-safe mode)/mOS Amber (Live, safe mode)/g' \
+		-e 's/Live system (\([^)]*\))/mOS Amber (Live)/g' \
+		-e 's/Live system/mOS Amber (Live)/g' \
+		-e 's/Debian GNU\/Linux/mOS/g' \
+		-e 's/Debian Live/mOS/g' \
+		"${cfg}"
+done
+
+grep -rh 'menuentry\|menu label' --include='*.cfg' . 2>/dev/null | head -n 20 || true
