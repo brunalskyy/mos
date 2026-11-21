@@ -65,6 +65,16 @@ if ! fc-list | grep -qi 'Inter'; then
 	echo "W: the Inter font is not installed" >&2
 fi
 
+# 0.4.1: no KDE splash, mOS login screen
+if [ -d /usr/share/plasma/look-and-feel/org.mos.desktop/contents/splash ]; then
+	echo "E: the KDE splash is still in the mOS global theme" >&2
+	fail=1
+fi
+if [ -f /usr/share/sddm/themes/breeze/Main.qml ] && ! grep -q 'MosClock {' /usr/share/sddm/themes/mos/Main.qml 2>/dev/null; then
+	echo "E: the mOS login screen is not in place" >&2
+	fail=1
+fi
+
 # System name
 if ! grep -q '^NAME="mOS"' /usr/lib/os-release; then
 	echo "E: os-release does not say mOS" >&2
