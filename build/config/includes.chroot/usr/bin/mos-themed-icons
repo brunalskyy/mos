@@ -35,7 +35,7 @@ GLYPH_FOR = {
     "accessories-text-editor": "notes", "org.kde.kwrite": "notes", "org.gnome.TextEditor": "notes",
     "accessories-calculator": "calculator", "org.kde.kcalc": "calculator", "org.gnome.Calculator": "calculator",
     "org.gnome.Music": "music", "org.kde.gwenview": "photos", "org.gnome.Loupe": "photos",
-    "plasmadiscover": "bag", "org.kde.discover": "bag", "org.gnome.Software": "bag",
+    "plasmadiscover": "bag", "org.kde.discover": "bag", "mos-store": "bag", "org.gnome.Software": "bag",
     "systemsettings": "gear", "preferences-system": "gear", "org.gnome.Settings": "gear",
     "utilities-terminal": "terminal", "org.kde.konsole": "terminal", "org.gnome.Terminal": "terminal",
     "org.gnome.Console": "terminal", "mos-logo": "m", "calamares": "installer", "install-debian": "installer",

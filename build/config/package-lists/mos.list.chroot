@@ -32,9 +32,20 @@ kcalc
 gwenview
 kclock
 ark
-plasma-discover
-plasma-discover-backend-flatpak
 flatpak
+
+# mOS Store (installs with real progress through libflatpak)
+gir1.2-flatpak-1.0
+python3-gi
+
+# Round Material buttons inside apps
+qt-style-kvantum
+qt-style-kvantum-themes
+
+# Printing (Settings > Printers)
+cups
+cups-client
+ipp-usb
 
 # Installer
 calamares

@@ -1,0 +1,3 @@
+#!/bin/sh
+# mOS Store
+exec python3 /usr/lib/mos-store/mos_store.py "$@"

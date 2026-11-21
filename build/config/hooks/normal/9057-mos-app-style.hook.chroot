@@ -1,0 +1,11 @@
+#!/bin/sh
+# Round Material buttons, fields and menus inside apps: the mOS Kvantum themes (light and dark).
+# Each person's copy follows their accent colour (mos-kvantum runs when it changes).
+echo "I: mOS: making the app style (Kvantum)"
+if [ -d /usr/share/Kvantum ]; then
+    mos-kvantum --system || echo "W: couldn't make the mOS app style"
+    ls /usr/share/Kvantum/mOS /usr/share/Kvantum/mOS-Dark 2>/dev/null || true
+else
+    echo "W: Kvantum isn't installed, apps keep the KDE look"
+fi
+exit 0

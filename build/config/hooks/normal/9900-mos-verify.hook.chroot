@@ -113,6 +113,35 @@ if ! grep -q '^Enabled=false' /etc/xdg/kwalletrc 2>/dev/null; then
 	fail=1
 fi
 
+# 0.6.1: Control Centre, clock with notifications, At a glance, mOS Store, app style, backup
+for f in /usr/bin/mos-cc /usr/bin/mos-store /usr/bin/mos-kvantum /usr/bin/mos-migrate /usr/lib/mos-store/mos_store.py; do
+	if ! python3 -m py_compile "${f}" 2>/dev/null && ! head -1 "${f}" | grep -q '^#!/bin/sh'; then
+		echo "E: ${f} has a Python error" >&2
+		fail=1
+	fi
+done
+find /usr/lib/mos-store /usr/bin -maxdepth 1 -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
+for f in /usr/share/plasma/plasmoids/org.mos.controlcentre/contents/ui/main.qml /usr/share/plasma/plasmoids/org.mos.taskclock/contents/ui/main.qml /usr/share/plasma/plasmoids/org.mos.glance/contents/ui/main.qml /usr/lib/mos-store/Main.qml /usr/lib/mos-store/pages/AppPage.qml /usr/share/applications/mos-store.desktop /usr/share/icons/mOS/128x128/apps/mos-store.png /usr/lib/mos-settings/pages/fonts.qml /usr/lib/mos-settings/pages/printers.qml /usr/lib/mos-settings/pages/shortcuts.qml /usr/lib/systemd/user/mos-backup.timer /etc/xdg/autostart/mos-migrate.desktop; do
+	if [ ! -f "${f}" ]; then
+		echo "E: ${f} is missing" >&2
+		fail=1
+	fi
+done
+if ! grep -q 'org.mos.controlcentre' "/usr/share/plasma/look-and-feel/org.mos.desktop/contents/layouts/org.kde.plasma.desktop-layout.js" 2>/dev/null; then
+	echo "E: the taskbar layout has no Control Centre" >&2
+	fail=1
+fi
+if dpkg -s plasma-discover >/dev/null 2>&1; then
+	echo "W: KDE Discover is still installed (the mOS Store replaces it; it's hidden from menus)" >&2
+fi
+if ! python3 -c "import gi; gi.require_version('Flatpak', '1.0'); from gi.repository import Flatpak" 2>/dev/null; then
+	echo "W: libflatpak for Python is missing; the mOS Store installs without speed and time left" >&2
+fi
+if [ ! -f /usr/share/Kvantum/mOS/mOS.kvconfig ]; then
+	echo "W: the mOS app style (Kvantum) wasn't made; apps keep the KDE look" >&2
+fi
+ls /var/lib/flatpak/appstream/flathub/*/active/appstream.xml* 2>/dev/null || echo "W: no Flathub app list yet (the mOS Store gets it on first run)"
+
 # System name
 if ! grep -q '^NAME="mOS"' /usr/lib/os-release; then
 	echo "E: os-release does not say mOS" >&2

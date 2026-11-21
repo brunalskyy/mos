@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=mOS Store
+GenericName=App Store
+Comment=Get apps and games for mOS
+Exec=mos-store %U
+Icon=mos-store
+Terminal=false
+Categories=System;PackageManager;
+Keywords=store;apps;install;flathub;software;games;discover;
+MimeType=application/vnd.flatpak.ref;x-scheme-handler/appstream;
+StartupNotify=true

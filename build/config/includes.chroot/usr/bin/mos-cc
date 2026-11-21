@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+"""mos-cc: the helper behind the mOS Control Centre.
+
+  mos-cc state                 everything the Control Centre shows, as JSON
+  mos-cc wifi on|off           Wi-Fi
+  mos-cc bt on|off             Bluetooth
+  mos-cc dark on|off           dark mode (switches Auto off, like a phone does)
+  mos-cc night on|off          Night Shift
+  mos-cc dnd on|off            Do not disturb
+  mos-cc profile NAME          power mode (power-saver, balanced, performance)
+  mos-cc brightness N          screen brightness, 1-100
+  mos-cc volume N              volume, 0-150
+  mos-cc mute on|off           sound on/off
+  mos-cc location              time zone location as JSON (for At a glance weather)
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import configparser
+import glob
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+HOME = os.path.expanduser("~")
+CONFIG = os.path.join(HOME, ".config")
+
+
+def sh(cmd, timeout=4):
+    if not shutil.which(cmd[0]):
+        return False, ""
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        return p.returncode == 0, p.stdout or ""
+    except (OSError, subprocess.TimeoutExpired):
+        return False, ""
+
+
+def kread(name, group, key, default=""):
+    cp = configparser.ConfigParser(interpolation=None, strict=False, delimiters=("=",))
+    cp.optionxform = str
+    for p in (os.path.join("/etc/xdg", name), os.path.join(CONFIG, name)):
+        try:
+            cp.read(p, encoding="utf-8")
+        except (configparser.Error, UnicodeDecodeError):
+            pass
+    try:
+        return cp.get(group, key)
+    except (configparser.Error, KeyError):
+        return default
+
+
+def kwrite(name, group, key, value):
+    cmd = ["kwriteconfig6", "--notify", "--file", name, "--group", group, "--key", key]
+    if isinstance(value, bool):
+        cmd += ["--type", "bool", "true" if value else "false"]
+    else:
+        cmd += [str(value)]
+    sh(cmd)
+
+
+def state():
+    s = {"wifi": {"available": False, "on": False, "name": ""}, "wired": "",
+         "bt": {"available": False, "on": False, "device": ""},
+         "dark": "dark" in kread("kdeglobals", "General", "ColorScheme", "mOSLight").lower(),
+         "night": kread("kwinrc", "NightColor", "Active", "false").lower() == "true",
+         "dnd": kread("plasmanotifyrc", "DoNotDisturb", "Until", "") > "2026",
+         "profile": "", "profiles": [], "brightness": -1, "volume": 0, "muted": False,
+         "battery": -1, "charging": False}
+    ok, out = sh(["nmcli", "-t", "-f", "WIFI", "general"])
+    if ok:
+        s["wifi"]["available"] = True
+        s["wifi"]["on"] = out.strip() == "enabled"
+        ok, out = sh(["nmcli", "-t", "-f", "NAME,TYPE", "connection", "show", "--active"])
+        for line in out.splitlines():
+            name, _, kind = line.rpartition(":")
+            name = name.replace("\\:", ":")
+            if kind == "802-11-wireless" and not s["wifi"]["name"]:
+                s["wifi"]["name"] = name
+            elif kind == "802-3-ethernet" and not s["wired"]:
+                s["wired"] = name
+    if glob.glob("/sys/class/bluetooth/hci*"):
+        ok, out = sh(["bluetoothctl", "show"], timeout=3)
+        if ok and "Controller" in out:
+            s["bt"]["available"] = True
+            s["bt"]["on"] = "Powered: yes" in out
+            if s["bt"]["on"]:
+                ok, out = sh(["bluetoothctl", "devices", "Connected"], timeout=3)
+                m = re.search(r"Device [0-9A-F:]{17} (.+)", out)
+                if m:
+                    s["bt"]["device"] = m.group(1).strip()
+    ok, out = sh(["powerprofilesctl", "list"])
+    for line in out.splitlines():
+        m = re.match(r"\s*(\*?)\s*([a-z-]+):\s*$", line)
+        if m:
+            s["profiles"].append(m.group(2))
+            if m.group(1):
+                s["profile"] = m.group(2)
+    ok, out = sh(["brightnessctl", "-m", "-c", "backlight"])
+    if ok and out.strip():
+        try:
+            s["brightness"] = int(out.strip().splitlines()[0].split(",")[3].rstrip("%"))
+        except (IndexError, ValueError):
+            pass
+    ok, out = sh(["pactl", "get-sink-volume", "@DEFAULT_SINK@"])
+    m = re.search(r"(\d+)%", out)
+    if m:
+        s["volume"] = int(m.group(1))
+    ok, out = sh(["pactl", "get-sink-mute", "@DEFAULT_SINK@"])
+    s["muted"] = "yes" in out
+    for b in sorted(glob.glob("/sys/class/power_supply/BAT*")):
+        try:
+            s["battery"] = int(open(os.path.join(b, "capacity")).read().strip())
+            s["charging"] = open(os.path.join(b, "status")).read().strip() in ("Charging", "Full")
+        except (OSError, ValueError):
+            pass
+        break
+    return s
+
+
+def location():
+    """Rough location from the time zone (no GPS, nothing sent anywhere)."""
+    lat, lon, place = 51.5, -0.13, "London"
+    try:
+        tz = os.path.realpath("/etc/localtime").split("zoneinfo/", 1)[1]
+        place = tz.split("/")[-1].replace("_", " ")
+        for line in open("/usr/share/zoneinfo/zone1970.tab"):
+            cols = line.split("\t")
+            if not line.startswith("#") and len(cols) > 2 and cols[2].strip() == tz:
+                m = re.match(r"([+-]\d{2})(\d{2})(\d{2})?([+-]\d{3})(\d{2})(\d{2})?", cols[1])
+                if m:
+                    sg = lambda v: -1 if v.startswith("-") else 1
+                    lat = int(m.group(1)) + sg(m.group(1)) * int(m.group(2)) / 60
+                    lon = int(m.group(4)) + sg(m.group(4)) * int(m.group(5)) / 60
+                break
+    except (OSError, IndexError):
+        pass
+    return {"lat": round(lat, 2), "lon": round(lon, 2), "place": place}
+
+
+def set_dark(on):
+    # Same as Settings: colours, title bars, themed icons and app style follow
+    sys.path.insert(0, "/usr/lib/mos-settings")
+    theme = os.path.join(CONFIG, "mos", "theme.json")
+    try:
+        prefs = json.load(open(theme))
+    except (OSError, ValueError):
+        prefs = {}
+    prefs["mode"] = "dark" if on else "light"
+    os.makedirs(os.path.dirname(theme), exist_ok=True)
+    json.dump(prefs, open(theme, "w"), indent=2)
+    import mos_settings
+    mos_settings.apply_dark(on)
+
+
+def main(argv):
+    if not argv or argv[0] == "state":
+        print(json.dumps(state()))
+        return
+    cmd, arg = argv[0], (argv[1] if len(argv) > 1 else "")
+    on = arg in ("on", "true", "1", "yes")
+    if cmd == "location":
+        print(json.dumps(location()))
+    elif cmd == "wifi":
+        sh(["nmcli", "radio", "wifi", "on" if on else "off"], timeout=10)
+    elif cmd == "bt":
+        if on:
+            sh(["rfkill", "unblock", "bluetooth"])
+        sh(["bluetoothctl", "power", "on" if on else "off"], timeout=8)
+    elif cmd == "dark":
+        set_dark(on)
+    elif cmd == "night":
+        kwrite("kwinrc", "NightColor", "Active", on)
+        if not kread("kwinrc", "NightColor", "Mode", ""):
+            kwrite("kwinrc", "NightColor", "Mode", "Automatic")
+        sh(["busctl", "--user", "call", "org.kde.KWin", "/KWin", "org.kde.KWin", "reconfigure"])
+    elif cmd == "dnd":
+        if on:
+            kwrite("plasmanotifyrc", "DoNotDisturb", "Until", "2100,1,1,0,0,0")
+        else:
+            sh(["kwriteconfig6", "--notify", "--file", "plasmanotifyrc", "--group", "DoNotDisturb",
+                "--key", "Until", "--delete"])
+    elif cmd == "profile":
+        sh(["powerprofilesctl", "set", arg])
+    elif cmd == "brightness":
+        sh(["brightnessctl", "-q", "-c", "backlight", "set", f"{max(1, min(100, int(arg or 50)))}%"])
+    elif cmd == "volume":
+        sh(["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{max(0, min(150, int(arg or 50)))}%"])
+        sh(["pactl", "set-sink-mute", "@DEFAULT_SINK@", "0"])
+    elif cmd == "mute":
+        sh(["pactl", "set-sink-mute", "@DEFAULT_SINK@", "1" if on else "0"])
+    else:
+        print(__doc__)
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

@@ -24,6 +24,7 @@ import socket
 import subprocess
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -31,6 +32,8 @@ from PySide6.QtCore import QObject, Property, Signal, Slot, QUrl
 
 API_KEY = "AIzaSyB2_U65oZbMrrhRC0D5ZcBunF2P3IQVZNQ"  # public web key of the mos-data project
 SIGN_IN_PAGE = "https://brunalskyy.github.io/mos/account.html"
+# Backup & sync: one private document per person in Firestore (only you can read or write yours)
+FIRESTORE = "https://firestore.googleapis.com/v1/projects/mos-data/databases/(default)/documents/users/{uid}"
 HOME = os.path.expanduser("~")
 STORE = os.path.join(HOME, ".config", "mos", "account.json")
 AVATAR = os.path.join(HOME, ".config", "mos", "avatar.png")
@@ -241,6 +244,76 @@ class Account(QObject):
         self._data = {}
         self.changed.emit()
         self.status.emit("signed-out")
+
+    # ---- backup & sync (Firestore, through its REST API)
+    @Property(bool, notify=changed)
+    def sync(self):
+        return bool(self._data.get("sync"))
+
+    @Property(str, notify=changed)
+    def lastBackup(self):
+        t = self._data.get("lastBackup")
+        if not t:
+            return ""
+        return time.strftime("%-d %b at %H:%M", time.localtime(t)) + (" from " + self._data["lastDevice"]
+                                                                      if self._data.get("lastDevice") else "")
+
+    def set_sync(self, on):
+        self._data["sync"] = bool(on)
+        _save(self._data)
+        self.changed.emit()
+
+    def _id_token(self):
+        tok = _post(f"https://securetoken.googleapis.com/v1/token?key={API_KEY}",
+                    {"grant_type": "refresh_token", "refresh_token": self._data["refreshToken"]}, form=True)
+        if tok.get("refresh_token") and tok["refresh_token"] != self._data.get("refreshToken"):
+            self._data["refreshToken"] = tok["refresh_token"]
+            _save(self._data)
+        return tok["id_token"]
+
+    def _cloud(self, method, body=None, query=""):
+        url = FIRESTORE.format(uid=urllib.parse.quote(self._data["uid"])) + query
+        req = urllib.request.Request(url, method=method, data=json.dumps(body).encode() if body is not None else None,
+                                     headers={"Authorization": "Bearer " + self._id_token(),
+                                              "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                return json.loads(r.read().decode() or "{}")
+        except urllib.error.HTTPError as e:
+            if e.code == 404 and method == "GET":
+                return None
+            detail = ""
+            try:
+                detail = json.loads(e.read().decode()).get("error", {}).get("status", "")
+            except Exception:
+                pass
+            if e.code in (403, 404) or detail in ("PERMISSION_DENIED", "NOT_FOUND", "FAILED_PRECONDITION"):
+                raise RuntimeError("Backup isn't switched on for mOS Account yet")
+            raise RuntimeError("Couldn't reach mOS Account")
+
+    def backup(self, payload, device):
+        """Save a backup (settings + app list) to your account."""
+        if not self.signedIn:
+            raise RuntimeError("Sign in first")
+        now = time.time()
+        self._cloud("PATCH", {"fields": {
+            "backup": {"stringValue": json.dumps(payload)},
+            "device": {"stringValue": device},
+            "updatedAt": {"timestampValue": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}}},
+            "?updateMask.fieldPaths=backup&updateMask.fieldPaths=device&updateMask.fieldPaths=updatedAt")
+        self._data["lastBackup"], self._data["lastDevice"] = now, device
+        _save(self._data)
+        self.changed.emit()
+
+    def fetch_backup(self):
+        """Your last backup, or None."""
+        if not self.signedIn:
+            raise RuntimeError("Sign in first")
+        doc = self._cloud("GET")
+        if not doc:
+            return None
+        raw = doc.get("fields", {}).get("backup", {}).get("stringValue")
+        return json.loads(raw) if raw else None
 
     @Slot()
     def manage(self):

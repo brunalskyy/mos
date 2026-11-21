@@ -158,6 +158,18 @@ def apply_dark(on):
     kwrite("kwinrc", "org.kde.kdecoration2", "theme", "__aurorae__svg__mOS-Dark" if on else "__aurorae__svg__mOS")
     kwin_reconfigure()
     refresh_themed_icons()
+    refresh_app_style()
+
+
+def app_style_on():
+    """Round Material buttons inside apps (the mOS Kvantum theme)."""
+    return kread("kdeglobals", "KDE", "widgetStyle", "kvantum").lower() == "kvantum"
+
+
+def refresh_app_style():
+    """The app style follows your accent colour and light/dark: remake it after a change."""
+    if app_style_on():
+        start(["mos-kvantum"])
 
 
 def themed_icons_on():
@@ -336,6 +348,7 @@ class Backend(QObject):
         kwrite("kdeglobals", "General", "LastUsedCustomAccentColor", rgb)
         start(["plasma-apply-colorscheme", "--accent-color", "#" + c])
         refresh_themed_icons()
+        refresh_app_style()
         self.changed.emit()
 
     @Property(bool, notify=changed)
@@ -1186,6 +1199,19 @@ class Backend(QObject):
         return {"glass": on("blurEnabled", "true"), "genie": on("magiclampEnabled", "true"),
                 "zoom": on("scaleEnabled", "true"), "wobbly": on("wobblywindowsEnabled", "false")}
 
+    @Property(bool, notify=changed)
+    def appStyle(self):
+        return app_style_on()
+
+    @Slot(bool)
+    def setAppStyle(self, on):
+        if on:
+            self._job("appstyle", lambda: (sh(["mos-kvantum"], timeout=60)[0], "Open apps again to see the new look"))
+        else:
+            sh(["mos-kvantum", "--off"])
+            self.toast.emit("Open apps again to see the change")
+        self.changed.emit()
+
     @Slot(str, bool)
     def setEffect(self, name, on):
         key = {"glass": "blurEnabled", "genie": "magiclampEnabled", "zoom": "scaleEnabled",
@@ -1241,6 +1267,199 @@ class Backend(QObject):
     def restart(self):
         start(["systemctl", "reboot"])
 
+    # ------------------------------------------------------------ mOS Account: backup & sync
+    def _flatpak_apps(self):
+        apps = set()
+        for scope in ("--system", "--user"):
+            ok, out = sh(["flatpak", "list", scope, "--app", "--columns=application"], timeout=20)
+            apps.update(l.strip() for l in out.splitlines() if l.strip())
+        return sorted(apps)
+
+    def collect_backup(self):
+        """Everything mOS backs up: your look, taskbar, effects, Night Shift, update options and app list."""
+        style = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
+        wp = style.get("wallpaper", "")
+        return {
+            "v": 1,
+            "theme": load_json(os.path.join(MOS_CONFIG, "theme.json"), {"mode": "dark" if is_dark() else "light"}),
+            "accent": self.accent, "accentFromWallpaper": self.accentFromWallpaper,
+            "iconShape": self.iconShape, "themedIcons": themed_icons_on(), "appStyle": app_style_on(),
+            "wallpaper": wp if wp.startswith("/usr/share/wallpapers/") else "",
+            "taskbar": self.taskbar, "effects": self.effects,
+            "night": {k: kread("kwinrc", "NightColor", k, "") for k in
+                      ("Active", "Mode", "EveningBeginFixed", "MorningBeginFixed", "NightTemperature")},
+            "updates": {k: self.updates.options.get(k) for k in ("unit", "insider", "autoDownload")},
+            "apps": self._flatpak_apps(),
+        }
+
+    def apply_backup(self, b):
+        """Put a backup back (runs in the background)."""
+        if b.get("theme"):
+            self.setThemeMode(b["theme"])
+        if b.get("accentFromWallpaper"):
+            self.setAccentFromWallpaper(True)
+        elif b.get("accent"):
+            self.setAccent(b["accent"])
+        if b.get("wallpaper") and os.path.exists(b["wallpaper"]):
+            self.setWallpaper(b["wallpaper"])
+        if b.get("iconShape"):
+            self.setIconShape(b["iconShape"])
+        if "themedIcons" in b and b["themedIcons"] != themed_icons_on():
+            self.setThemedIcons(b["themedIcons"])
+        if "appStyle" in b and b["appStyle"] != app_style_on():
+            self.setAppStyle(b["appStyle"])
+        for k, v in (b.get("effects") or {}).items():
+            self.setEffect(k, bool(v))
+        for k, v in (b.get("night") or {}).items():
+            if v:
+                kwrite("kwinrc", "NightColor", k, v)
+        kwin_reconfigure()
+        for k, v in (b.get("updates") or {}).items():
+            if v is not None:
+                self.updates.setOption(k, v)
+        if b.get("taskbar"):
+            self.setTaskbar(b["taskbar"])
+        missing = [a for a in b.get("apps", []) if a not in set(self._flatpak_apps())]
+        if missing and have("flatpak"):
+            self.toast.emit(f"Getting your {len(missing)} apps back… (they'll appear when they're done)")
+            ok, out = sh(["flatpak", "install", "--system", "-y", "--noninteractive", "flathub"] + missing, timeout=7200)
+            return ok, "Your apps are back" if ok else "Some apps couldn't be put back"
+        return True, "Your settings are back"
+
+    @Slot(bool)
+    def setSync(self, on):
+        self.account.set_sync(on)
+        if on:
+            self.backupNow()
+
+    @Slot()
+    def backupNow(self):
+        def go():
+            try:
+                self.account.backup(self.collect_backup(), platform.node())
+                return True, "Backed up to your mOS Account"
+            except RuntimeError as e:
+                return False, str(e)
+        self._job("backup", go)
+
+    @Slot()
+    def restoreBackup(self):
+        def go():
+            try:
+                b = self.account.fetch_backup()
+            except RuntimeError as e:
+                return False, str(e)
+            if not b:
+                return False, "There's no backup in your account yet"
+            return self.apply_backup(b)
+        self.toast.emit("Restoring from your mOS Account…")
+        self._job("restore", go)
+
+    # ------------------------------------------------------------ Fonts
+    @Property("QVariantMap", notify=changed)
+    def fonts(self):
+        def parse(v, d):
+            p = (v or d).split(",")
+            try:
+                return p[0], float(p[1])
+            except (IndexError, ValueError):
+                return p[0], 10.0
+        fam, size = parse(kread("kdeglobals", "General", "font", ""), "Inter,10")
+        mono, msize = parse(kread("kdeglobals", "General", "fixed", ""), "Hack,10")
+        return {"family": fam, "size": size, "mono": mono, "monoSize": msize,
+                "antialias": kread("kdeglobals", "General", "XftAntialias", "true").lower() == "true"}
+
+    @Property("QVariantList", constant=True)
+    def fontFamilies(self):
+        ok, out = sh(["fc-list", ":", "family"], timeout=10)
+        fams = sorted({l.split(",")[0].strip() for l in out.splitlines() if l.strip() and not l.startswith(".")},
+                      key=str.lower)
+        return fams or ["Inter", "Noto Sans", "DejaVu Sans"]
+
+    @Slot(str, float)
+    def setFont(self, family, size):
+        q = f"{family},{size:g},-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        small = f"{family},{max(6, size - 2):g},-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+        for key, val in (("font", q), ("menuFont", q), ("toolBarFont", q), ("smallestReadableFont", small)):
+            kwrite("kdeglobals", "General", key, val)
+        kwrite("kdeglobals", "WM", "activeFont", f"{family},{size:g},-1,5,600,0,0,0,0,0,0,0,0,0,0,1")
+        self.changed.emit()
+        self.toast.emit("Font changed. Open apps again to see it everywhere")
+
+    @Slot(str, float)
+    def setMonoFont(self, family, size):
+        kwrite("kdeglobals", "General", "fixed", f"{family},{size:g},-1,5,400,0,0,0,0,0,0,0,0,0,0,1")
+        self.changed.emit()
+
+    # ------------------------------------------------------------ Keyboard shortcuts
+    @Property("QVariantList", constant=True)
+    def shortcuts(self):
+        def get(component, action, default):
+            v = kread("kglobalshortcutsrc", component, action, "")
+            keys = v.split(",")[0].replace("\\t", "  or  ") if v else default
+            return keys if keys and keys != "none" else default
+        win = "Meta"
+        return [
+            {"what": "Search apps and files (Spotlight)", "keys": "Meta+Space  or  Alt+Space"},
+            {"what": "Open Start", "keys": win},
+            {"what": "Files", "keys": "Meta+E"},
+            {"what": "Settings", "keys": "Meta+I"},
+            {"what": "Lock the screen", "keys": get("ksmserver", "Lock Session", "Meta+L")},
+            {"what": "Show the desktop", "keys": get("kwin", "Show Desktop", "Meta+D")},
+            {"what": "Overview of open windows", "keys": get("kwin", "Overview", "Meta+W")},
+            {"what": "Switch windows", "keys": "Alt+Tab"},
+            {"what": "Snap window left / right", "keys": "Meta+Left / Meta+Right"},
+            {"what": "Maximise window", "keys": "Meta+Up"},
+            {"what": "Minimise window", "keys": get("kwin", "Window Minimize", "Meta+PgDown")},
+            {"what": "Close window", "keys": "Alt+F4"},
+            {"what": "Screenshot", "keys": "Print  or  Meta+Shift+S"},
+            {"what": "Clipboard history", "keys": "Meta+V"},
+            {"what": "Emoji", "keys": "Meta+."},
+            {"what": "Log out, restart or shut down", "keys": "Ctrl+Alt+Delete"},
+        ]
+
+    @Slot()
+    def openShortcutEditor(self):
+        start(["kcmshell6", "kcm_keys"])
+
+    # ------------------------------------------------------------ Printers
+    @Slot(result="QVariantMap")
+    def printers(self):
+        res = {"available": have("lpstat"), "printers": [], "default": ""}
+        if not res["available"]:
+            return res
+        ok, out = sh(["lpstat", "-d"], timeout=5)
+        m = re.search(r":\s*(\S+)", out)
+        if m:
+            res["default"] = m.group(1)
+        ok, out = sh(["lpstat", "-p"], timeout=5)
+        for line in out.splitlines():
+            m = re.match(r"printer (\S+) (.*)", line)
+            if m:
+                state = "Ready" if "idle" in m.group(2) else "Printing" if "printing" in m.group(2) else \
+                        "Paused" if "disabled" in m.group(2) else m.group(2).split(".")[0]
+                res["printers"].append({"name": m.group(1), "state": state, "default": m.group(1) == res["default"]})
+        return res
+
+    @Slot(str)
+    def setDefaultPrinter(self, name):
+        self._job("printer", lambda: (sh(["lpoptions", "-d", name])[0], f"{name} is now your main printer"))
+
+    @Slot(str)
+    def removePrinter(self, name):
+        self._job("printer", lambda: (sh(["pkexec", "lpadmin", "-x", name], timeout=120)[0], f"Removed {name}"))
+
+    @Slot()
+    def addPrinter(self):
+        # CUPS finds most network and USB printers by itself; its page adds the rest
+        if not start(["kde-add-printer", "--add-printer"]):
+            self.openUrl("http://localhost:631/admin")
+
+    @Slot(str)
+    def printTestPage(self, name):
+        self._job("printer", lambda: (sh(["lp", "-d", name, "/usr/share/cups/data/testprint"], timeout=20)[0],
+                                      "Test page sent"))
+
     # ------------------------------------------------------------ misc
     @Slot(str)
     def openUrl(self, url):
@@ -1248,6 +1467,16 @@ class Backend(QObject):
 
 
 def main():
+    if "--backup" in sys.argv:
+        # Daily automatic backup (mos-backup.timer), only when sync is on
+        b = Backend()
+        if b.account.signedIn and b.account.sync:
+            try:
+                b.account.backup(b.collect_backup(), platform.node())
+                print("backed up")
+            except RuntimeError as e:
+                print(e)
+        return
     QGuiApplication.setApplicationName("mOS Settings")
     QGuiApplication.setDesktopFileName("mos-settings")
     app = QGuiApplication(sys.argv)

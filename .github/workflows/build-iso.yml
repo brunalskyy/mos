@@ -117,7 +117,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="v${MOS_VERSION}.0-amber"
+          # 0.6 -> v0.6.0-amber, 0.6.1 -> v0.6.1-amber
+          case "${MOS_VERSION}" in *.*.*) TAG="v${MOS_VERSION}-amber" ;; *) TAG="v${MOS_VERSION}.0-amber" ;; esac
           TITLE="$(python3 -c 'import json;print(json.load(open("build/config/includes.chroot/usr/share/mos/version"))["name"])')"
           echo "TAG=${TAG}" >> "$GITHUB_ENV"
           # Every build is a pre-release until the full mOS 1.0 Amber ("prerelease": false in the version file)

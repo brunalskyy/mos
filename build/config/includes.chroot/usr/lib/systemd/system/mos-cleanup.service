@@ -1,0 +1,12 @@
+[Unit]
+Description=mOS: remove leftover packages after an update
+ConditionPathExists=/var/lib/mos/cleanup
+After=network.target
+
+[Service]
+Type=oneshot
+# wait for the update that's running now to let go of dpkg, then tidy up
+ExecStart=/bin/sh -c 'xargs -a /var/lib/mos/cleanup apt-get -o DPkg::Lock::Timeout=900 purge -y && rm -f /var/lib/mos/cleanup'
+
+[Install]
+WantedBy=multi-user.target

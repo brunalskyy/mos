@@ -1,0 +1,30 @@
+#!/bin/sh
+# The mOS Store replaces KDE Discover.
+# On a new install Discover is never there; on a computer updated from an older mOS,
+# mos-cleanup removes it once the update has finished (dpkg is busy until then).
+
+echo "I: removing KDE Discover (the mOS Store replaces it)"
+if dpkg -s plasma-discover >/dev/null 2>&1; then
+    if ! apt-get purge -y plasma-discover plasma-discover-backend-flatpak plasma-discover-common 2>/dev/null; then
+        # dpkg is busy (we're being run by an mOS update): finish the job afterwards
+        mkdir -p /var/lib/mos
+        echo "plasma-discover plasma-discover-backend-flatpak plasma-discover-common" >> /var/lib/mos/cleanup
+        systemctl daemon-reload 2>/dev/null; systemctl start --no-block mos-cleanup.service 2>/dev/null || true
+    fi
+fi
+# Hide Discover from menus even before it's gone
+for f in /usr/share/applications/org.kde.discover*.desktop; do
+    [ -f "$f" ] && ! grep -q '^NoDisplay=true' "$f" && sed -i '/^\[Desktop Entry\]/a NoDisplay=true' "$f"
+done
+# .flatpakref files and appstream:// links open in the mOS Store
+if [ -f /usr/share/applications/mimeapps.list ] || true; then
+    mkdir -p /etc/xdg
+    touch /etc/xdg/mimeapps.list
+    grep -q '^\[Default Applications\]' /etc/xdg/mimeapps.list || printf '[Default Applications]\n' >> /etc/xdg/mimeapps.list
+    for m in application/vnd.flatpak.ref x-scheme-handler/appstream; do
+        sed -i "\|^$m=|d" /etc/xdg/mimeapps.list
+        sed -i "/^\[Default Applications\]/a $m=mos-store.desktop" /etc/xdg/mimeapps.list
+    done
+fi
+command -v update-desktop-database >/dev/null && update-desktop-database -q /usr/share/applications || true
+exit 0

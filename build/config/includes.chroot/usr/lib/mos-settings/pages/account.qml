@@ -19,7 +19,7 @@ ColumnLayout {
             spacing: 10
             Image { Layout.alignment: Qt.AlignHCenter; source: "file:///usr/share/icons/hicolor/256x256/apps/mos-logo.png"; Layout.preferredWidth: 80; Layout.preferredHeight: 80; sourceSize: Qt.size(160, 160) }
             Label { Layout.alignment: Qt.AlignHCenter; text: "One account for all your mOS stuff"; color: Theme.textColour; font.pixelSize: 22; font.weight: Font.DemiBold }
-            Hint { horizontalAlignment: Text.AlignHCenter; text: "Your name and picture on mOS, mOS Insider updates, and soon settings sync and app backup." }
+            Hint { horizontalAlignment: Text.AlignHCenter; text: "Your name and picture on mOS, backup of your settings and apps, and mOS Insider updates." }
         }
         PillButton {
             Layout.alignment: Qt.AlignHCenter
@@ -61,8 +61,37 @@ ColumnLayout {
         SettingRow { title: "Name and picture on mOS"; sub: "Shown on the lock screen, login screen and Start menu"
                      Label { text: "On"; color: Theme.good; font.weight: Font.DemiBold } }
         Divider {}
-        ListItem { title: "mOS Insider"; sub: "Get new features early"; iconName: "update"; tone: "#1E88E5"; onClicked: { Nav.top("general"); Nav.go("update") } }
+        SettingRow { title: "mOS Insider"; sub: "Get new mOS features early, before everyone else"
+                     MSwitch { checked: backend.updateApi.options.insider === true; onToggled: function (v) { backend.updateApi.setOption("insider", v) } } }
+        Divider {}
         ListItem { title: "Manage your account"; sub: "Name, password, delete account"; iconName: "account"; tone: "#E8833A"; onClicked: backend.accountApi.manage() }
+    }
+    // Backup & sync
+    SectionTitle { visible: page.acc.signedIn; text: "Backup & sync" }
+    Card {
+        visible: page.acc.signedIn
+        SettingRow {
+            title: "Back up this computer"
+            sub: "Every day: your look, colours, taskbar, effects, Night Shift and the list of apps you got from the mOS Store"
+            MSwitch { checked: page.acc.sync; onToggled: function (v) { backend.setSync(v) } }
+        }
+        Hint { text: page.acc.lastBackup !== "" ? "Last backup: " + page.acc.lastBackup : "Not backed up yet" }
+        RowLayout {
+            spacing: 10
+            PillButton { text: "Back up now"; tonal: true; onClicked: backend.backupNow() }
+            PillButton { text: "Restore"; outlined: true; onClicked: restoreSheet.open() }
+        }
+    }
+    Sheet {
+        id: restoreSheet
+        title: "Restore from your mOS Account?"
+        Hint { text: "Your look, taskbar, effects and Night Shift go back to how they were in your last backup, and your apps download again." }
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
+            spacing: 10
+            PillButton { outlined: true; text: "Cancel"; onClicked: restoreSheet.close() }
+            PillButton { text: "Restore"; onClicked: { backend.restoreBackup(); restoreSheet.close() } }
+        }
     }
     RowLayout {
         visible: page.acc.signedIn
