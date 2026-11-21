@@ -142,6 +142,11 @@ if [ ! -f /usr/share/Kvantum/mOS/mOS.kvconfig ]; then
 fi
 ls /var/lib/flatpak/appstream/flathub/*/active/appstream.xml* 2>/dev/null || echo "W: no Flathub app list yet (the mOS Store gets it on first run)"
 
+# 0.6.2: no second Settings (KDE's System Settings is hidden everywhere)
+if [ -f /usr/share/applications/systemsettings.desktop ] && ! grep -q '^Hidden=true' /usr/local/share/applications/systemsettings.desktop 2>/dev/null; then
+	echo "E: KDE System Settings still shows next to mOS Settings" >&2
+	fail=1
+fi
 # 0.6.2: Files laid out like Windows 11 File Explorer
 if ! grep -q 'name="commandBar"' /usr/share/kxmlgui5/dolphin/dolphinui.rc 2>/dev/null; then
 	echo "E: the Explorer-style Files layout is missing" >&2
