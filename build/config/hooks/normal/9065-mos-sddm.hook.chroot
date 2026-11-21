@@ -1,0 +1,60 @@
+#!/bin/sh
+# mOS login screen (SDDM): Breeze login with the mOS wallpaper and the
+# Pixel-style stacked clock, instead of Debian's blue login screen.
+# If this theme ever failed to load, SDDM falls back to its built-in one.
+set -e
+
+echo "I: mOS login screen"
+
+SRC=/usr/share/sddm/themes/breeze
+DEST=/usr/share/sddm/themes/mos
+
+if [ ! -f "${SRC}/Main.qml" ]; then
+	echo "W: ${SRC} not found; keeping the default login screen" >&2
+	exit 0
+fi
+
+rm -rf "${DEST}"
+cp -a "${SRC}" "${DEST}"
+cp /usr/share/mos/lockscreen/MosClock.qml "${DEST}/MosClock.qml"
+
+python3 - "${DEST}/Main.qml" <<'PY'
+import re, sys
+path = sys.argv[1]
+s = open(path).read()
+m = re.search(r"\n(\s*)Clock \{\n\s*id: clock\n.*?\n\1\}\n", s, re.S)
+if not m:
+    sys.exit("E: could not find the clock in the login screen")
+ind = m.group(1)
+new = f"""
+{ind}MosClock {{
+{ind}    id: clock
+{ind}    property Item shadow: clockShadow
+{ind}    visible: config.showClock === "true"
+{ind}    digitSize: Math.round(Math.max(72, Math.min(parent.height * 0.17, 210)))
+{ind}    anchors.left: parent.left
+{ind}    anchors.leftMargin: Math.round(parent.width * 0.07)
+{ind}    anchors.verticalCenter: parent.verticalCenter
+{ind}}}
+"""
+s = s[:m.start()] + new + s[m.end():]
+open(path, "w").write(s)
+print("I: login screen clock swapped for MosClock")
+PY
+
+cat > "${DEST}/theme.conf.user" <<'CONF'
+[General]
+type=image
+background=/usr/share/wallpapers/mOS/contents/images/2880x1800.png
+showClock=true
+showlogo=hidden
+CONF
+
+sed -i 's/^Name=.*/Name=mOS/' "${DEST}/metadata.desktop" || true
+
+mkdir -p /etc/sddm.conf.d
+cat > /etc/sddm.conf.d/zz-mos.conf <<'CONF'
+[Theme]
+Current=mos
+CursorTheme=breeze_cursors
+CONF

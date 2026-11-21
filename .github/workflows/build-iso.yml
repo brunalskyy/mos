@@ -106,10 +106,14 @@ jobs:
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.4.0-amber-preview
+          TAG: v0.4.1-amber-preview
         run: |
           notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.4 preview.** This is a preview, not a finished release.
+          **mOS 1.0 Amber, 0.4.1 preview.** This is a preview, not a finished release.
+
+          New in 0.4.1:
+          - No more "Plasma made by KDE" loading screen after the mOS boot screen
+          - New mOS login screen: Amber wallpaper and the Pixel-style stacked clock
 
           New in 0.4:
           - New Settings app in Material 3 style: Wallpaper & style, Icon shape, Wi-Fi, Bluetooth, Display, Sound, About mOS and more
@@ -132,7 +136,7 @@ jobs:
           - Chromium, Dolphin (files), Discover with Flathub (app store), Konsole, KWrite, KCalc, Gwenview, KClock
           - Wi-Fi driver for the MacBook Air (2017), VMware tools
 
-          Not in it yet: see-through sidebars in apps, the stacked lock screen clock, the setup wizard.
+          Not in it yet: the full mOS Settings pages, the mOS Store, software updates, the setup wizard.
 
           How to try it:
           - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
@@ -148,6 +152,6 @@ jobs:
             gh release create "${TAG}" out/release/* \
               --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.4 preview)" \
+              --title "mOS 1.0 Amber (0.4.1 preview)" \
               --notes "${notes}"
           fi

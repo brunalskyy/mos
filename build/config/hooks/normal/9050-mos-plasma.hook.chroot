@@ -44,6 +44,12 @@ rm -f "${DEST}/contents/layouts/"*
 cp "${MOS}/org.kde.plasma.desktop-layout.js" "${DEST}/contents/layouts/org.kde.plasma.desktop-layout.js"
 cp "${MOS}/defaults" "${DEST}/contents/defaults"
 
+# No KDE splash ("Plasma made by KDE") after the mOS boot screen.
+# Plasma turns the splash back on when a global theme has one, so take it out.
+rm -rf "${DEST}/contents/splash" "${DEST}/contents/previews/splash.png"
+mkdir -p /etc/skel/.config
+printf '[KSplash]\nEngine=none\nTheme=None\n' > /etc/skel/.config/ksplashrc
+
 # Debian's KDE wallpaper alternative points at the Debian theme; point it at mOS too.
 if update-alternatives --query desktop-plasma5-wallpaper >/dev/null 2>&1; then
 	update-alternatives --install /usr/share/wallpapers/DebianTheme desktop-plasma5-wallpaper /usr/share/wallpapers/mOS 500
