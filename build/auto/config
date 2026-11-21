@@ -13,7 +13,7 @@ lb config noauto \
 	--binary-image iso-hybrid \
 	--bootloaders "syslinux grub-efi" \
 	--debian-installer none \
-	--firmware-binary true \
+	--firmware-binary false \
 	--firmware-chroot true \
 	--linux-packages "linux-image linux-headers" \
 	--memtest none \
