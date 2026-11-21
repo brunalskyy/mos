@@ -1,0 +1,50 @@
+#!/bin/sh
+# mOS: macOS-style bounce. While an app is opening, its icon bounces in the
+# taskbar (instead of a spinner over it). The original file is kept with
+# dpkg-divert. If the code ever changes upstream, we keep the normal spinner.
+set -e
+
+echo "I: mOS taskbar bounce"
+
+UI=/usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/ui/Task.qml
+if [ ! -f "${UI}" ]; then
+	echo "W: ${UI} not found; no bounce" >&2
+	exit 0
+fi
+
+cp "${UI}" /tmp/Task.qml.mos
+if python3 - /tmp/Task.qml.mos <<'PY'
+import re, sys
+path = sys.argv[1]
+s = open(path).read()
+# 1. Bounce the icon while the app starts
+icon = re.search(r"(\n([ \t]*)Kirigami\.Icon \{\n[ \t]*id: icon\n)", s)
+if not icon:
+    sys.exit(1)
+ind = icon.group(2) + "    "
+bounce = f"""{ind}// mOS: bounce while the app is opening (like the macOS Dock)
+{ind}transform: Translate {{ id: mosBounce }}
+{ind}SequentialAnimation {{
+{ind}    running: model.IsStartup === true
+{ind}    loops: Animation.Infinite
+{ind}    alwaysRunToEnd: true
+{ind}    NumberAnimation {{ target: mosBounce; property: "y"; to: -Math.round(icon.height * 0.32); duration: 280; easing.type: Easing.OutQuad }}
+{ind}    NumberAnimation {{ target: mosBounce; property: "y"; to: 0; duration: 280; easing.type: Easing.InQuad }}
+{ind}    PauseAnimation {{ duration: 60 }}
+{ind}}}
+"""
+s = s[:icon.end()] + bounce + s[icon.end():]
+# 2. No spinner on top of the bouncing icon
+s2, n = re.subn(r"active: model\.IsStartup\n(\s*)sourceComponent: busyIndicator", r"active: false\n\1sourceComponent: busyIndicator", s)
+if n != 1:
+    sys.exit(1)
+open(path, "w").write(s2)
+PY
+then
+	dpkg-divert --local --rename --divert "${UI}.debian" --add "${UI}"
+	cp /tmp/Task.qml.mos "${UI}"
+	echo "I: taskbar icons bounce while apps open"
+else
+	echo "W: could not add the bounce; keeping the normal spinner" >&2
+fi
+rm -f /tmp/Task.qml.mos
