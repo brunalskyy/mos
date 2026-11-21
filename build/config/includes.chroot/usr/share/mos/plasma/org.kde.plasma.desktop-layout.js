@@ -1,5 +1,5 @@
 // mOS default desktop layout (KDE Plasma 6)
-// Windows 10-style taskbar along the bottom: mOS Start button, pinned and open apps,
+// Floating pill taskbar along the bottom (Windows 10 layout, iOS 27 shape): mOS Start button, pinned and open apps,
 // system tray, time with the date underneath, and a show-desktop corner.
 // Desktop: the Amber wallpaper (mOS logo top left), icons on the right, widgets on the left.
 
@@ -29,8 +29,9 @@ for (var j = 0; j < desktopsArray.length; j++) {
 // Taskbar
 var taskbar = new Panel;
 taskbar.location = "bottom";
-taskbar.height = Math.round(gridUnit * 2.6);
-taskbar.floating = false;
+taskbar.height = Math.round(gridUnit * 2.75);
+// Floating pill, like the iOS 27 tab bar (the mOS Plasma style gives it round ends)
+taskbar.floating = true;
 taskbar.alignment = "left";
 taskbar.lengthMode = "fill";
 taskbar.hiding = "none";
@@ -52,6 +53,8 @@ tasks.writeConfig("launchers", [
 tasks.writeConfig("showOnlyCurrentDesktop", "false");
 tasks.writeConfig("indicateAudioStreams", "true");
 tasks.writeConfig("fill", "false");
+// Spread the apps out a bit
+tasks.writeConfig("iconSpacing", "2");
 
 taskbar.addWidget("org.kde.plasma.marginsseparator");
 taskbar.addWidget("org.kde.plasma.systemtray");

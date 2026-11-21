@@ -1,0 +1,14 @@
+{
+  "version": "0.5",
+  "build": 5,
+  "codename": "Amber",
+  "name": "mOS 1.0 Amber (0.5)",
+  "notes": [
+    "New Settings: every page is real mOS now, with a General section",
+    "Sign in to your mOS Account right inside Settings",
+    "Software update: mOS, system and app updates in one place",
+    "Taskbar your way: Windows, Centred or Dock, floating, size, position, spacing",
+    "Material You colours in every app, glass pop-ups and menus",
+    "macOS-style animations and bouncing app icons; Spotlight on Win + Space"
+  ]
+}

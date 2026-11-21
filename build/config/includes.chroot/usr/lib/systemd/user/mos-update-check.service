@@ -1,0 +1,8 @@
+[Unit]
+Description=mOS: check for updates
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mos-update-check
+Nice=10

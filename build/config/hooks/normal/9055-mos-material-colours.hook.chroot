@@ -1,0 +1,44 @@
+#!/bin/sh
+# mOS Material You colours for every app: mOS Light / mOS Dark colour schemes.
+# Based on Breeze, with Material 3 surfaces and the whole UI gently tinted with
+# the accent colour (which mOS picks from your wallpaper).
+set -e
+echo "I: mOS Material colours"
+python3 - <<'PY'
+import configparser, os
+SRC = "/usr/share/color-schemes"
+def make(src, dst, name, tint, window, view, button):
+    cp = configparser.ConfigParser(interpolation=None, strict=False)
+    cp.optionxform = str
+    cp.read(os.path.join(SRC, src))
+    for sec, val in (("Colors:Window", window), ("Colors:View", view), ("Colors:Button", button),
+                     ("Colors:Header", window), ("Colors:Header][Inactive", window)):
+        if cp.has_section(sec):
+            cp[sec]["BackgroundNormal"] = val
+            cp[sec]["BackgroundAlternate"] = val
+    cp.setdefault("General", {})
+    cp["General"]["Name"] = name
+    cp["General"]["ColorScheme"] = dst[:-7]
+    cp["General"]["TintFactor"] = str(tint)
+    cp["General"]["AccentColorFromWallpaper"] = "true"
+    with open(os.path.join(SRC, dst), "w") as f:
+        cp.write(f, space_around_delimiters=False)
+    print("I: wrote", dst)
+make("BreezeLight.colors", "mOSLight.colors", "mOS Light", 0.12, "251,248,253", "255,255,255", "243,239,247")
+make("BreezeDark.colors", "mOSDark.colors", "mOS Dark", 0.14, "29,27,32", "20,18,24", "43,41,48")
+
+# Put the mOS Light colours in the system defaults, so every app uses them from the first login
+scheme = configparser.ConfigParser(interpolation=None, strict=False); scheme.optionxform = str
+scheme.read(os.path.join(SRC, "mOSLight.colors"))
+glob_ = configparser.ConfigParser(interpolation=None, strict=False); glob_.optionxform = str
+glob_.read("/etc/xdg/kdeglobals")
+for sec in scheme.sections():
+    if sec.startswith("Colors:") or sec in ("WM", "ColorEffects:Disabled", "ColorEffects:Inactive"):
+        glob_[sec] = dict(scheme[sec])
+glob_.setdefault("General", {})
+glob_["General"]["ColorScheme"] = "mOSLight"
+glob_["General"]["TintFactor"] = scheme["General"].get("TintFactor", "0.12")
+with open("/etc/xdg/kdeglobals", "w") as f:
+    glob_.write(f, space_around_delimiters=False)
+print("I: mOS Light colours set as the default")
+PY

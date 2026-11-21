@@ -8,3 +8,11 @@ set -e
 echo "I: mOS icon shapes for every app"
 /usr/bin/mos-shape-icons
 systemctl --global enable mos-shape-icons.path
+systemctl --global enable mos-update-check.timer
+
+# Hide the old KDE System Settings from the Start menu: mOS Settings does it all
+for f in /usr/share/applications/systemsettings.desktop /usr/share/applications/kdesystemsettings.desktop; do
+	if [ -f "${f}" ] && ! grep -q "^NoDisplay=true" "${f}"; then
+		sed -i "/^\[Desktop Entry\]/a NoDisplay=true" "${f}"
+	fi
+done

@@ -2,14 +2,14 @@
 widgetStyle=Breeze
 
 [kdeglobals][General]
-ColorScheme=BreezeLight
+ColorScheme=mOSLight
 accentColorFromWallpaper=true
 
 [kdeglobals][Icons]
 Theme=mOS
 
 [plasmarc][Theme]
-name=default
+name=mOS
 
 [Wallpaper]
 Image=mOS

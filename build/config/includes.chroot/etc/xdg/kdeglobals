@@ -2,6 +2,7 @@
 LookAndFeelPackage=org.mos.desktop
 
 [General]
+ColorScheme=mOSLight
 accentColorFromWallpaper=true
 
 [Icons]

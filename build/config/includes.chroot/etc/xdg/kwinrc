@@ -6,3 +6,18 @@ ButtonsOnRight=
 
 [Plugins]
 blurEnabled=true
+contrastEnabled=true
+# macOS-style: zoom windows in and out, genie (magic lamp) when minimising
+scaleEnabled=true
+fadeEnabled=false
+magiclampEnabled=true
+squashEnabled=false
+# No app icon stuck to the cursor while an app opens
+startupfeedbackEnabled=false
+
+[Effect-blur]
+BlurStrength=12
+NoiseStrength=2
+
+[Effect-magiclamp]
+AnimationDuration=300
