@@ -46,16 +46,22 @@ if grep -lsE '^Exec=.*(calamares|install-debian)' /etc/xdg/autostart/*.desktop |
 	fail=1
 fi
 
-# Dock
-if ! grep -q "dash-to-dock@micxgx.gmail.com" /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override; then
-	echo "E: the mOS dock is not enabled" >&2
+# Desktop (KDE Plasma): mOS global theme with the top bar + dock layout, and desktop icons
+LAYOUT=/usr/share/plasma/look-and-feel/org.mos.desktop/contents/layouts/org.kde.plasma.desktop-layout.js
+if ! grep -q 'org.kde.plasma.icontasks' "${LAYOUT}" 2>/dev/null; then
+	echo "E: the mOS desktop layout (dock) is missing" >&2
 	fail=1
 fi
-dock_fixed="$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell.extensions.dash-to-dock dock-fixed 2>&1 || true)"
-dock_pos="$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell.extensions.dash-to-dock dock-position 2>&1 || true)"
-echo "I: dock-fixed=${dock_fixed} dock-position=${dock_pos}"
-if [ "${dock_fixed}" != "true" ] || [ "${dock_pos}" != "'BOTTOM'" ]; then
-	echo "E: the dock defaults did not apply (always visible, at the bottom)" >&2
+if ! grep -q '^LookAndFeelPackage=org.mos.desktop' /etc/xdg/kdeglobals; then
+	echo "E: Plasma is not set to the mOS global theme" >&2
+	fail=1
+fi
+if [ ! -f /usr/share/wallpapers/mOS/contents/images/2880x1800.png ]; then
+	echo "E: the mOS wallpaper is missing" >&2
+	fail=1
+fi
+if [ ! -x /usr/bin/plasmashell ] || [ ! -x /usr/bin/sddm ]; then
+	echo "E: KDE Plasma or SDDM is not installed" >&2
 	fail=1
 fi
 
