@@ -13,15 +13,15 @@ QtObject {
     function alpha(c, a) { var x = Qt.lighter(c, 1.0); return Qt.rgba(x.r, x.g, x.b, a) }
 
     readonly property color primary: dark ? mix(accent, "#FFFFFF", 0.35) : mix(accent, "#000000", 0.12)
-    readonly property color onPrimary: dark ? mix(accent, "#000000", 0.8) : "#FFFFFF"
+    readonly property color primaryText: dark ? mix(accent, "#000000", 0.8) : Qt.rgba(1, 1, 1, 1)
     readonly property color primaryContainer: dark ? mix(accent, "#000000", 0.6) : mix(accent, "#FFFFFF", 0.78)
-    readonly property color onPrimaryContainer: dark ? mix(accent, "#FFFFFF", 0.82) : mix(accent, "#000000", 0.7)
+    readonly property color primaryContainerText: dark ? mix(accent, "#FFFFFF", 0.82) : mix(accent, "#000000", 0.7)
     readonly property color secondaryContainer: dark ? mix(accent, "#2B2930", 0.82) : mix(accent, "#FFFFFF", 0.86)
     readonly property color surface: dark ? mix(accent, "#141218", 0.94) : mix(accent, "#FFFBFF", 0.96)
     readonly property color surfaceContainer: dark ? mix(accent, "#1D1B20", 0.9) : mix(accent, "#F7F2FA", 0.9)
-    readonly property color surfaceHigh: dark ? mix(accent, "#2B2930", 0.9) : "#FFFFFF"
-    readonly property color onSurface: dark ? "#E6E0E9" : "#1D1B20"
-    readonly property color onSurfaceVariant: dark ? "#CAC4D0" : "#49454F"
+    readonly property color surfaceHigh: dark ? mix(accent, "#2B2930", 0.9) : Qt.rgba(1, 1, 1, 1)
+    readonly property color textColour: dark ? "#E6E0E9" : "#1D1B20"
+    readonly property color textVariant: dark ? "#CAC4D0" : "#49454F"
     readonly property color outline: dark ? "#49454F" : mix(accent, "#CAC4D0", 0.85)
     readonly property color error: dark ? "#F2B8B5" : "#B3261E"
     readonly property color good: dark ? "#8BD5A0" : "#1E6B3A"

@@ -1,0 +1,13 @@
+#!/bin/sh
+# mOS: no KDE Wallet pop-ups. The wallet is switched off for everyone
+# (/etc/xdg/kwalletrc) and the wallet manager app is removed.
+set -e
+echo "I: mOS: removing KDE Wallet"
+if dpkg -s kwalletmanager >/dev/null 2>&1; then
+	apt-get purge -y kwalletmanager || true
+fi
+# The PAM module would still try to open a wallet at login
+for f in /etc/pam.d/sddm /etc/pam.d/sddm-autologin /etc/pam.d/kde; do
+	[ -f "${f}" ] && sed -i '/^[^#].*pam_kwallet5\.so/s/^/#mOS no wallet: /' "${f}" || true
+done
+exit 0

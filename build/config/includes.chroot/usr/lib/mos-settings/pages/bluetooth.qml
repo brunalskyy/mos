@@ -49,7 +49,7 @@ ColumnLayout {
                 }
                 Rectangle {
                     visible: modelData.paired
-                    width: 40; height: 40; radius: 20; color: rm.containsMouse ? Theme.alpha(Theme.onSurface, 0.08) : "transparent"
+                    width: 40; height: 40; radius: 20; color: rm.containsMouse ? Theme.alpha(Theme.textColour, 0.08) : "transparent"
                     Image { anchors.centerIn: parent; source: Theme.ink("trash"); width: 20; height: 20; sourceSize: Qt.size(40, 40) }
                     MouseArea { id: rm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: backend.bluetoothRemove(modelData.mac) }
                 }

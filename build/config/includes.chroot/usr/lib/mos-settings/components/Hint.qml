@@ -6,6 +6,6 @@ import QtQuick.Layouts
 Label {
     Layout.fillWidth: true
     wrapMode: Text.WordWrap
-    color: Theme.onSurfaceVariant
+    color: Theme.textVariant
     font.pixelSize: 14
 }

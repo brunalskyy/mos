@@ -6,8 +6,8 @@ TextField {
     id: f
     implicitHeight: 48
     leftPadding: 18; rightPadding: 18
-    color: Theme.onSurface
-    placeholderTextColor: Theme.onSurfaceVariant
+    color: Theme.textColour
+    placeholderTextColor: Theme.textVariant
     font.pixelSize: 15
     selectByMouse: true
     background: Rectangle {

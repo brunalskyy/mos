@@ -30,13 +30,13 @@ ColumnLayout {
                         c.beginPath(); c.arc(48, 48, 40, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * v); c.stroke()
                     }
                 }
-                Label { anchors.centerIn: parent; text: page.p.percent + "%"; color: Theme.onSurface; font.pixelSize: 22; font.weight: Font.DemiBold }
+                Label { anchors.centerIn: parent; text: page.p.percent + "%"; color: Theme.textColour; font.pixelSize: 22; font.weight: Font.DemiBold }
             }
             ColumnLayout {
                 spacing: 4
-                Label { text: page.p.state; color: Theme.onSurface; font.pixelSize: 20; font.weight: Font.DemiBold }
-                Label { visible: page.p.timeLeft !== ""; text: page.p.timeLeft + (page.p.state === "Charging" ? " until full" : " left"); color: Theme.onSurfaceVariant }
-                Label { visible: page.p.health !== ""; text: "Battery health " + page.p.health; color: Theme.onSurfaceVariant }
+                Label { text: page.p.state; color: Theme.textColour; font.pixelSize: 20; font.weight: Font.DemiBold }
+                Label { visible: page.p.timeLeft !== ""; text: page.p.timeLeft + (page.p.state === "Charging" ? " until full" : " left"); color: Theme.textVariant }
+                Label { visible: page.p.health !== ""; text: "Battery health " + page.p.health; color: Theme.textVariant }
             }
         }
     }

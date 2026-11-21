@@ -1,0 +1,10 @@
+{
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Description": "mOS window style, Windows 10-style buttons",
+        "Id": "mOS-Dark",
+        "License": "GPL-2.0-or-later",
+        "Name": "mOS Dark",
+        "Version": "0.6"
+    }
+}

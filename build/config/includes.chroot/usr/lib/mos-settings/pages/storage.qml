@@ -17,9 +17,9 @@ ColumnLayout {
         pad: 24
         Label {
             text: page.s.total ? page.gb(page.s.free) + " free" : "Checking…"
-            color: Theme.onSurface; font.pixelSize: 26; font.weight: Font.DemiBold
+            color: Theme.textColour; font.pixelSize: 26; font.weight: Font.DemiBold
         }
-        Label { visible: !!page.s.total; text: page.gb(page.s.used) + " used of " + page.gb(page.s.total); color: Theme.onSurfaceVariant }
+        Label { visible: !!page.s.total; text: page.gb(page.s.used) + " used of " + page.gb(page.s.total); color: Theme.textVariant }
         // Stacked bar
         Rectangle {
             Layout.fillWidth: true; implicitHeight: 22; radius: 11; color: Theme.surfaceContainer; clip: true
@@ -44,8 +44,8 @@ ColumnLayout {
                 required property int index
                 Layout.fillWidth: true
                 Rectangle { width: 12; height: 12; radius: 6; color: page.colours[index % page.colours.length] }
-                Label { text: modelData.label; color: Theme.onSurface; Layout.fillWidth: true }
-                Label { text: page.gb(modelData.bytes); color: Theme.onSurfaceVariant }
+                Label { text: modelData.label; color: Theme.textColour; Layout.fillWidth: true }
+                Label { text: page.gb(modelData.bytes); color: Theme.textVariant }
             }
         }
         Hint { visible: page.scanning; text: "Adding it all up…" }

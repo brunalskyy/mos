@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Label {
     Layout.fillWidth: true
     Layout.topMargin: 6
-    color: Theme.onSurface
+    color: Theme.textColour
     font.pixelSize: 18
     font.weight: Font.DemiBold
 }

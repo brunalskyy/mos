@@ -76,7 +76,7 @@ if [ -f /usr/share/sddm/themes/breeze/Main.qml ] && ! grep -q 'MosClock {' /usr/
 fi
 
 # 0.5: full Settings, updates, Material colours
-for f in /usr/lib/mos-settings/mos_settings.py /usr/lib/mos-settings/mos_account.py /usr/lib/mos-settings/mos_update.py /usr/lib/mos-settings/mos-update-helper /usr/bin/mos-update-check; do
+for f in /usr/lib/mos-settings/mos_welcome.py /usr/bin/mos-themed-icons /usr/bin/mos-auto-theme /usr/lib/mos-settings/mos_settings.py /usr/lib/mos-settings/mos_account.py /usr/lib/mos-settings/mos_update.py /usr/lib/mos-settings/mos-update-helper /usr/bin/mos-update-check; do
 	if ! python3 -m py_compile "${f}" 2>/dev/null; then
 		echo "E: ${f} has a Python error" >&2
 		fail=1
@@ -95,6 +95,22 @@ if [ "$(ls /usr/lib/mos-settings/pages/*.qml | wc -l)" -lt 20 ]; then
 fi
 if ! dpkg -s mos-desktop >/dev/null 2>&1; then
 	echo "W: the mos-desktop package is not installed (updates will still work)" >&2
+fi
+
+# 0.6: Pixel widgets, Windows 10 window buttons, no KDE Wallet
+for f in /usr/bin/mos-themed-icons /usr/bin/mos-auto-theme /usr/bin/mos-welcome /usr/lib/mos-settings/welcome/Welcome.qml /usr/share/mos/glyphs/folder.svg /etc/xdg/autostart/mos-welcome.desktop /usr/share/plasma/plasmoids/org.mos.clock/metadata.json /usr/share/plasma/plasmoids/org.mos.battery/metadata.json /usr/share/aurorae/themes/mOS-Dark/decoration.svg; do
+	if [ ! -f "${f}" ]; then
+		echo "E: ${f} is missing" >&2
+		fail=1
+	fi
+done
+if ! grep -q '^ButtonsOnRight=IAX' /etc/xdg/kwinrc; then
+	echo "E: the Windows-style window buttons are not set" >&2
+	fail=1
+fi
+if ! grep -q '^Enabled=false' /etc/xdg/kwalletrc 2>/dev/null; then
+	echo "E: KDE Wallet is still switched on" >&2
+	fail=1
 fi
 
 # System name
@@ -131,8 +147,8 @@ if [ ! -f /usr/share/wallpapers/mOS/contents/images/2880x1800.png ]; then
 	echo "E: the mOS wallpaper is missing" >&2
 	fail=1
 fi
-if ! grep -q 'org.kde.plasma.showdesktop' "${LAYOUT}" 2>/dev/null; then
-	echo "E: the mOS taskbar layout is missing" >&2
+if ! grep -q 'org.mos.clock' "${LAYOUT}" 2>/dev/null; then
+	echo "E: the mOS desktop layout (Pixel clock) is missing" >&2
 	fail=1
 fi
 if [ ! -f /usr/share/aurorae/themes/mOS/decoration.svg ] || ! grep -q '__aurorae__svg__mOS' /etc/xdg/kwinrc; then

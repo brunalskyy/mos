@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=mOS Setup
+GenericName=Set up mOS
+Comment=Language, Wi-Fi, mOS Account and your look
+Exec=mos-welcome
+Icon=mos-logo
+Categories=System;Settings;

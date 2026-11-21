@@ -5,6 +5,13 @@ import "../components"
 
 ColumnLayout {
     spacing: 18
+    Card {
+        SettingRow {
+            title: "Themed icons"
+            sub: "Like a Pixel: every icon in one colour that matches your wallpaper, light or dark"
+            MSwitch { checked: backend.themedIcons; onToggled: function (v) { backend.setThemedIcons(v) } }
+        }
+    }
     Hint { text: "Pick the shape for app icons. Every app follows it — on the taskbar, in the Start menu and on the desktop — even apps you install later." }
     RowLayout {
         Layout.fillWidth: true
@@ -47,7 +54,7 @@ ColumnLayout {
                         Layout.alignment: Qt.AlignHCenter
                         spacing: 6
                         Image { visible: card.chosen; source: Theme.ink("check"); Layout.preferredWidth: 18; Layout.preferredHeight: 18; sourceSize: Qt.size(36, 36) }
-                        Label { text: card.modelData.name; color: card.chosen ? Theme.onPrimaryContainer : Theme.onSurface; font.pixelSize: 15; font.weight: Font.DemiBold }
+                        Label { text: card.modelData.name; color: card.chosen ? Theme.primaryContainerText : Theme.textColour; font.pixelSize: 15; font.weight: Font.DemiBold }
                     }
                 }
                 MouseArea { id: m; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: backend.setIconShape(card.modelData.shape) }

@@ -23,9 +23,24 @@ R = 28
 ROUNDED = (f"M{R} 0H{128-R}A{R} {R} 0 0 1 128 {R}V{128-R}A{R} {R} 0 0 1 {128-R} 128"
            f"H{R}A{R} {R} 0 0 1 0 {128-R}V{R}A{R} {R} 0 0 1 {R} 0Z")
 
+def superellipse(n, size=128, steps=360):
+    """Samsung One UI-style squircle: smooth corners that curve in gradually."""
+    import math
+    pts = []
+    for i in range(steps):
+        t = 2 * math.pi * i / steps
+        c, si = math.cos(t), math.sin(t)
+        x = (abs(c) ** (2 / n)) * (1 if c >= 0 else -1)
+        y = (abs(si) ** (2 / n)) * (1 if si >= 0 else -1)
+        pts.append(((x + 1) * size / 2, (y + 1) * size / 2))
+    return "M" + " L".join(f"{x:.2f} {y:.2f}" for x, y in pts) + "Z"
+
+
+SQUIRCLE = superellipse(3.2)
+
 THEMES = {
     "mOS": ("mOS Circle", "mOS app icons, circle shape (default)", CIRCLE),
-    "mOS-Squircle": ("mOS Squircle", "mOS app icons, squircle shape (macOS style)", None),
+    "mOS-Squircle": ("mOS Squircle", "mOS app icons, One UI-style squircle", SQUIRCLE),
     "mOS-Rounded": ("mOS Rounded square", "mOS app icons, rounded square shape", ROUNDED),
 }
 

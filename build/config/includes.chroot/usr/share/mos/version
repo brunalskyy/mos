@@ -1,15 +1,15 @@
 {
-  "version": "0.5",
-  "build": 5,
+  "version": "0.6",
+  "build": 6,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.5)",
+  "name": "mOS 1.0 Amber (0.6)",
   "notes": [
-    "New Settings: every page is real mOS now, with a General section",
-    "Sign in to your mOS Account right inside Settings",
-    "Software update: mOS, system and app updates in one place",
-    "Taskbar your way: Windows, Centred or Dock, floating, size, position, spacing",
-    "Material You colours in every app, glass pop-ups and menus",
-    "macOS-style animations and bouncing app icons; Spotlight on Win + Space"
+    "Pixel-style desktop widgets: the flower clock and a battery ring",
+    "Windows 10-style window buttons (minimise, maximise, close on the right)",
+    "Themed icons like a Pixel, and a One UI-style squircle",
+    "Every app gets your icon shape, however you install it",
+    "Auto dark mode (sunset to sunrise) and Night Shift schedules",
+    "Setup wizard, cleaner taskbar with the notification centre, no more KDE Wallet"
   ],
   "prerelease": true
 }

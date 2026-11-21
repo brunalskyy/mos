@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Category": "Date and Time",
+        "Description": "Pixel-style clock: a four-petal flower with 12, 3, 6 and 9",
+        "Icon": "preferences-system-time",
+        "Id": "org.mos.clock",
+        "License": "GPL-2.0-or-later",
+        "Name": "mOS Clock",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

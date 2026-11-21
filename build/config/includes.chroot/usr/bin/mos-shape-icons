@@ -51,8 +51,8 @@ def shape_mask(theme, size):
         d.ellipse((0, 0, big - 1, big - 1), fill=255)
     elif theme == "mOS-Rounded":
         d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * 28 / 128), fill=255)
-    else:  # squircle: superellipse n=5
-        n = 5.0
+    else:  # squircle: One UI-style superellipse
+        n = 3.2
         pts = []
         import math
         for i in range(720):
@@ -174,6 +174,13 @@ def main():
     if not user:
         for theme in THEMES:
             subprocess.run(["gtk-update-icon-cache", "-f", "-q", os.path.join(sys_root, theme)], check=False)
+    if user and os.path.exists(os.path.expanduser("~/.local/share/icons/mOS-Themed")):
+        # Themed icons are on: give the new apps themed icons too
+        subprocess.run(["mos-themed-icons"], check=False)
+    elif user and done:
+        # Tell open apps (taskbar, Start menu) to reload icons straight away
+        subprocess.run(["dbus-send", "--session", "--type=signal", "/KIconLoader",
+                        "org.kde.KIconLoader.iconChanged", "int32:0"], check=False)
     print(f"mos-shape-icons: shaped {done} app icons, {skipped} had no picture")
 
 

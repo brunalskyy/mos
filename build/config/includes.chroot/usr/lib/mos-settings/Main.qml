@@ -24,18 +24,18 @@ ApplicationWindow {
         { id: "wifi", title: "Wi-Fi & internet", icon: "wifi", tone: "#2F7BEA", keys: "network wireless ethernet internet" },
         { id: "bluetooth", title: "Bluetooth", icon: "bluetooth", tone: "#1E88E5", keys: "headphones devices pair" },
         { section: "Personalise" },
-        { id: "style", title: "Wallpaper & style", icon: "palette", tone: "#E8833A", keys: "background colour dark mode accent theme material" },
+        { id: "style", title: "Wallpaper & style", icon: "palette", tone: "#E8833A", keys: "background colour dark mode auto accent theme material glass effects animations wobbly" },
         { id: "icons", title: "Icon shape", icon: "shapes", tone: "#D9488B", keys: "circle squircle rounded" },
         { id: "taskbar", title: "Taskbar", icon: "taskbar", tone: "#5C6BC0", keys: "dock panel floating pinned" },
         { id: "lock", title: "Lock screen", icon: "lockscreen", tone: "#7C5CFF", keys: "password clock timeout" },
         { section: "Device" },
-        { id: "display", title: "Display", icon: "display", tone: "#00897B", keys: "screen brightness resolution scale night light" },
+        { id: "display", title: "Display", icon: "display", tone: "#00897B", keys: "screen brightness resolution scale night shift light" },
         { id: "sound", title: "Sound", icon: "sound", tone: "#E53935", keys: "volume speakers microphone audio" },
         { id: "power", title: "Battery & power", icon: "battery", tone: "#43A047", keys: "sleep power mode energy" },
         { section: "System" },
         { id: "notifications", title: "Notifications", icon: "bell", tone: "#F4511E", keys: "do not disturb alerts" },
         { id: "privacy", title: "Privacy & security", icon: "shield", tone: "#3949AB", keys: "camera microphone permissions" },
-        { id: "general", title: "General", icon: "general", tone: "#616161", keys: "about update storage apps language date time users accessibility reset" }
+        { id: "general", title: "General", icon: "general", tone: "#616161", keys: "about update storage apps language date time users accessibility reset startup login" }
     ]
     // Pages that live inside General (they get a back button)
     readonly property var generalPages: [
@@ -47,6 +47,7 @@ ApplicationWindow {
         { id: "datetime", title: "Date & time", icon: "clock", tone: "#3949AB", sub: "Time zone, 24-hour clock" },
         { id: "keyboard", title: "Keyboard", icon: "keyboard", tone: "#6D4C41", sub: "Layouts" },
         { id: "mouse", title: "Mouse & trackpad", icon: "mouse", tone: "#546E7A", sub: "Speed, scrolling, tap to click" },
+        { id: "startup", title: "Startup apps", icon: "update", tone: "#43A047", sub: "Apps that open when you log in" },
         { id: "users", title: "Users", icon: "person", tone: "#5E35B1", sub: "People who use this computer" },
         { id: "accessibility", title: "Accessibility", icon: "access", tone: "#00897B", sub: "Text size, motion, colour filters" },
         { id: "reset", title: "Reset", icon: "reset", tone: "#E53935", sub: "Put mOS back to how it started" }
@@ -107,8 +108,8 @@ ApplicationWindow {
                         TextField {
                             Layout.fillWidth: true
                             placeholderText: "Search settings"
-                            placeholderTextColor: Theme.onSurfaceVariant
-                            color: Theme.onSurface
+                            placeholderTextColor: Theme.textVariant
+                            color: Theme.textColour
                             font.pixelSize: 15
                             background: null
                             onTextChanged: win.query = text.toLowerCase()
@@ -142,12 +143,12 @@ ApplicationWindow {
                             spacing: 1; Layout.fillWidth: true
                             Label {
                                 text: backend.accountApi.signedIn ? backend.accountApi.name : "mOS Account"
-                                color: Theme.onPrimaryContainer; font.pixelSize: 16; font.weight: Font.DemiBold
+                                color: Theme.primaryContainerText; font.pixelSize: 16; font.weight: Font.DemiBold
                                 elide: Text.ElideRight; Layout.fillWidth: true
                             }
                             Label {
                                 text: backend.accountApi.signedIn ? "mOS Account" : "Sign in, sync and more"
-                                color: Theme.onPrimaryContainer; opacity: 0.8; font.pixelSize: 13
+                                color: Theme.primaryContainerText; opacity: 0.8; font.pixelSize: 13
                             }
                         }
                         Image { source: Theme.ink("chevron"); Layout.preferredWidth: 18; Layout.preferredHeight: 18; sourceSize: Qt.size(36, 36); opacity: 0.7 }
@@ -184,7 +185,7 @@ ApplicationWindow {
                             text: row.modelData.section || ""
                             anchors.left: parent.left; anchors.leftMargin: 14
                             anchors.bottom: parent.bottom; anchors.bottomMargin: 6
-                            color: Theme.onSurfaceVariant
+                            color: Theme.textVariant
                             font.pixelSize: 12; font.weight: Font.DemiBold; font.letterSpacing: 0.4
                         }
                         Rectangle {
@@ -192,7 +193,7 @@ ApplicationWindow {
                             anchors.fill: parent
                             radius: 25
                             color: row.current ? Theme.primaryContainer
-                                 : rowMa.containsMouse ? Theme.alpha(Theme.onSurface, 0.06) : "transparent"
+                                 : rowMa.containsMouse ? Theme.alpha(Theme.textColour, 0.06) : "transparent"
                             Behavior on color { ColorAnimation { duration: 140 } }
                             RowLayout {
                                 anchors.fill: parent; anchors.leftMargin: 9; anchors.rightMargin: 14; spacing: 14
@@ -201,7 +202,7 @@ ApplicationWindow {
                                     text: row.modelData.title || ""
                                     Layout.fillWidth: true
                                     elide: Text.ElideRight
-                                    color: row.current ? Theme.onPrimaryContainer : Theme.onSurface
+                                    color: row.current ? Theme.primaryContainerText : Theme.textColour
                                     font.pixelSize: 15
                                     font.weight: row.current ? Font.DemiBold : Font.Normal
                                 }
@@ -240,13 +241,13 @@ ApplicationWindow {
                     Rectangle {
                         visible: Nav.canGoBack
                         width: 44; height: 44; radius: 22
-                        color: backMa.containsMouse ? Theme.alpha(Theme.onSurface, 0.07) : "transparent"
+                        color: backMa.containsMouse ? Theme.alpha(Theme.textColour, 0.07) : "transparent"
                         Image { anchors.centerIn: parent; source: Theme.ink("back"); width: 22; height: 22; sourceSize: Qt.size(44, 44) }
                         MouseArea { id: backMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Nav.back() }
                     }
                     Label {
                         text: win.titleFor(Nav.page)
-                        color: Theme.onSurface
+                        color: Theme.textColour
                         font.pixelSize: 34; font.weight: Font.DemiBold
                     }
                 }

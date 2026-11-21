@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Category": "System Information",
+        "Description": "Pixel-style battery: a ring with your battery level",
+        "Icon": "battery-good",
+        "Id": "org.mos.battery",
+        "License": "GPL-2.0-or-later",
+        "Name": "mOS Battery",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

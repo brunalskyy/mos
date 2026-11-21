@@ -1,0 +1,2 @@
+// mOS: after installing apps (apt, .deb, Software update), put their icons in the mOS shape
+DPkg::Post-Invoke { "if [ -x /usr/bin/mos-shape-icons ]; then /usr/bin/mos-shape-icons >/dev/null 2>&1 || true; fi"; };

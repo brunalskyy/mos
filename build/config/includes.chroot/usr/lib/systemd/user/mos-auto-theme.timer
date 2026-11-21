@@ -1,0 +1,9 @@
+[Unit]
+Description=mOS: check light/dark mode every 10 minutes
+
+[Timer]
+OnStartupSec=20s
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target

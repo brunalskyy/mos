@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+"""mOS auto dark mode: switches between light and dark at sunset/sunrise (or
+your own times). Runs every 10 minutes from mos-auto-theme.timer."""
+import json
+import os
+import sys
+
+sys.path.insert(0, "/usr/lib/mos-settings")
+import mos_settings as m  # noqa: E402
+
+prefs = m.load_json(os.path.join(m.MOS_CONFIG, "theme.json"), {})
+if prefs.get("mode") in ("auto", "custom"):
+    want = m.should_be_dark(prefs)
+    if want != m.is_dark():
+        m.apply_dark(want)

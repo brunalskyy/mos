@@ -30,7 +30,7 @@ ColumnLayout {
                     displayText: currentIndex >= 0 ? currentText : (modelData.choices.length ? "Choose…" : "None installed")
                     onActivated: function (i) { backend.setDefaultApp(modelData.kind, modelData.choices[i].id) }
                     background: Rectangle { radius: 22; color: Theme.surfaceContainer; border.width: 1; border.color: Theme.outline }
-                    contentItem: Label { leftPadding: 16; text: cb.displayText; color: Theme.onSurface; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
+                    contentItem: Label { leftPadding: 16; text: cb.displayText; color: Theme.textColour; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight }
                 }
             }
         }

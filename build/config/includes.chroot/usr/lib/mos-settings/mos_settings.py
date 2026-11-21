@@ -148,6 +148,87 @@ def desktop_entry(path):
         return None
 
 
+# ---------------------------------------------------------------- light / dark
+def apply_dark(on):
+    """Switch mOS light/dark: colours for every app and the window title bars."""
+    scheme = "mOSDark" if on else "mOSLight"
+    if not os.path.exists(f"/usr/share/color-schemes/{scheme}.colors"):
+        scheme = "BreezeDark" if on else "BreezeLight"
+    sh(["plasma-apply-colorscheme", scheme])
+    kwrite("kwinrc", "org.kde.kdecoration2", "theme", "__aurorae__svg__mOS-Dark" if on else "__aurorae__svg__mOS")
+    kwin_reconfigure()
+    refresh_themed_icons()
+
+
+def themed_icons_on():
+    return kread("kdeglobals", "Icons", "Theme", "mOS") == "mOS-Themed"
+
+
+def refresh_themed_icons():
+    """Themed icons follow the wallpaper colours and light/dark: remake them after a change."""
+    if themed_icons_on():
+        start(["mos-themed-icons"])
+
+
+def is_dark():
+    return "dark" in kread("kdeglobals", "General", "ColorScheme", "mOSLight").lower()
+
+
+def sun_times(day=None):
+    """Sunrise and sunset (local hours, e.g. 7.5) for your time zone's location."""
+    import datetime
+    import math
+    lat, lon = 51.5, -0.13  # London if we can't tell
+    try:
+        tz = os.path.realpath("/etc/localtime").split("zoneinfo/", 1)[1]
+        for line in open("/usr/share/zoneinfo/zone1970.tab"):
+            if line.startswith("#"):
+                continue
+            cols = line.split("\t")
+            if len(cols) > 2 and cols[2].strip() == tz:
+                m = re.match(r"([+-]\d{2})(\d{2})(\d{2})?([+-]\d{3})(\d{2})(\d{2})?", cols[1])
+                if m:
+                    sgn = lambda v: -1 if v.startswith("-") else 1
+                    lat = int(m.group(1)) + sgn(m.group(1)) * int(m.group(2)) / 60
+                    lon = int(m.group(4)) + sgn(m.group(4)) * int(m.group(5)) / 60
+                break
+    except (OSError, IndexError):
+        pass
+    day = day or datetime.date.today()
+    n = day.timetuple().tm_yday
+    decl = 23.44 * math.sin(math.radians(360 / 365 * (n - 81)))
+    b = math.radians(360 / 365 * (n - 81))
+    eot = 9.87 * math.sin(2 * b) - 7.53 * math.cos(b) - 1.5 * math.sin(b)  # minutes
+    x = -math.tan(math.radians(lat)) * math.tan(math.radians(decl))
+    x = max(-1.0, min(1.0, x))
+    half = math.degrees(math.acos(x)) / 15  # hours
+    offset = (datetime.datetime.now().astimezone().utcoffset().total_seconds()) / 3600
+    noon = 12 - lon / 15 - eot / 60 + offset
+    return noon - half, noon + half
+
+
+def should_be_dark(prefs):
+    import datetime
+    mode = prefs.get("mode", "light")
+    if mode in ("light", "dark"):
+        return mode == "dark"
+    now = datetime.datetime.now()
+    h = now.hour + now.minute / 60
+    if mode == "custom":
+        def hours(t):
+            try:
+                hh, mm = t.split(":")
+                return int(hh) + int(mm) / 60
+            except ValueError:
+                return 0
+        dark_at, light_at = hours(prefs.get("darkAt", "19:00")), hours(prefs.get("lightAt", "07:00"))
+    else:
+        light_at, dark_at = sun_times()
+    if dark_at > light_at:
+        return h >= dark_at or h < light_at
+    return dark_at <= h < light_at
+
+
 APP_DIRS = [
     "/usr/share/applications",
     "/var/lib/flatpak/exports/share/applications",
@@ -254,24 +335,44 @@ class Backend(QObject):
         kwrite("kdeglobals", "General", "AccentColor", rgb)
         kwrite("kdeglobals", "General", "LastUsedCustomAccentColor", rgb)
         start(["plasma-apply-colorscheme", "--accent-color", "#" + c])
+        refresh_themed_icons()
         self.changed.emit()
 
     @Property(bool, notify=changed)
     def dark(self):
-        return "dark" in kread("kdeglobals", "General", "ColorScheme", "BreezeLight").lower()
+        return is_dark()
 
     @Slot(bool)
     def setDark(self, on):
-        scheme = "mOSDark" if on else "mOSLight"
-        if not os.path.exists(f"/usr/share/color-schemes/{scheme}.colors"):
-            scheme = "BreezeDark" if on else "BreezeLight"
-        sh(["plasma-apply-colorscheme", scheme])
+        apply_dark(on)
+        self.changed.emit()
+
+    @Property("QVariantMap", notify=changed)
+    def themeMode(self):
+        d = {"mode": "light", "darkAt": "19:00", "lightAt": "07:00"}
+        d.update(load_json(os.path.join(MOS_CONFIG, "theme.json"), {}))
+        if d["mode"] == "auto":
+            rise, sset = sun_times()
+            d["sunrise"] = f"{int(rise):02d}:{int(rise % 1 * 60):02d}"
+            d["sunset"] = f"{int(sset):02d}:{int(sset % 1 * 60):02d}"
+        return d
+
+    @Slot("QVariantMap")
+    def setThemeMode(self, opts):
+        d = self.themeMode
+        d.update({k: opts[k] for k in ("mode", "darkAt", "lightAt") if k in opts})
+        save_json(os.path.join(MOS_CONFIG, "theme.json"), {k: d[k] for k in ("mode", "darkAt", "lightAt")})
+        want = should_be_dark(d)
+        if want != is_dark():
+            apply_dark(want)
         self.changed.emit()
 
     # ------------------------------------------------------------ icon shape
     @Property(str, notify=changed)
     def iconShape(self):
         theme = kread("kdeglobals", "Icons", "Theme", "mOS")
+        if theme == "mOS-Themed":
+            theme = kread("kdeglobals", "Icons", "mosShape", "mOS")
         for shape, name in SHAPES.items():
             if name == theme:
                 return shape
@@ -280,11 +381,25 @@ class Backend(QObject):
     @Slot(str)
     def setIconShape(self, shape):
         theme = SHAPES.get(shape, "mOS")
-        tool = next(iter(glob.glob("/usr/lib/*/libexec/plasma-changeicons")), None)
-        if not (tool and sh([tool, theme])[0]):
-            kwrite("kdeglobals", "Icons", "Theme", theme)
+        kwrite("kdeglobals", "Icons", "mosShape", theme)
+        if themed_icons_on():
+            self._job("icons", lambda: (sh(["mos-themed-icons"], timeout=600)[0], "Icon shape changed"))
+        else:
+            tool = next(iter(glob.glob("/usr/lib/*/libexec/plasma-changeicons")), None)
+            if not (tool and sh([tool, theme])[0]):
+                kwrite("kdeglobals", "Icons", "Theme", theme)
+            self.toast.emit("Icon shape changed")
         self.changed.emit()
-        self.toast.emit("Icon shape changed")
+
+    @Property(bool, notify=changed)
+    def themedIcons(self):
+        return themed_icons_on()
+
+    @Slot(bool)
+    def setThemedIcons(self, on):
+        self.toast.emit("Making your themed icons…" if on else "Back to normal icons")
+        self._job("icons", lambda: (sh(["mos-themed-icons"] + ([] if on else ["--off"]), timeout=600)[0],
+                                    "Themed icons are on" if on else "Themed icons are off"))
 
     # ------------------------------------------------------------ wallpaper
     @Property("QVariantList", constant=True)
@@ -316,6 +431,9 @@ class Backend(QObject):
         data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
         data["wallpaper"] = path
         save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        if themed_icons_on():
+            # wait a moment for mOS to pick the new colours from the wallpaper
+            self._job("icons", lambda: (__import__("time").sleep(4) or sh(["mos-themed-icons"], timeout=600)[0], "ok"))
         self.changed.emit()
 
     # ------------------------------------------------------------ Wi-Fi
@@ -472,6 +590,12 @@ class Backend(QObject):
             except (IndexError, ValueError):
                 pass
         res["nightLight"] = kread("kwinrc", "NightColor", "Active", "false").lower() == "true"
+        res["nightMode"] = "times" if kread("kwinrc", "NightColor", "Mode", "Automatic") == "Times" else "sun"
+        def hhmm(v, d):
+            v = (v or d).zfill(4)
+            return f"{v[:2]}:{v[2:]}"
+        res["nightEvening"] = hhmm(kread("kwinrc", "NightColor", "EveningBeginFixed", ""), "2000")
+        res["nightMorning"] = hhmm(kread("kwinrc", "NightColor", "MorningBeginFixed", ""), "0600")
         try:
             res["nightLightTemp"] = int(kread("kwinrc", "NightColor", "NightTemperature", "4500"))
         except ValueError:
@@ -493,7 +617,20 @@ class Backend(QObject):
     @Slot(bool)
     def setNightLight(self, on):
         kwrite("kwinrc", "NightColor", "Active", on)
-        kwrite("kwinrc", "NightColor", "Mode", "Automatic")
+        if not kread("kwinrc", "NightColor", "Mode", ""):
+            kwrite("kwinrc", "NightColor", "Mode", "Automatic")
+        kwin_reconfigure()
+        self.changed.emit()
+
+    @Slot(str, str, str)
+    def setNightSchedule(self, mode, evening, morning):
+        """mode: 'sun' (sunset to sunrise) or 'times' (evening/morning as HH:MM)."""
+        if mode == "times":
+            kwrite("kwinrc", "NightColor", "Mode", "Times")
+            kwrite("kwinrc", "NightColor", "EveningBeginFixed", evening.replace(":", ""))
+            kwrite("kwinrc", "NightColor", "MorningBeginFixed", morning.replace(":", ""))
+        else:
+            kwrite("kwinrc", "NightColor", "Mode", "Automatic")
         kwin_reconfigure()
         self.changed.emit()
 
@@ -994,6 +1131,74 @@ class Backend(QObject):
         v = f"{float(value):.2f}" if t == "d" else ("true" if value else "false")
         dbus_user("set-property", "org.kde.KWin", f"/org/kde/KWin/InputDevice/{dev}",
                   "org.kde.KWin.InputDevice", prop, t, v, timeout=5)
+
+    # ------------------------------------------------------------ Startup apps
+    @Slot(result="QVariantList")
+    def startupApps(self):
+        user_dir = os.path.join(CONFIG, "autostart")
+        out, seen = [], set()
+        for d in (user_dir, "/etc/xdg/autostart"):
+            for f in sorted(glob.glob(os.path.join(d, "*.desktop"))):
+                fid = os.path.basename(f)
+                if fid in seen:
+                    continue
+                seen.add(fid)
+                e = desktop_entry(f) or {}
+                if d != user_dir and (e.get("NoDisplay", "false").lower() == "true"
+                                      or "KDE" in e.get("OnlyShowIn", "") or fid.startswith(("mos-", "org.kde.", "kde", "polkit", "xdg-", "at-spi"))):
+                    continue  # parts of mOS itself
+                out.append({"id": fid, "name": e.get("Name", fid[:-8]), "icon": e.get("Icon", "application-x-executable"),
+                            "on": e.get("Hidden", "false").lower() != "true" and e.get("X-GNOME-Autostart-enabled", "true") != "false"})
+        return out
+
+    @Slot(str, bool)
+    def setStartupApp(self, fid, on):
+        user_dir = os.path.join(CONFIG, "autostart")
+        os.makedirs(user_dir, exist_ok=True)
+        dest = os.path.join(user_dir, fid)
+        if not os.path.exists(dest):
+            for d in ("/etc/xdg/autostart",) + tuple(APP_DIRS):
+                if os.path.exists(os.path.join(d, fid)):
+                    shutil.copy(os.path.join(d, fid), dest)
+                    break
+        if os.path.exists(dest):
+            sh(["kwriteconfig6", "--file", dest, "--group", "Desktop Entry", "--key", "Hidden", "false" if on else "true"])
+        self.changed.emit()
+
+    @Slot(str)
+    def addStartupApp(self, desktop_id):
+        self.setStartupApp(desktop_id + ".desktop", True)
+
+    @Slot(str)
+    def removeStartupApp(self, fid):
+        p = os.path.join(CONFIG, "autostart", fid)
+        if os.path.exists(p) and not os.path.exists(os.path.join("/etc/xdg/autostart", fid)):
+            os.remove(p)
+        else:
+            self.setStartupApp(fid, False)
+        self.changed.emit()
+
+    # ------------------------------------------------------------ Effects
+    @Property("QVariantMap", notify=changed)
+    def effects(self):
+        def on(key, d):
+            return kread("kwinrc", "Plugins", key, d).lower() == "true"
+        return {"glass": on("blurEnabled", "true"), "genie": on("magiclampEnabled", "true"),
+                "zoom": on("scaleEnabled", "true"), "wobbly": on("wobblywindowsEnabled", "false")}
+
+    @Slot(str, bool)
+    def setEffect(self, name, on):
+        key = {"glass": "blurEnabled", "genie": "magiclampEnabled", "zoom": "scaleEnabled",
+               "wobbly": "wobblywindowsEnabled"}.get(name)
+        if not key:
+            return
+        kwrite("kwinrc", "Plugins", key, on)
+        if name == "genie":
+            kwrite("kwinrc", "Plugins", "squashEnabled", not on)
+        if name == "zoom":
+            kwrite("kwinrc", "Plugins", "fadeEnabled", not on)
+        kwin_reconfigure()
+        self.changed.emit()
 
     # ------------------------------------------------------------ Accessibility
     @Slot(result="QVariantMap")

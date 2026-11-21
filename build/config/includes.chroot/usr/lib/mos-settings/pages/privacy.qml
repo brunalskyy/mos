@@ -23,7 +23,7 @@ ColumnLayout {
             RowLayout {
                 spacing: 14
                 Image { source: "image://icon/" + modelData.icon; Layout.preferredWidth: 40; Layout.preferredHeight: 40; sourceSize: Qt.size(80, 80) }
-                Label { text: modelData.name; color: Theme.onSurface; font.pixelSize: 17; font.weight: Font.DemiBold; Layout.fillWidth: true }
+                Label { text: modelData.name; color: Theme.textColour; font.pixelSize: 17; font.weight: Font.DemiBold; Layout.fillWidth: true }
             }
             SettingRow { title: "Camera"; MSwitch { checked: modelData.camera; onToggled: function (v) { backend.setAppPermission(modelData.id, "camera", v) } } }
             SettingRow { title: "Microphone"; MSwitch { checked: modelData.microphone; onToggled: function (v) { backend.setAppPermission(modelData.id, "microphone", v) } } }

@@ -1,18 +1,23 @@
-**mOS 1.0 Amber (0.5)**
+**mOS 1.0 Amber (0.6 preview)**
 
-New in 0.5:
-- **Settings, all real mOS**: Wi-Fi, Bluetooth, Display, Sound, Battery, Lock screen, Taskbar, Notifications, Privacy, and General (About, Software update, Storage, Apps, Language, Date & time, Keyboard, Mouse, Users, Accessibility, Reset). No more KDE settings windows.
-- **mOS Account in Settings**: sign in with Google, email or phone and your name and picture show on mOS
-- **Software update**: mOS, system and app updates with progress, speed and time left; checks at login and every 6 hours
-- **Taskbar your way**: Windows, Centred or Dock style, floating, size, position, auto-hide and spacing
-- **Material You everywhere**: mOS Light and mOS Dark colours in every app, tinted by your wallpaper
-- **Liquid glass**: see-through round pop-ups, menus and a floating pill taskbar
-- **Animations**: windows zoom open and closed, genie minimise, app icons bounce while opening, no icon stuck to the cursor
-- **Spotlight**: press Win + Space (⌘ + Space on a Mac) to search apps, files, settings and more
+New in 0.6:
+- **Pixel widgets**: the flower clock (4 petals, 12 · 3 · 6 · 9, two hands) and a battery ring for laptops, in your Material colours
+- **Windows 10 window buttons**: minimise, maximise and close on the right; close goes red. Title bars go dark in dark mode
+- **Themed icons** (Settings → Icon shape): one colour on tinted shapes, like a Pixel, following your wallpaper and light/dark
+- **New squircle** shaped like Samsung One UI
+- **Every app gets your icon shape**: store apps, .deb downloads and apt installs
+- **Auto dark mode**: Light, Dark, Auto (sunset to sunrise) or your own times
+- **Night Shift**: sunset to sunrise or set times, with warmth
+- **Dark mode text fixed**: light text everywhere in dark mode
+- **Setup wizard** the first time you log in after installing: language, Wi-Fi, mOS Account, look, taskbar
+- **Cleaner taskbar**: tidy tray with the notification centre (bell), smaller clock, no show-desktop box
+- **mOS-style pop-ups**: round Material buttons, fields and highlights in notifications, tray pop-ups and the Start menu
+- **No more KDE Wallet** pop-ups
+- **Settings**: Startup apps, Effects (glass, zoom, genie, wobbly) and Appearance
 
 Download all the parts (.7z.001, .7z.002…) into one folder, open the .7z.001 file with 7-Zip (Windows) or Keka (Mac) and extract the .iso.
-The mos-desktop .deb is the mOS update package that Software update installs on installed computers.
+Already on 0.5 and installed? Settings → General → Software update.
 
 How to try it:
-- VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
+- VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI, Accelerate 3D graphics on
 - USB: write the ISO with balenaEtcher, then on a Mac hold Option at startup and pick the EFI Boot drive

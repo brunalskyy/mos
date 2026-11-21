@@ -51,7 +51,7 @@ ColumnLayout {
         MField { id: pw1; Layout.fillWidth: true; placeholderText: "Password"; echoMode: TextInput.Password }
         RowLayout {
             MSwitch { id: admin }
-            Label { text: "Can change settings and install apps (admin)"; color: Theme.onSurface; Layout.fillWidth: true; wrapMode: Text.WordWrap } }
+            Label { text: "Can change settings and install apps (admin)"; color: Theme.textColour; Layout.fillWidth: true; wrapMode: Text.WordWrap } }
         RowLayout {
             Layout.alignment: Qt.AlignRight
             PillButton { text: "Cancel"; outlined: true; onClicked: addSheet.close() }

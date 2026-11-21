@@ -21,7 +21,7 @@ Rectangle {
     Behavior on scale { NumberAnimation { duration: 90 } }
     Label {
         id: lbl; anchors.centerIn: parent; text: b.busy ? "…" : b.text
-        color: b.outlined ? Theme.primary : b.danger ? Theme.surfaceHigh : b.tonal ? Theme.onPrimaryContainer : Theme.onPrimary
+        color: b.outlined ? Theme.primary : b.danger ? Theme.surfaceHigh : b.tonal ? Theme.primaryContainerText : Theme.primaryText
         font.pixelSize: 15; font.weight: Font.DemiBold
     }
     MouseArea { id: ma; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; enabled: b.enabled && !b.busy; onClicked: b.clicked() }
