@@ -1,0 +1,3 @@
+#!/bin/sh
+# mOS Settings
+exec python3 /usr/lib/mos-settings/mos_settings.py "$@"

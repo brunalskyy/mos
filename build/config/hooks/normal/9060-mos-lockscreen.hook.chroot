@@ -1,0 +1,48 @@
+#!/bin/sh
+# mOS lock screen: swap the Plasma lock screen clock for the Pixel-style
+# stacked mOS clock (left side, Material You accent on the minutes).
+#
+# The original file is kept with dpkg-divert, so a Plasma update installs its
+# copy next to ours instead of over it. If our lock screen ever failed to load,
+# Plasma falls back to its built-in one, so you can always unlock.
+set -e
+
+echo "I: mOS lock screen"
+
+DIR=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
+UI="${DIR}/LockScreenUi.qml"
+
+if [ ! -f "${UI}" ]; then
+	echo "E: ${UI} is missing" >&2
+	exit 1
+fi
+
+dpkg-divert --local --rename --divert "${UI}.debian" --add "${UI}"
+cp "${UI}.debian" "${UI}"
+cp /usr/share/mos/lockscreen/MosClock.qml "${DIR}/MosClock.qml"
+
+python3 - "${UI}" <<'PY'
+import re, sys
+path = sys.argv[1]
+s = open(path).read()
+m = re.search(r"\n(\s*)Clock \{\n\s*id: clock\n.*?\n\1\}\n", s, re.S)
+if not m:
+    sys.exit("E: could not find the clock in LockScreenUi.qml")
+ind = m.group(1)
+new = f"""
+{ind}MosClock {{
+{ind}    id: clock
+{ind}    property Item shadow: clockShadow
+{ind}    visible: config.alwaysShowClock
+{ind}    digitSize: Math.round(Math.max(72, Math.min(parent.height * 0.17, 210)))
+{ind}    anchors.left: parent.left
+{ind}    anchors.leftMargin: Math.round(parent.width * 0.07)
+{ind}    anchors.verticalCenter: parent.verticalCenter
+{ind}}}
+"""
+s = s[:m.start()] + new + s[m.end():]
+open(path, "w").write(s)
+print("I: lock screen clock swapped for MosClock")
+PY
+
+grep -q 'MosClock {' "${UI}"

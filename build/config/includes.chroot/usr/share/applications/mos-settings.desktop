@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+GenericName=mOS Settings
+Comment=Wallpaper, colours, icon shape, Wi-Fi and everything else
+Exec=mos-settings
+Icon=systemsettings
+StartupWMClass=mos-settings
+Categories=Settings;System;
+Keywords=settings;preferences;wallpaper;theme;wifi;bluetooth;display;sound;mOS;

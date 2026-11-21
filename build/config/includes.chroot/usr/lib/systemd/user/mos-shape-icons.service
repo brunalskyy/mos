@@ -1,0 +1,7 @@
+[Unit]
+Description=mOS: put new app icons into the mOS icon shape
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mos-shape-icons --user
+Nice=10
