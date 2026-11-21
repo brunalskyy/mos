@@ -62,14 +62,23 @@ jobs:
           ls ./*.iso >/dev/null 2>&1 && sha256sum ./*.iso > SHA256SUMS || echo "No ISO was produced"
           ls -lh
 
-      - name: Check the ISO fits in a GitHub release (under 2 GiB)
+      - name: Prepare release files (GitHub release files must be under 2 GiB)
         run: |
-          size=$(stat -c %s out/*.iso)
+          iso=$(ls out/*.iso)
+          size=$(stat -c %s "${iso}")
           echo "ISO size: ${size} bytes"
-          if [ "${size}" -ge 2147483648 ]; then
-            echo "::error::The ISO is ${size} bytes; GitHub releases only accept files under 2 GiB (2147483648 bytes)."
-            exit 1
+          echo "Non-zero bytes in the last 64 MiB (0 means it is padding):"
+          tail -c 67108864 "${iso}" | tr -d '\000' | wc -c
+          mkdir -p out/release
+          if [ "${size}" -lt 2147483648 ]; then
+            cp "${iso}" out/release/
+          else
+            echo "The ISO is 2 GiB or more, so the release gets a compressed copy (.iso.xz)."
+            xz -T0 -3 -k -c "${iso}" > "out/release/$(basename "${iso}").xz"
           fi
+          cd out/release
+          sha256sum ./* > SHA256SUMS
+          ls -l
 
       - name: Upload the ISO
         if: success()
@@ -94,19 +103,23 @@ jobs:
         if: success() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: v0.1.0-amber-preview
+          TAG: v0.1.1-amber-preview
         run: |
           notes=$(cat <<'NOTES'
-          **mOS 1.0 Amber, 0.1 preview.** The first bootable mOS. This is a preview, not a finished release.
+          **mOS 1.0 Amber, 0.1.1 preview.** The first bootable mOS. This is a preview, not a finished release.
+
+          If the file ends in .iso.xz, extract it first (7-Zip on Windows, or double-click on a Mac). balenaEtcher can flash the .xz directly.
 
           What's in it:
           - mOS name and logo (Settings > About says mOS 1.0 Amber)
+          - mOS icons for Files, Settings, Software, Terminal, Calculator, Clock, Calendar and Photos
+          - mOS installer (Install mOS)
           - mOS boot menu, boot animation and wallpaper
           - GNOME desktop, Chromium, and the app store with Flathub
           - Wi-Fi driver for the MacBook Air (2017)
           - VMware tools
 
-          Not in it yet: the Material 3 theme and mOS icons (0.2), control centre and dock (0.3), lock screen and widgets (0.4), setup wizard (0.5).
+          Not in it yet: the Material 3 theme (0.2), control centre and dock (0.3), lock screen and widgets (0.4), setup wizard (0.5).
 
           How to try it:
           - VMware: new VM, choose this ISO, Linux > Debian 12.x 64-bit, 4 GB RAM, 2 cores, firmware UEFI
@@ -116,12 +129,12 @@ jobs:
           NOTES
           )
           if gh release view "${TAG}" >/dev/null 2>&1; then
-            gh release upload "${TAG}" out/*.iso out/SHA256SUMS --clobber
+            gh release upload "${TAG}" out/release/* --clobber
             gh release edit "${TAG}" --prerelease --notes "${notes}"
           else
-            gh release create "${TAG}" out/*.iso out/SHA256SUMS \
+            gh release create "${TAG}" out/release/* \
               --prerelease \
               --target "${GITHUB_SHA}" \
-              --title "mOS 1.0 Amber (0.1 preview)" \
+              --title "mOS 1.0 Amber (0.1.1 preview)" \
               --notes "${notes}"
           fi

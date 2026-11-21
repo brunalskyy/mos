@@ -6,3 +6,6 @@ picture-options='zoom'
 [org.gnome.desktop.screensaver]
 picture-uri='file:///usr/share/backgrounds/mos/dusk.png'
 picture-options='zoom'
+
+[org.gnome.desktop.interface]
+icon-theme='mOS'

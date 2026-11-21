@@ -1,0 +1,53 @@
+#!/bin/sh
+# Fail the build if any visible Debian branding is left where mOS should be.
+set -e
+
+echo "I: checking mOS branding"
+fail=0
+
+# Boot animation inside the initramfs (what you see while it loads)
+for initrd in /boot/initrd.img-*; do
+	work="$(mktemp -d)"
+	unmkinitramfs "${initrd}" "${work}"
+	conf="$(find "${work}" -path '*etc/plymouth/plymouthd.conf' | head -n 1)"
+	default="$(find "${work}" -name 'default.plymouth' | head -n 1)"
+	echo "I: ${initrd}: plymouthd.conf: $(cat "${conf}" 2>/dev/null | tr '\n' ' ')"
+	if [ -n "${default}" ]; then
+		echo "I: ${initrd}: default.plymouth -> $(readlink "${default}" || echo file)"
+	fi
+	if ! find "${work}" -path '*plymouth/themes/mos/mos.plymouth' | grep -q .; then
+		echo "E: the mOS boot animation is not in ${initrd}" >&2
+		fail=1
+	fi
+	if [ -z "${conf}" ] || ! grep -q '^Theme=mos' "${conf}"; then
+		echo "E: ${initrd} does not select the mOS boot animation" >&2
+		fail=1
+	fi
+	rm -rf "${work}"
+done
+
+# System name
+if ! grep -q '^NAME="mOS"' /usr/lib/os-release; then
+	echo "E: os-release does not say mOS" >&2
+	fail=1
+fi
+
+# Installer
+if ! grep -rqs '^\s*branding:\s*mos' /etc/calamares/settings.conf /usr/share/calamares/settings.conf; then
+	echo "E: Calamares is not using the mOS branding" >&2
+	fail=1
+fi
+if grep -lE '^Exec=.*(calamares|install-debian)' /usr/share/applications/*.desktop 2>/dev/null | xargs -r grep -qE '^Name=.*Debian'; then
+	echo "E: the installer launcher still says Debian" >&2
+	fail=1
+fi
+if grep -lsE '^Exec=.*(calamares|install-debian)' /etc/xdg/autostart/*.desktop | grep -q .; then
+	echo "E: the installer still opens by itself" >&2
+	fail=1
+fi
+
+if [ "${fail}" -ne 0 ]; then
+	echo "E: mOS branding check failed" >&2
+	exit 1
+fi
+echo "I: mOS branding check passed"

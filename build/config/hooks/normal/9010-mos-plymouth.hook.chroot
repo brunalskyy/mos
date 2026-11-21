@@ -1,11 +1,16 @@
 #!/bin/sh
 # mOS boot animation: the mOS logo with the standard spinner frames.
+#
+# Debian picks the boot animation through the "default.plymouth" alternative
+# (desktop-base points it at Debian's theme), so plymouth-set-default-theme on
+# its own is not enough. We set both, rebuild the initramfs, and check it.
 set -e
 
 echo "I: mOS boot animation"
 
-THEME_DIR=/usr/share/plymouth/themes/mos
-SPINNER_DIR=/usr/share/plymouth/themes/spinner
+THEMES=/usr/share/plymouth/themes
+THEME_DIR="${THEMES}/mos"
+SPINNER_DIR="${THEMES}/spinner"
 
 if [ ! -d "${SPINNER_DIR}" ]; then
 	echo "E: ${SPINNER_DIR} is missing; is plymouth-themes installed?" >&2
@@ -19,5 +24,13 @@ for f in "${SPINNER_DIR}"/*.png; do
 	cp -f "${f}" "${THEME_DIR}/${name}"
 done
 
+# 1. The Debian way: the default.plymouth alternative, at a priority above desktop-base's.
+update-alternatives --install "${THEMES}/default.plymouth" default.plymouth "${THEME_DIR}/mos.plymouth" 500
+update-alternatives --set default.plymouth "${THEME_DIR}/mos.plymouth"
+
+# 2. Plymouth's own setting.
+mkdir -p /etc/plymouth
+printf '[Daemon]\nTheme=mos\nShowDelay=0\n' > /etc/plymouth/plymouthd.conf
 plymouth-set-default-theme mos
+
 update-initramfs -u -k all
