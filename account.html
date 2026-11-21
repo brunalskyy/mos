@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mOS Account</title>
+<meta name="description" content="Sign in to your mOS Account, or make one. One account for every mOS computer.">
+<link rel="icon" type="image/svg+xml" href="assets/mos-logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#6D4AFF;--primary-dark:#4A2FD6;--container:#EAE3FF;--on:#22005D;--text:#1B1B21;--muted:#5D5A6B;--line:#E2DFEC;--error:#B3261E;--error-bg:#FDE7E5;--ok:#1E6B3A;--ok-bg:#DFF5E6}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:Inter,system-ui,sans-serif;color:var(--text);background:#FBFAFF;min-height:100vh;display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:
+ radial-gradient(60% 50% at 15% 0%,#EAE3FF 0%,transparent 70%),
+ radial-gradient(50% 45% at 100% 100%,#FFE2C4 0%,transparent 70%),#FBFAFF}
+a{color:var(--primary-dark)}
+header{max-width:1100px;width:100%;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700;font-size:20px;letter-spacing:-.4px}
+.brand img{width:34px;height:34px}
+header nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px 48px}
+.card{width:100%;max-width:420px;background:rgba(255,255,255,.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.9);border-radius:28px;padding:32px 28px;box-shadow:0 1px 2px rgba(30,20,60,.06),0 18px 48px rgba(60,40,120,.12)}
+.top{text-align:center;margin-bottom:22px}
+.top img{width:64px;height:64px}
+h1{font-size:26px;letter-spacing:-.5px;margin:12px 0 6px}
+.sub{color:var(--muted);margin:0;font-size:15px;line-height:1.45}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#F1EEF8;border-radius:999px;padding:4px;margin-bottom:20px}
+.tabs button{border:0;background:transparent;border-radius:999px;padding:10px;font:600 15px Inter,system-ui,sans-serif;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 6px}
+input{width:100%;font:16px Inter,system-ui,sans-serif;padding:13px 14px;border:1px solid #CFCBDC;border-radius:14px;background:#fff;color:var(--text);outline:none}
+input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--container)}
+.btn{width:100%;margin-top:20px;border:0;border-radius:999px;padding:14px;font:600 16px Inter,system-ui,sans-serif;cursor:pointer;background:var(--primary);color:#fff}
+.btn:hover{background:var(--primary-dark)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.ghost{background:#fff;color:var(--text);border:1px solid #CFCBDC;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn.ghost:hover{background:#F6F4FB}
+.btn.text{background:transparent;color:var(--primary-dark);margin-top:8px;padding:8px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:18px 0 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.msg{display:none;margin-top:16px;padding:12px 14px;border-radius:14px;font-size:14px;line-height:1.4}
+.msg.error{display:block;background:var(--error-bg);color:var(--error)}
+.msg.ok{display:block;background:var(--ok-bg);color:var(--ok)}
+.small{font-size:13px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.5}
+.avatar{width:84px;height:84px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;background:linear-gradient(135deg,#FFD36B,#FF9A3C 50%,#E8505B);box-shadow:0 8px 24px rgba(232,80,91,.3);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.rows{margin-top:22px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+.row{display:flex;justify-content:space-between;gap:12px;padding:14px 16px;font-size:15px}
+.row+.row{border-top:1px solid var(--line)}
+.row span:first-child{color:var(--muted)}
+.row span:last-child{font-weight:500;text-align:right;word-break:break-all}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.badge.yes{background:var(--ok-bg);color:var(--ok)}
+.badge.no{background:#FFF1D6;color:#7A4B00}
+[hidden]{display:none !important}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 24px}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+<a class="brand" href="./"><img src="assets/mos-logo.svg" alt="">mOS</a>
+<nav><a href="./">Back to mOS</a></nav>
+</header>
+
+<main>
+<div class="card">
+
+<!-- Signed out -->
+<section id="signedOut" hidden>
+<div class="top">
+<img src="assets/mos-logo.svg" alt="">
+<h1 id="title">Sign in to mOS</h1>
+<p class="sub">One mOS Account for every computer you use.</p>
+</div>
+
+<div class="tabs" role="tablist">
+<button id="tabIn" role="tab" aria-selected="true">Sign in</button>
+<button id="tabUp" role="tab" aria-selected="false">Create account</button>
+</div>
+
+<form id="form" novalidate>
+<div id="nameWrap" hidden>
+<label for="name">Your name</label>
+<input id="name" autocomplete="name" placeholder="e.g. Alex">
+</div>
+<label for="email">Email</label>
+<input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+<label for="password">Password</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="At least 8 characters" required>
+<button class="btn" id="submit" type="submit">Sign in</button>
+<button class="btn text" id="forgot" type="button">Forgot password?</button>
+</form>
+
+<div class="or">or</div>
+<button class="btn ghost" id="google" type="button">
+<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+Continue with Google
+</button>
+<div class="msg" id="msgOut" role="status"></div>
+<p class="small">By continuing you agree to the <a href="privacy.html">mOS privacy notice</a>.</p>
+</section>
+
+<!-- Signed in -->
+<section id="signedIn" hidden>
+<div class="top">
+<div class="avatar" id="avatar"></div>
+<h1 id="hello">Hey!</h1>
+<p class="sub">You're signed in to your mOS Account.</p>
+</div>
+<div class="rows">
+<div class="row"><span>Name</span><span id="infoName"></span></div>
+<div class="row"><span>Email</span><span id="infoEmail"></span></div>
+<div class="row"><span>Email checked</span><span id="infoVerified"></span></div>
+<div class="row"><span>Member since</span><span id="infoSince"></span></div>
+</div>
+<label for="newName">Change your name</label>
+<input id="newName" autocomplete="name">
+<button class="btn" id="saveName" type="button">Save name</button>
+<button class="btn ghost" id="verify" type="button" hidden>Send me a check email</button>
+<button class="btn text" id="signOut" type="button">Sign out</button>
+<div class="msg" id="msgIn" role="status"></div>
+</section>
+
+<!-- Loading -->
+<section id="loading" class="top"><img src="assets/mos-logo.svg" alt=""><p class="sub">Loading…</p></section>
+
+</div>
+</main>
+
+<footer>mOS by Bruno Woznicki · <a href="privacy.html">Privacy</a></footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  sendPasswordResetEmail, sendEmailVerification, updateProfile, signOut,
+  GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+// mOS Account (Firebase project "mos-data"). This config is public by design.
+const firebaseConfig = {
+  apiKey: "AIzaSyB2_U65oZbMrrhRC0D5ZcBunF2P3IQVZNQ",
+  authDomain: "mos-data.firebaseapp.com",
+  projectId: "mos-data",
+  storageBucket: "mos-data.firebasestorage.app",
+  messagingSenderId: "16708622190",
+  appId: "1:16708622190:web:6eaa46fd18c2731450537f"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = "en-GB";
+
+const $ = (id) => document.getElementById(id);
+let mode = "in"; // "in" or "up"
+
+const friendly = {
+  "auth/invalid-email": "That email doesn't look right.",
+  "auth/missing-password": "Type a password.",
+  "auth/weak-password": "Pick a longer password (8+ characters).",
+  "auth/email-already-in-use": "There's already an mOS Account with that email. Try signing in.",
+  "auth/invalid-credential": "Wrong email or password.",
+  "auth/wrong-password": "Wrong email or password.",
+  "auth/user-not-found": "Wrong email or password.",
+  "auth/too-many-requests": "Too many tries. Wait a minute and try again.",
+  "auth/popup-closed-by-user": "The Google window was closed before signing in.",
+  "auth/popup-blocked": "Your browser blocked the Google window. Allow pop-ups and try again.",
+  "auth/operation-not-allowed": "This sign-in option isn't switched on yet.",
+  "auth/unauthorized-domain": "This website isn't allowed to sign in yet.",
+  "auth/network-request-failed": "No internet connection. Check your Wi-Fi."
+};
+const say = (box, text, kind = "error") => { box.className = "msg " + kind; box.textContent = text; };
+const clear = (box) => { box.className = "msg"; box.textContent = ""; };
+const errText = (e) => friendly[e.code] || "Something went wrong. Try again.";
+
+function setMode(next) {
+  mode = next;
+  const up = mode === "up";
+  $("tabIn").setAttribute("aria-selected", String(!up));
+  $("tabUp").setAttribute("aria-selected", String(up));
+  $("nameWrap").hidden = !up;
+  $("forgot").hidden = up;
+  $("title").textContent = up ? "Create your mOS Account" : "Sign in to mOS";
+  $("submit").textContent = up ? "Create account" : "Sign in";
+  $("password").autocomplete = up ? "new-password" : "current-password";
+  clear($("msgOut"));
+}
+$("tabIn").onclick = () => setMode("in");
+$("tabUp").onclick = () => setMode("up");
+if (location.hash === "#create") setMode("up");
+
+$("form").onsubmit = async (ev) => {
+  ev.preventDefault();
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const btn = $("submit");
+  clear($("msgOut"));
+  if (mode === "up" && password.length < 8) return say($("msgOut"), "Pick a longer password (8+ characters).");
+  btn.disabled = true;
+  try {
+    if (mode === "up") {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const name = $("name").value.trim();
+      if (name) await updateProfile(cred.user, { displayName: name });
+      await sendEmailVerification(cred.user).catch(() => {});
+      render(auth.currentUser);
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  } catch (e) {
+    say($("msgOut"), errText(e));
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+$("forgot").onclick = async () => {
+  const email = $("email").value.trim();
+  if (!email) return say($("msgOut"), "Type your email first, then tap Forgot password.");
+  try {
+    await sendPasswordResetEmail(auth, email);
+    say($("msgOut"), "If there's an mOS Account for " + email + ", a reset link is on its way.", "ok");
+  } catch (e) { say($("msgOut"), errText(e)); }
+};
+
+$("google").onclick = async () => {
+  clear($("msgOut"));
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch (e) { say($("msgOut"), errText(e)); }
+};
+
+$("saveName").onclick = async () => {
+  const name = $("newName").value.trim();
+  if (!name) return say($("msgIn"), "Type a name first.");
+  try {
+    await updateProfile(auth.currentUser, { displayName: name });
+    render(auth.currentUser);
+    say($("msgIn"), "Name saved.", "ok");
+  } catch (e) { say($("msgIn"), errText(e)); }
+};
+
+$("verify").onclick = async () => {
+  try {
+    await sendEmailVerification(auth.currentUser);
+    say($("msgIn"), "Check email sent to " + auth.currentUser.email + ".", "ok");
+  } catch (e) { say($("msgIn"), errText(e)); }
+};
+
+$("signOut").onclick = () => signOut(auth);
+
+function render(user) {
+  $("loading").hidden = true;
+  $("signedOut").hidden = !!user;
+  $("signedIn").hidden = !user;
+  if (!user) return;
+  const name = user.displayName || user.email.split("@")[0];
+  $("hello").textContent = "Hey " + name + "!";
+  const av = $("avatar");
+  av.textContent = "";
+  if (user.photoURL) {
+    const img = document.createElement("img");
+    img.src = user.photoURL; img.alt = ""; img.referrerPolicy = "no-referrer";
+    av.appendChild(img);
+  } else {
+    av.textContent = name.charAt(0).toUpperCase();
+  }
+  $("infoName").textContent = user.displayName || "Not set";
+  $("infoEmail").textContent = user.email;
+  $("infoVerified").innerHTML = user.emailVerified
+    ? '<span class="badge yes">Yes</span>' : '<span class="badge no">Not yet</span>';
+  $("verify").hidden = user.emailVerified;
+  const since = user.metadata.creationTime ? new Date(user.metadata.creationTime) : null;
+  $("infoSince").textContent = since ? since.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : "";
+  $("newName").value = user.displayName || "";
+}
+
+onAuthStateChanged(auth, render);
+</script>
+</body>
+</html>
