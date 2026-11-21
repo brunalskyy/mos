@@ -15,6 +15,7 @@ HorizontalAlignment=.5
 VerticalAlignment=.72
 WatermarkHorizontalAlignment=.5
 WatermarkVerticalAlignment=.45
+UseFirmwareBackground=false
 Transition=none
 TransitionDuration=0.0
 BackgroundStartColor=0x0e0b1f

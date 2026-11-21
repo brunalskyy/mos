@@ -1,7 +1,7 @@
 // mOS default desktop layout (KDE Plasma 6)
 // Windows 10-style taskbar along the bottom: mOS Start button, pinned and open apps,
 // system tray, time with the date underneath, and a show-desktop corner.
-// Desktop: icons on the desktop, the mOS wallpaper, and widgets (clock, calendar, notes).
+// Desktop: the Amber wallpaper (mOS logo top left), icons on the right, widgets on the left.
 
 var wallpaper = "file:///usr/share/wallpapers/mOS/contents/images/2880x1800.png";
 
@@ -13,18 +13,17 @@ for (var j = 0; j < desktopsArray.length; j++) {
     desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
     desktop.writeConfig("Image", wallpaper);
 
-    var width = 1280;
-    try {
-        width = screenGeometry(desktop.screen).width;
-    } catch (e) {
-        // keep the default width
-    }
-    var unit = gridUnit;
-    var column = width - unit * 20;
+    // Desktop icons line up on the right, so the mOS logo on the wallpaper (top left) stays clear.
+    desktop.currentConfigGroup = ["General"];
+    desktop.writeConfig("alignment", 1);
+    desktop.writeConfig("arrangement", 1);
 
-    var clock = desktop.addWidget("org.kde.plasma.analogclock", column, unit * 2, unit * 10, unit * 10);
-    var calendar = desktop.addWidget("org.kde.plasma.calendar", column - unit * 2, unit * 13, unit * 18, unit * 16);
-    var notes = desktop.addWidget("org.kde.plasma.notes", column - unit * 2, unit * 30, unit * 18, unit * 12);
+    // Widgets down the left side, under the logo.
+    var unit = gridUnit;
+    var left = unit * 2;
+    desktop.addWidget("org.kde.plasma.analogclock", left, unit * 9, unit * 10, unit * 10);
+    desktop.addWidget("org.kde.plasma.calendar", left, unit * 20, unit * 18, unit * 16);
+    desktop.addWidget("org.kde.plasma.notes", left, unit * 37, unit * 18, unit * 12);
 }
 
 // Taskbar

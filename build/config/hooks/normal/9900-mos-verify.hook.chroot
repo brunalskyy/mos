@@ -23,6 +23,21 @@ for initrd in /boot/initrd.img-*; do
 		echo "E: ${initrd} does not select the mOS boot animation" >&2
 		fail=1
 	fi
+	theme="$(find "${work}" -type d -path '*plymouth/themes/mos' | head -n 1)"
+	if [ -n "${theme}" ]; then
+		echo "I: ${initrd}: boot animation files: $(ls "${theme}" | tr '\n' ' ')"
+		if ! cmp -s "${theme}/watermark.png" /usr/share/plymouth/themes/mos/watermark.png; then
+			echo "E: the boot logo in ${initrd} is not the mOS logo" >&2
+			fail=1
+		fi
+		for bad in bgrt-fallback.png header-image.png; do
+			if [ -e "${theme}/${bad}" ]; then
+				echo "E: ${initrd} still has ${bad} (the Debian logo) in the boot animation" >&2
+				fail=1
+			fi
+		done
+	fi
+	echo "I: ${initrd}: plymouth themes: $(ls "$(dirname "${theme:-/nonexistent}")" 2>/dev/null | tr '\n' ' ')"
 	rm -rf "${work}"
 done
 
