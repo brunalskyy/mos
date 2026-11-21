@@ -7,10 +7,10 @@ echo "I: mOS branding"
 # System name shown in Settings > About, hostnamectl and the login screen.
 # ID stays "debian" and VERSION_CODENAME stays "trixie" so Debian tools keep working.
 cat > /usr/lib/os-release <<'EOF'
-PRETTY_NAME="mOS 1.0 Amber (0.1 preview)"
+PRETTY_NAME="mOS 1.0 Amber (0.1.1 preview)"
 NAME="mOS"
 VERSION_ID="1.0"
-VERSION="1.0 Amber (0.1 preview)"
+VERSION="1.0 Amber (0.1.1 preview)"
 VERSION_CODENAME=trixie
 ID=debian
 HOME_URL="https://github.com/brunalskyy/mos"
@@ -21,11 +21,12 @@ EOF
 ln -sf ../usr/lib/os-release /etc/os-release
 
 # Text console and login banners
-printf 'mOS 1.0 Amber (0.1 preview) \\n \\l\n\n' > /etc/issue
-printf 'mOS 1.0 Amber (0.1 preview)\n' > /etc/issue.net
+printf 'mOS 1.0 Amber (0.1.1 preview) \\n \\l\n\n' > /etc/issue
+printf 'mOS 1.0 Amber (0.1.1 preview)\n' > /etc/issue.net
 
 # Logo icon and wallpaper defaults
 if command -v gtk-update-icon-cache >/dev/null 2>&1; then
 	gtk-update-icon-cache -f -q /usr/share/icons/hicolor || true
+	gtk-update-icon-cache -f -q /usr/share/icons/mOS || true
 fi
 glib-compile-schemas /usr/share/glib-2.0/schemas

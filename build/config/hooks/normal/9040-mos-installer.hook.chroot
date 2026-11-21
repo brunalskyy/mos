@@ -1,0 +1,105 @@
+#!/bin/sh
+# mOS installer: rebrand Calamares, rename its launcher, and stop it opening by itself.
+set -e
+
+echo "I: mOS installer branding"
+
+ASSETS=/usr/share/mos/calamares
+
+# Find Debian's Calamares branding (its location differs between versions).
+SRC=""
+for d in /etc/calamares/branding/debian /usr/share/calamares/branding/debian; do
+	if [ -f "${d}/branding.desc" ]; then
+		SRC="${d}"
+		break
+	fi
+done
+if [ -z "${SRC}" ]; then
+	echo "E: Debian's Calamares branding was not found" >&2
+	exit 1
+fi
+DEST="$(dirname "${SRC}")/mos"
+rm -rf "${DEST}"
+cp -a "${SRC}" "${DEST}"
+
+# Our images and slideshow
+rm -f "${DEST}"/*.png "${DEST}"/*.svg "${DEST}"/*.jpg
+cp "${ASSETS}/logo.png" "${ASSETS}/welcome.png" "${ASSETS}/slide1.png" "${DEST}/"
+cat > "${DEST}/show.qml" <<'EOF'
+import QtQuick 2.15
+import calamares.slideshow 1.0
+
+Presentation {
+    id: presentation
+
+    Slide {
+        Image {
+            anchors.fill: parent
+            source: "slide1.png"
+            fillMode: Image.PreserveAspectFit
+        }
+    }
+
+    function onActivate() { }
+    function onLeave() { }
+}
+EOF
+
+# Rewrite branding.desc: our name, links, images and colours. Everything else stays as Debian set it.
+DESC="${DEST}/branding.desc"
+sed -i \
+	-e 's/^\(\s*componentName:\).*/\1 mos/' \
+	-e 's/^\(\s*productName:\).*/\1 mOS/' \
+	-e 's/^\(\s*shortProductName:\).*/\1 mOS/' \
+	-e 's/^\(\s*version:\).*/\1 1.0 Amber (0.1.1 preview)/' \
+	-e 's/^\(\s*shortVersion:\).*/\1 1.0/' \
+	-e 's/^\(\s*versionedName:\).*/\1 mOS 1.0 Amber/' \
+	-e 's/^\(\s*shortVersionedName:\).*/\1 mOS 1.0/' \
+	-e 's/^\(\s*bootloaderEntryName:\).*/\1 mOS/' \
+	-e 's|^\(\s*productUrl:\).*|\1 https://github.com/brunalskyy/mos|' \
+	-e 's|^\(\s*supportUrl:\).*|\1 https://github.com/brunalskyy/mos/issues|' \
+	-e 's|^\(\s*knownIssuesUrl:\).*|\1 https://github.com/brunalskyy/mos/issues|' \
+	-e 's|^\(\s*releaseNotesUrl:\).*|\1 https://github.com/brunalskyy/mos/releases|' \
+	-e 's/^\(\s*productLogo:\).*/\1 "logo.png"/' \
+	-e 's/^\(\s*productIcon:\).*/\1 "logo.png"/' \
+	-e 's/^\(\s*productWelcome:\).*/\1 "welcome.png"/' \
+	-e 's/^\(\s*slideshow:\).*/\1 "show.qml"/' \
+	-e 's/^\(\s*slideshowAPI:\).*/\1 2/' \
+	-e 's/^\(\s*SidebarBackground:\).*/\1 "#1C1A26"/' \
+	-e 's/^\(\s*SidebarText:\).*/\1 "#FFFFFF"/' \
+	-e 's/^\(\s*SidebarTextCurrent:\).*/\1 "#21005D"/' \
+	-e 's/^\(\s*SidebarBackgroundCurrent:\).*/\1 "#D0BCFF"/' \
+	-e 's/^\(\s*sidebarBackground:\).*/\1 "#1C1A26"/' \
+	-e 's/^\(\s*sidebarText:\).*/\1 "#FFFFFF"/' \
+	-e 's/^\(\s*sidebarTextSelect:\).*/\1 "#21005D"/' \
+	-e 's/^\(\s*sidebarTextHighlight:\).*/\1 "#D0BCFF"/' \
+	"${DESC}"
+grep -q '^slideshowAPI:' "${DESC}" || printf '\nslideshowAPI: 2\n' >> "${DESC}"
+
+# Point Calamares at the mOS branding
+for conf in /etc/calamares/settings.conf /usr/share/calamares/settings.conf; do
+	[ -f "${conf}" ] && sed -i 's/^\(\s*branding:\).*/\1 mos/' "${conf}"
+done
+
+# Installer launcher: "Install mOS" with the mOS logo
+for f in $(grep -lE '^Exec=.*(calamares|install-debian)' /usr/share/applications/*.desktop 2>/dev/null); do
+	sed -i \
+		-e 's/^Name=.*/Name=Install mOS/' \
+		-e '/^Name\[/d' \
+		-e 's/^GenericName=.*/GenericName=Install mOS/' \
+		-e '/^GenericName\[/d' \
+		-e 's/^Comment=.*/Comment=Install mOS on this computer/' \
+		-e '/^Comment\[/d' \
+		-e 's/^Icon=.*/Icon=mos-logo/' \
+		"${f}"
+	echo "I: launcher ${f}"
+done
+
+# Don't open the installer by itself when the live session starts
+for f in /etc/xdg/autostart/*.desktop /etc/skel/.config/autostart/*.desktop; do
+	[ -f "${f}" ] || continue
+	if grep -qE '^Exec=.*(calamares|install-debian)' "${f}"; then
+		echo "I: removing installer autostart ${f}"
+		rm -f "${f}"
+	fi
+done

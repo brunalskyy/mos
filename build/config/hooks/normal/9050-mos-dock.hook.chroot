@@ -1,0 +1,41 @@
+#!/bin/sh
+# Dock (GNOME favourites): Chromium, Files, Software, Settings, Terminal, Install mOS.
+set -e
+
+echo "I: mOS dock"
+
+pick() {
+	for name in "$@"; do
+		if [ -f "/usr/share/applications/${name}" ]; then
+			printf "'%s'" "${name}"
+			return 0
+		fi
+	done
+	return 1
+}
+
+apps=""
+add() {
+	if entry="$(pick "$@")"; then
+		if [ -z "${apps}" ]; then apps="${entry}"; else apps="${apps}, ${entry}"; fi
+	else
+		echo "W: none of $* found; skipping in the dock"
+	fi
+}
+
+add chromium.desktop
+add org.gnome.Nautilus.desktop
+add org.gnome.Software.desktop
+add org.gnome.Settings.desktop
+add org.gnome.Console.desktop org.gnome.Terminal.desktop
+installer="$(grep -lE '^Exec=.*(calamares|install-debian)' /usr/share/applications/*.desktop 2>/dev/null | head -n 1 || true)"
+if [ -n "${installer}" ]; then
+	add "$(basename "${installer}")"
+fi
+
+cat > /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override <<EOF
+[org.gnome.shell]
+favorite-apps=[${apps}]
+EOF
+cat /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override
+glib-compile-schemas /usr/share/glib-2.0/schemas
