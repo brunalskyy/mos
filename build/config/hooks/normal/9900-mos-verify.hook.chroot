@@ -46,6 +46,19 @@ if grep -lsE '^Exec=.*(calamares|install-debian)' /etc/xdg/autostart/*.desktop |
 	fail=1
 fi
 
+# Dock
+if ! grep -q "dash-to-dock@micxgx.gmail.com" /usr/share/glib-2.0/schemas/91_mos-dock.gschema.override; then
+	echo "E: the mOS dock is not enabled" >&2
+	fail=1
+fi
+dock_fixed="$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell.extensions.dash-to-dock dock-fixed 2>&1 || true)"
+dock_pos="$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell.extensions.dash-to-dock dock-position 2>&1 || true)"
+echo "I: dock-fixed=${dock_fixed} dock-position=${dock_pos}"
+if [ "${dock_fixed}" != "true" ] || [ "${dock_pos}" != "'BOTTOM'" ]; then
+	echo "E: the dock defaults did not apply (always visible, at the bottom)" >&2
+	fail=1
+fi
+
 if [ "${fail}" -ne 0 ]; then
 	echo "E: mOS branding check failed" >&2
 	exit 1

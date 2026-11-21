@@ -36,3 +36,6 @@ wireless-tools
 # VMware
 open-vm-tools
 open-vm-tools-desktop
+
+# Dock (always visible, mOS style)
+gnome-shell-extension-dashtodock
