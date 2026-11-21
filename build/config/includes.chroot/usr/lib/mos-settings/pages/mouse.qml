@@ -17,8 +17,8 @@ ColumnLayout {
                 ToneIcon { name: "mouse"; tone: modelData.touchpad ? "#546E7A" : "#455A64"; size: 40 }
                 ColumnLayout {
                     spacing: 0
-                    Label { text: modelData.touchpad ? "Trackpad" : "Mouse"; color: Theme.onSurface; font.pixelSize: 17; font.weight: Font.DemiBold }
-                    Label { text: modelData.name; color: Theme.onSurfaceVariant; font.pixelSize: 13 }
+                    Label { text: modelData.touchpad ? "Trackpad" : "Mouse"; color: Theme.textColour; font.pixelSize: 17; font.weight: Font.DemiBold }
+                    Label { text: modelData.name; color: Theme.textVariant; font.pixelSize: 13 }
                 }
             }
             Hint { text: "Pointer speed" }

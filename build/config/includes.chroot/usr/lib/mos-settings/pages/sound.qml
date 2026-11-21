@@ -22,7 +22,7 @@ ColumnLayout {
             MSlider { Layout.fillWidth: true; from: 0; to: 100; value: page.s.volume
                       onMoved: function (v) { page.dragging = true; backend.setVolume(v) }
                       onReleased: page.dragging = false }
-            Label { text: (page.s.volume || 0) + "%"; color: Theme.onSurfaceVariant; Layout.preferredWidth: 44 }
+            Label { text: (page.s.volume || 0) + "%"; color: Theme.textVariant; Layout.preferredWidth: 44 }
         }
         Divider {}
         Hint { text: "Play sound through" }
@@ -48,7 +48,7 @@ ColumnLayout {
             MSlider { Layout.fillWidth: true; from: 0; to: 100; value: page.s.micVolume
                       onMoved: function (v) { page.dragging = true; backend.setMicVolume(v) }
                       onReleased: page.dragging = false }
-            Label { text: (page.s.micVolume || 0) + "%"; color: Theme.onSurfaceVariant; Layout.preferredWidth: 44 }
+            Label { text: (page.s.micVolume || 0) + "%"; color: Theme.textVariant; Layout.preferredWidth: 44 }
         }
         Repeater {
             model: page.s.inputs || []

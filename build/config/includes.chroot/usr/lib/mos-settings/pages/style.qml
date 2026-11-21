@@ -36,16 +36,34 @@ ColumnLayout {
                         }
                         MouseArea { id: wpMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: backend.setWallpaper(modelData.image) }
                     }
-                    Label { text: modelData.name; color: Theme.onSurfaceVariant; font.pixelSize: 13; Layout.alignment: Qt.AlignHCenter }
+                    Label { text: modelData.name; color: Theme.textVariant; font.pixelSize: 13; Layout.alignment: Qt.AlignHCenter }
                 }
             }
         }
     }
     Card {
-        SettingRow {
-            title: "Dark mode"
-            sub: "Dark backgrounds in mOS and your apps"
-            MSwitch { checked: backend.dark; onToggled: function (v) { backend.setDark(v) } }
+        SectionTitle { text: "Appearance"; Layout.topMargin: 0 }
+        Segmented {
+            Layout.fillWidth: true
+            options: [{ value: "light", label: "Light" }, { value: "dark", label: "Dark" },
+                      { value: "auto", label: "Auto" }, { value: "custom", label: "Schedule" }]
+            current: backend.themeMode.mode
+            onSelected: function (v) { backend.setThemeMode({ mode: v }) }
+        }
+        Hint {
+            text: backend.themeMode.mode === "auto" ? "Dark from sunset (" + backend.themeMode.sunset + ") to sunrise (" + backend.themeMode.sunrise + ")."
+                : backend.themeMode.mode === "custom" ? "Dark between the times you pick."
+                : backend.themeMode.mode === "dark" ? "Dark backgrounds with light text everywhere." : "Light backgrounds everywhere."
+        }
+        RowLayout {
+            visible: backend.themeMode.mode === "custom"
+            spacing: 10
+            Label { text: "Dark from"; color: Theme.textColour }
+            MField { implicitWidth: 100; text: backend.themeMode.darkAt; inputMask: "99:99"
+                     onEditingFinished: backend.setThemeMode({ darkAt: text }) }
+            Label { text: "until"; color: Theme.textColour }
+            MField { implicitWidth: 100; text: backend.themeMode.lightAt; inputMask: "99:99"
+                     onEditingFinished: backend.setThemeMode({ lightAt: text }) }
         }
         Divider {}
         SettingRow {
@@ -85,6 +103,17 @@ ColumnLayout {
                 }
             }
         }
+    }
+    Card {
+        SectionTitle { text: "Effects"; Layout.topMargin: 0 }
+        SettingRow { title: "Liquid glass"; sub: "See-through frosted taskbar, menus and pop-ups"
+                     MSwitch { checked: backend.effects.glass; onToggled: function (v) { backend.setEffect("glass", v) } } }
+        SettingRow { title: "Zoom windows open and closed"
+                     MSwitch { checked: backend.effects.zoom; onToggled: function (v) { backend.setEffect("zoom", v) } } }
+        SettingRow { title: "Genie when minimising"; sub: "Like a Mac"
+                     MSwitch { checked: backend.effects.genie; onToggled: function (v) { backend.setEffect("genie", v) } } }
+        SettingRow { title: "Wobbly windows"; sub: "Just for fun"
+                     MSwitch { checked: backend.effects.wobbly; onToggled: function (v) { backend.setEffect("wobbly", v) } } }
     }
     Card {
         ListItem { title: "Icon shape"; sub: "Circle, squircle or rounded square"; iconName: "shapes"; tone: "#D9488B"; onClicked: Nav.top("icons") }

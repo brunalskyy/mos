@@ -30,11 +30,11 @@ ColumnLayout {
                 Label {
                     Layout.fillWidth: true; wrapMode: Text.WordWrap
                     text: page.u.state === "available" && page.u.mos && page.u.mos.name ? page.u.mos.name + " is ready" : (page.u.message || "Software update")
-                    color: Theme.onSurface; font.pixelSize: 22; font.weight: Font.DemiBold
+                    color: Theme.textColour; font.pixelSize: 22; font.weight: Font.DemiBold
                 }
                 Label {
                     Layout.fillWidth: true; wrapMode: Text.WordWrap
-                    color: Theme.onSurfaceVariant
+                    color: Theme.textVariant
                     text: page.u.state === "available" ? page.u.count + " update" + (page.u.count === 1 ? "" : "s") + (page.u.downloadSizeText ? " · " + page.u.downloadSizeText : "")
                         : page.working ? (page.u.phase || "")
                         : "mOS " + page.u.current + " · last checked " + page.u.lastChecked
@@ -53,10 +53,10 @@ ColumnLayout {
                             Behavior on width { NumberAnimation { duration: 300 } } }
             }
             RowLayout {
-                Label { text: page.u.progress + "%"; color: Theme.onSurface; font.weight: Font.DemiBold }
-                Label { text: page.u.speed ? "· " + page.u.speed : ""; color: Theme.onSurfaceVariant }
+                Label { text: page.u.progress + "%"; color: Theme.textColour; font.weight: Font.DemiBold }
+                Label { text: page.u.speed ? "· " + page.u.speed : ""; color: Theme.textVariant }
                 Item { Layout.fillWidth: true }
-                Label { text: page.u.eta || ""; color: Theme.onSurfaceVariant }
+                Label { text: page.u.eta || ""; color: Theme.textVariant }
             }
         }
 
@@ -74,7 +74,7 @@ ColumnLayout {
         SectionTitle { text: "What's new"; Layout.topMargin: 0; visible: !!(page.u.mos && page.u.mos.name) }
         Repeater {
             model: page.u.mos && page.u.mos.notes ? page.u.mos.notes : []
-            delegate: Label { required property string modelData; text: "•  " + modelData; color: Theme.onSurface; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+            delegate: Label { required property string modelData; text: "•  " + modelData; color: Theme.textColour; wrapMode: Text.WordWrap; Layout.fillWidth: true }
         }
         ListItem { visible: (page.u.system || []).length > 0; title: "System updates"; sub: (page.u.system || []).length + " packages, incl. security fixes"; iconName: "shield"; tone: "#3949AB"; chevron: false }
         ListItem { visible: (page.u.apps || []).length > 0; title: "App updates"; sub: (page.u.apps || []).map(function (a) { return a.name }).slice(0, 4).join(", "); iconName: "apps"; tone: "#F4511E"; chevron: false }
@@ -112,8 +112,8 @@ ColumnLayout {
             delegate: RowLayout {
                 required property var modelData
                 Layout.fillWidth: true
-                Label { text: modelData.what; color: Theme.onSurface; Layout.fillWidth: true; elide: Text.ElideRight }
-                Label { text: modelData.when; color: Theme.onSurfaceVariant }
+                Label { text: modelData.what; color: Theme.textColour; Layout.fillWidth: true; elide: Text.ElideRight }
+                Label { text: modelData.when; color: Theme.textVariant }
             }
         }
     }

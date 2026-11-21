@@ -20,7 +20,7 @@ Item {
         width: d; height: d; radius: d / 2
         anchors.verticalCenter: parent.verticalCenter
         x: sw.checked ? parent.width - d - 4 : (ma.pressed ? 2 : 8)
-        color: sw.checked ? Theme.onPrimary : Theme.onSurfaceVariant
+        color: sw.checked ? Theme.primaryText : Theme.textVariant
         Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutBack; easing.overshoot: 1.6 } }
         Behavior on width { NumberAnimation { duration: 140 } }
         Behavior on height { NumberAnimation { duration: 140 } }

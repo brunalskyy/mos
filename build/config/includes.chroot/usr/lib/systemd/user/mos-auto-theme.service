@@ -1,0 +1,6 @@
+[Unit]
+Description=mOS: automatic dark mode
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mos-auto-theme

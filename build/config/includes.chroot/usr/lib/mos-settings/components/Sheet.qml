@@ -22,7 +22,7 @@ Popup {
     background: Rectangle { radius: 28; color: Theme.surfaceHigh }
     contentItem: ColumnLayout {
         spacing: 16
-        Label { text: sheet.title; color: Theme.onSurface; font.pixelSize: 22; font.weight: Font.DemiBold; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+        Label { text: sheet.title; color: Theme.textColour; font.pixelSize: 22; font.weight: Font.DemiBold; Layout.fillWidth: true; wrapMode: Text.WordWrap }
         ColumnLayout { id: body; spacing: 14; Layout.fillWidth: true }
     }
 }

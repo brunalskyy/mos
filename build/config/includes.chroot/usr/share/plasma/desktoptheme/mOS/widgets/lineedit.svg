@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="184" height="140" viewBox="0 0 184 140"><defs><style type="text/css" id="current-color-scheme">.ColorScheme-Text{color:#232629;}.ColorScheme-Background{color:#eff0f1;}.ColorScheme-Highlight{color:#3daee9;}.ColorScheme-ButtonBackground{color:#fcfcfc;}.ColorScheme-ViewBackground{color:#ffffff;}</style></defs><g id="base-topleft"><path d="M0 14 A14 14 0 0 1 14 0 L14 14 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-topright"><path d="M34 0 A14 14 0 0 1 48 14 L34 14 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-bottomright"><path d="M48 34 A14 14 0 0 1 34 48 L34 34 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-bottomleft"><path d="M14 48 A14 14 0 0 1 0 34 L14 34 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-top"><path d="M14 0 h20 v14 h-20 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-bottom"><path d="M14 34 h20 v14 h-20 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-left"><path d="M0 14 h14 v20 h-14 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-right"><path d="M34 14 h14 v20 h-14 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<g id="base-center"><path d="M14 14 h20 v20 h-20 Z" class="ColorScheme-Text" fill="currentColor" fill-opacity="0.07"/></g>
+<rect id="base-hint-left-margin" x="0" y="52" width="14" height="2" fill="none"/><rect id="base-hint-right-margin" x="0" y="56" width="14" height="2" fill="none"/><rect id="base-hint-top-margin" x="0" y="60" width="2" height="6" fill="none"/><rect id="base-hint-bottom-margin" x="0" y="82" width="2" height="6" fill="none"/>
+<g id="hover-topleft"><path d="M58 14 A14 14 0 0 1 72 0 L72 14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-topright"><path d="M92 0 A14 14 0 0 1 106 14 L92 14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-bottomright"><path d="M106 34 A14 14 0 0 1 92 48 L92 34 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-bottomleft"><path d="M72 48 A14 14 0 0 1 58 34 L72 34 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-top"><path d="M72 0 h20 v14 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-bottom"><path d="M72 34 h20 v14 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-left"><path d="M58 14 h14 v20 h-14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-right"><path d="M92 14 h14 v20 h-14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<g id="hover-center"><path d="M72 14 h20 v20 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.08"/></g>
+<rect id="hover-hint-left-margin" x="58" y="52" width="14" height="2" fill="none"/><rect id="hover-hint-right-margin" x="58" y="56" width="14" height="2" fill="none"/><rect id="hover-hint-top-margin" x="58" y="60" width="2" height="6" fill="none"/><rect id="hover-hint-bottom-margin" x="58" y="82" width="2" height="6" fill="none"/>
+<g id="focus-topleft"><path d="M116 14 A14 14 0 0 1 130 0 L130 14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-topright"><path d="M150 0 A14 14 0 0 1 164 14 L150 14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-bottomright"><path d="M164 34 A14 14 0 0 1 150 48 L150 34 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-bottomleft"><path d="M130 48 A14 14 0 0 1 116 34 L130 34 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-top"><path d="M130 0 h20 v14 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-bottom"><path d="M130 34 h20 v14 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-left"><path d="M116 14 h14 v20 h-14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-right"><path d="M150 14 h14 v20 h-14 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<g id="focus-center"><path d="M130 14 h20 v20 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.16"/></g>
+<rect id="focus-hint-left-margin" x="116" y="52" width="14" height="2" fill="none"/><rect id="focus-hint-right-margin" x="116" y="56" width="14" height="2" fill="none"/><rect id="focus-hint-top-margin" x="116" y="60" width="2" height="6" fill="none"/><rect id="focus-hint-bottom-margin" x="116" y="82" width="2" height="6" fill="none"/></svg>

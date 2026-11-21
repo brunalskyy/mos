@@ -71,7 +71,7 @@ ColumnLayout {
         MField { id: pass; Layout.fillWidth: true; placeholderText: "Password"; echoMode: show.checked ? TextInput.Normal : TextInput.Password; onAccepted: go.clicked() }
         RowLayout {
             MSwitch { id: show }
-            Label { text: "Show password"; color: Theme.onSurface } }
+            Label { text: "Show password"; color: Theme.textColour } }
         RowLayout {
             Layout.alignment: Qt.AlignRight
             PillButton { text: "Cancel"; outlined: true; onClicked: pw.close() }

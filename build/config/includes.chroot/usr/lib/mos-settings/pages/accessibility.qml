@@ -16,7 +16,7 @@ ColumnLayout {
             current: page.a.textSize
             onSelected: function (v) { backend.setTextSize(v) }
         }
-        Label { text: "The quick brown fox jumps over the lazy dog"; color: Theme.onSurfaceVariant; font.pointSize: page.a.textSize; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+        Label { text: "The quick brown fox jumps over the lazy dog"; color: Theme.textVariant; font.pointSize: page.a.textSize; Layout.fillWidth: true; wrapMode: Text.WordWrap }
     }
     Card {
         SettingRow {

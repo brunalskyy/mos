@@ -16,8 +16,8 @@ ColumnLayout {
 
     Card {
         pad: 24
-        Label { text: Qt.formatTime(page.now, page.d.h24 ? "HH:mm" : "h:mm AP"); color: Theme.onSurface; font.pixelSize: 44; font.weight: Font.DemiBold }
-        Label { text: Qt.formatDate(page.now, "dddd d MMMM yyyy"); color: Theme.onSurfaceVariant; font.pixelSize: 16 }
+        Label { text: Qt.formatTime(page.now, page.d.h24 ? "HH:mm" : "h:mm AP"); color: Theme.textColour; font.pixelSize: 44; font.weight: Font.DemiBold }
+        Label { text: Qt.formatDate(page.now, "dddd d MMMM yyyy"); color: Theme.textVariant; font.pixelSize: 16 }
     }
     Card {
         SettingRow {

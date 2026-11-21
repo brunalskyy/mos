@@ -14,9 +14,9 @@ ColumnLayout {
             Image { source: "file:///usr/share/icons/hicolor/256x256/apps/mos-logo.png"; Layout.preferredWidth: 96; Layout.preferredHeight: 96; sourceSize: Qt.size(192, 192) }
             ColumnLayout {
                 spacing: 4
-                Label { text: "mOS"; color: Theme.onSurface; font.pixelSize: 32; font.weight: Font.Bold }
-                Label { text: page.a.version || "mOS"; color: Theme.onSurfaceVariant; font.pixelSize: 15 }
-                Label { text: "Made by Bruno Woznicki"; color: Theme.onSurfaceVariant; font.pixelSize: 13 }
+                Label { text: "mOS"; color: Theme.textColour; font.pixelSize: 32; font.weight: Font.Bold }
+                Label { text: page.a.version || "mOS"; color: Theme.textVariant; font.pixelSize: 15 }
+                Label { text: "Made by Bruno Woznicki"; color: Theme.textVariant; font.pixelSize: 13 }
             }
         }
     }
@@ -38,8 +38,8 @@ ColumnLayout {
                 visible: modelData.v !== "" && modelData.v !== undefined
                 Layout.fillWidth: true
                 Layout.leftMargin: 12; Layout.rightMargin: 12
-                Label { text: modelData.k; color: Theme.onSurfaceVariant; font.pixelSize: 15; Layout.preferredWidth: 150 }
-                Label { text: modelData.v || ""; color: Theme.onSurface; font.pixelSize: 15; font.weight: Font.Medium; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                Label { text: modelData.k; color: Theme.textVariant; font.pixelSize: 15; Layout.preferredWidth: 150 }
+                Label { text: modelData.v || ""; color: Theme.textColour; font.pixelSize: 15; font.weight: Font.Medium; Layout.fillWidth: true; wrapMode: Text.WordWrap }
             }
         }
     }

@@ -23,8 +23,8 @@ LayoutName=org.kde.breeze.desktop
 [kwinrc][org.kde.kdecoration2]
 library=org.kde.kwin.aurorae
 theme=__aurorae__svg__mOS
-ButtonsOnLeft=XIA
-ButtonsOnRight=
+ButtonsOnLeft=
+ButtonsOnRight=IAX
 
 [ksplashrc][KSplash]
 Engine=none

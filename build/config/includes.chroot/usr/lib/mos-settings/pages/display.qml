@@ -35,7 +35,7 @@ ColumnLayout {
                     currentIndex: { for (var i = 0; i < modelData.modes.length; i++) if (modelData.modes[i].label === modelData.current) return i; return 0 }
                     onActivated: function (i) { backend.setResolution(modelData.name, modelData.modes[i].id) }
                     background: Rectangle { radius: 22; color: Theme.surfaceContainer; border.width: 1; border.color: Theme.outline }
-                    contentItem: Label { leftPadding: 16; text: res.displayText; color: Theme.onSurface; verticalAlignment: Text.AlignVCenter }
+                    contentItem: Label { leftPadding: 16; text: res.displayText; color: Theme.textColour; verticalAlignment: Text.AlignVCenter }
                 }
             }
             Divider {}
@@ -55,16 +55,35 @@ ColumnLayout {
 
     Card {
         SettingRow {
-            title: "Night Light"
-            sub: "Warmer colours after sunset, easier on your eyes"
+            title: "Night Shift"
+            sub: "Warmer colours in the evening, easier on your eyes"
             MSwitch { checked: page.d.nightLight; onToggled: function (v) { backend.setNightLight(v) } }
         }
         ColumnLayout {
             visible: page.d.nightLight
             Layout.fillWidth: true
+            spacing: 12
+            Hint { text: "When" }
+            Segmented {
+                Layout.fillWidth: true
+                options: [{ value: "sun", label: "Sunset to sunrise" }, { value: "times", label: "Set times" }]
+                current: page.d.nightMode
+                onSelected: function (v) { backend.setNightSchedule(v, page.d.nightEvening, page.d.nightMorning) }
+            }
+            RowLayout {
+                visible: page.d.nightMode === "times"
+                spacing: 10
+                Label { text: "From"; color: Theme.textColour }
+                MField { implicitWidth: 100; text: page.d.nightEvening; inputMask: "99:99"
+                         onEditingFinished: backend.setNightSchedule("times", text, page.d.nightMorning) }
+                Label { text: "to"; color: Theme.textColour }
+                MField { implicitWidth: 100; text: page.d.nightMorning; inputMask: "99:99"
+                         onEditingFinished: backend.setNightSchedule("times", page.d.nightEvening, text) }
+            }
             Hint { text: "Warmth" }
             MSlider { Layout.fillWidth: true; from: 6500; to: 2500; step: 100; value: page.d.nightLightTemp
                       onReleased: function (v) { backend.setNightLightTemp(v) } }
         }
     }
+    Connections { target: backend; function onChanged() { page.d = backend.display() } }
 }

@@ -1,6 +1,6 @@
 // mOS default desktop layout (KDE Plasma 6)
 // Floating pill taskbar along the bottom (Windows 10 layout, iOS 27 shape): mOS Start button, pinned and open apps,
-// system tray, time with the date underneath, and a show-desktop corner.
+// tidy system tray (with the notification bell) and a small clock with the date.
 // Desktop: the Amber wallpaper (mOS logo top left), icons on the right, widgets on the left.
 
 var wallpaper = "file:///usr/share/wallpapers/mOS/contents/images/2880x1800.png";
@@ -18,12 +18,41 @@ for (var j = 0; j < desktopsArray.length; j++) {
     desktop.writeConfig("alignment", 1);
     desktop.writeConfig("arrangement", 1);
 
-    // Widgets down the left side, under the logo.
+    // Pixel-style widgets down the left side, under the logo: the flower clock and the battery ring
+    // (the battery one stays hidden on computers without a battery)
     var unit = gridUnit;
     var left = unit * 2;
-    desktop.addWidget("org.kde.plasma.analogclock", left, unit * 9, unit * 10, unit * 10);
-    desktop.addWidget("org.kde.plasma.calendar", left, unit * 20, unit * 18, unit * 16);
-    desktop.addWidget("org.kde.plasma.notes", left, unit * 37, unit * 18, unit * 12);
+    desktop.addWidget("org.mos.clock", left, unit * 8, unit * 12, unit * 12);
+    desktop.addWidget("org.mos.battery", left + unit * 2, unit * 21, unit * 8, unit * 8);
+}
+
+
+// Tidy system tray: Wi-Fi, sound, battery and the notification centre (bell) always show;
+// the rest go in the ^ menu
+function mosTidyTray(tray) {
+    var id = tray.readConfig("SystrayContainmentId");
+    var inner = id ? desktopById(id) : null;
+    if (!inner) {
+        return;
+    }
+    inner.currentConfigGroup = ["General"];
+    inner.writeConfig("shownItems", ["org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
+                                     "org.kde.plasma.volume", "org.kde.plasma.battery"]);
+    inner.writeConfig("hiddenItems", ["org.kde.plasma.clipboard", "org.kde.kscreen", "org.kde.plasma.keyboardindicator",
+                                      "org.kde.plasma.keyboardlayout", "org.kde.plasma.manage-inputmethod",
+                                      "org.kde.plasma.printmanager", "org.kde.plasma.vault", "org.kde.kdeconnect",
+                                      "org.kde.plasma.cameraindicator", "org.kde.plasma.brightness",
+                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth"]);
+}
+
+// Smaller clock: time with the date in small text underneath
+function mosClock(clock, small) {
+    clock.currentConfigGroup = ["Appearance"];
+    clock.writeConfig("showDate", "true");
+    clock.writeConfig("dateDisplayFormat", small ? "BesideTime" : "BelowTime");
+    clock.writeConfig("dateFormat", "shortDate");
+    clock.writeConfig("autoFontAndSize", "false");
+    clock.writeConfig("fontSize", "9");
 }
 
 // Taskbar
@@ -47,8 +76,7 @@ tasks.writeConfig("launchers", [
     "applications:org.kde.dolphin.desktop",
     "applications:org.kde.discover.desktop",
     "applications:mos-settings.desktop",
-    "applications:org.kde.konsole.desktop",
-    "applications:calamares-install-debian.desktop"
+    "applications:org.kde.konsole.desktop"
 ]);
 tasks.writeConfig("showOnlyCurrentDesktop", "false");
 tasks.writeConfig("indicateAudioStreams", "true");
@@ -56,13 +84,9 @@ tasks.writeConfig("fill", "false");
 // Spread the apps out a bit
 tasks.writeConfig("iconSpacing", "2");
 
-taskbar.addWidget("org.kde.plasma.marginsseparator");
-taskbar.addWidget("org.kde.plasma.systemtray");
+taskbar.addWidget("org.kde.plasma.panelspacer");
+var tray = taskbar.addWidget("org.kde.plasma.systemtray");
+mosTidyTray(tray);
 
 var time = taskbar.addWidget("org.kde.plasma.digitalclock");
-time.currentConfigGroup = ["Appearance"];
-time.writeConfig("showDate", "true");
-time.writeConfig("dateDisplayFormat", "BelowTime");
-time.writeConfig("dateFormat", "shortDate");
-
-taskbar.addWidget("org.kde.plasma.showdesktop");
+mosClock(time, false);

@@ -1,8 +1,8 @@
 [org.kde.kdecoration2]
 library=org.kde.kwin.aurorae
 theme=__aurorae__svg__mOS
-ButtonsOnLeft=XIA
-ButtonsOnRight=
+ButtonsOnLeft=
+ButtonsOnRight=IAX
 
 [Plugins]
 blurEnabled=true

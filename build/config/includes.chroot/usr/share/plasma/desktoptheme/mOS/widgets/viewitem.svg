@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="226" height="140" viewBox="0 0 226 140"><defs><style type="text/css" id="current-color-scheme">.ColorScheme-Text{color:#232629;}.ColorScheme-Background{color:#eff0f1;}.ColorScheme-Highlight{color:#3daee9;}.ColorScheme-ButtonBackground{color:#fcfcfc;}.ColorScheme-ViewBackground{color:#ffffff;}</style></defs><g id="normal-topleft"><path d="M0 12 A12 12 0 0 1 12 0 L12 12 Z" fill="none"/></g>
+<g id="normal-topright"><path d="M32 0 A12 12 0 0 1 44 12 L32 12 Z" fill="none"/></g>
+<g id="normal-bottomright"><path d="M44 32 A12 12 0 0 1 32 44 L32 32 Z" fill="none"/></g>
+<g id="normal-bottomleft"><path d="M12 44 A12 12 0 0 1 0 32 L12 32 Z" fill="none"/></g>
+<g id="normal-top"><path d="M12 0 h20 v12 h-20 Z" fill="none"/></g>
+<g id="normal-bottom"><path d="M12 32 h20 v12 h-20 Z" fill="none"/></g>
+<g id="normal-left"><path d="M0 12 h12 v20 h-12 Z" fill="none"/></g>
+<g id="normal-right"><path d="M32 12 h12 v20 h-12 Z" fill="none"/></g>
+<g id="normal-center"><path d="M12 12 h20 v20 h-20 Z" fill="none"/></g>
+<rect id="normal-hint-left-margin" x="0" y="48" width="8" height="2" fill="none"/><rect id="normal-hint-right-margin" x="0" y="52" width="8" height="2" fill="none"/><rect id="normal-hint-top-margin" x="0" y="56" width="2" height="4" fill="none"/><rect id="normal-hint-bottom-margin" x="0" y="78" width="2" height="4" fill="none"/>
+<g id="hover-topleft"><path d="M54 12 A12 12 0 0 1 66 0 L66 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-topright"><path d="M86 0 A12 12 0 0 1 98 12 L86 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-bottomright"><path d="M98 32 A12 12 0 0 1 86 44 L86 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-bottomleft"><path d="M66 44 A12 12 0 0 1 54 32 L66 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-top"><path d="M66 0 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-bottom"><path d="M66 32 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-left"><path d="M54 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-right"><path d="M86 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<g id="hover-center"><path d="M66 12 h20 v20 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.14"/></g>
+<rect id="hover-hint-left-margin" x="54" y="48" width="8" height="2" fill="none"/><rect id="hover-hint-right-margin" x="54" y="52" width="8" height="2" fill="none"/><rect id="hover-hint-top-margin" x="54" y="56" width="2" height="4" fill="none"/><rect id="hover-hint-bottom-margin" x="54" y="78" width="2" height="4" fill="none"/>
+<g id="selected-topleft"><path d="M108 12 A12 12 0 0 1 120 0 L120 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-topright"><path d="M140 0 A12 12 0 0 1 152 12 L140 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-bottomright"><path d="M152 32 A12 12 0 0 1 140 44 L140 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-bottomleft"><path d="M120 44 A12 12 0 0 1 108 32 L120 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-top"><path d="M120 0 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-bottom"><path d="M120 32 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-left"><path d="M108 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-right"><path d="M140 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<g id="selected-center"><path d="M120 12 h20 v20 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.24"/></g>
+<rect id="selected-hint-left-margin" x="108" y="48" width="8" height="2" fill="none"/><rect id="selected-hint-right-margin" x="108" y="52" width="8" height="2" fill="none"/><rect id="selected-hint-top-margin" x="108" y="56" width="2" height="4" fill="none"/><rect id="selected-hint-bottom-margin" x="108" y="78" width="2" height="4" fill="none"/>
+<g id="selected+hover-topleft"><path d="M162 12 A12 12 0 0 1 174 0 L174 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-topright"><path d="M194 0 A12 12 0 0 1 206 12 L194 12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-bottomright"><path d="M206 32 A12 12 0 0 1 194 44 L194 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-bottomleft"><path d="M174 44 A12 12 0 0 1 162 32 L174 32 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-top"><path d="M174 0 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-bottom"><path d="M174 32 h20 v12 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-left"><path d="M162 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-right"><path d="M194 12 h12 v20 h-12 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<g id="selected+hover-center"><path d="M174 12 h20 v20 h-20 Z" class="ColorScheme-Highlight" fill="currentColor" fill-opacity="0.32"/></g>
+<rect id="selected+hover-hint-left-margin" x="162" y="48" width="8" height="2" fill="none"/><rect id="selected+hover-hint-right-margin" x="162" y="52" width="8" height="2" fill="none"/><rect id="selected+hover-hint-top-margin" x="162" y="56" width="2" height="4" fill="none"/><rect id="selected+hover-hint-bottom-margin" x="162" y="78" width="2" height="4" fill="none"/></svg>

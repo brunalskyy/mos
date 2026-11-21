@@ -1,0 +1,244 @@
+#!/usr/bin/python3
+"""mos-themed-icons: Pixel-style themed icons for mOS.
+
+Every app icon becomes one colour on a tinted tile in your icon shape, using
+the Material You colours from your wallpaper (light or dark). The icons go in
+~/.local/share/icons/mOS-Themed and mOS switches to that icon theme.
+
+  mos-themed-icons            make the icons (and switch to them)
+  mos-themed-icons --off      go back to normal icons
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import configparser
+import glob
+import io
+import math
+import os
+import shutil
+import subprocess
+import sys
+
+from PIL import Image, ImageChops, ImageDraw, ImageOps
+
+HOME = os.path.expanduser("~")
+OUT = os.path.join(HOME, ".local/share/icons/mOS-Themed")
+SIZES = [16, 22, 24, 32, 48, 64, 96, 128, 256]
+SHAPE_THEMES = ("mOS", "mOS-Squircle", "mOS-Rounded")
+GLYPHS = "/usr/share/mos/glyphs"
+# mOS's own apps get hand-drawn Pixel-style symbols
+GLYPH_FOR = {
+    "system-file-manager": "folder", "org.kde.dolphin": "folder", "org.gnome.Nautilus": "folder",
+    "org.gnome.Epiphany": "globe", "org.gnome.Geary": "mail", "org.gnome.Calendar": "calendar",
+    "org.kde.kclock": "clock", "org.gnome.clocks": "clock",
+    "accessories-text-editor": "notes", "org.kde.kwrite": "notes", "org.gnome.TextEditor": "notes",
+    "accessories-calculator": "calculator", "org.kde.kcalc": "calculator", "org.gnome.Calculator": "calculator",
+    "org.gnome.Music": "music", "org.kde.gwenview": "photos", "org.gnome.Loupe": "photos",
+    "plasmadiscover": "bag", "org.kde.discover": "bag", "org.gnome.Software": "bag",
+    "systemsettings": "gear", "preferences-system": "gear", "org.gnome.Settings": "gear",
+    "utilities-terminal": "terminal", "org.kde.konsole": "terminal", "org.gnome.Terminal": "terminal",
+    "org.gnome.Console": "terminal", "mos-logo": "m", "calamares": "installer", "install-debian": "installer",
+}
+
+
+def run(cmd):
+    """Run a helper if it is installed; never fail because of it."""
+    if shutil.which(cmd[0]) or os.path.exists(cmd[0]):
+        subprocess.run(cmd, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def kread(name, group, key, default=""):
+    cp = configparser.ConfigParser(interpolation=None, strict=False, delimiters=("=",))
+    cp.optionxform = str
+    for p in ("/etc/xdg/" + name, os.path.join(HOME, ".config", name)):
+        try:
+            cp.read(p, encoding="utf-8")
+        except (configparser.Error, UnicodeDecodeError):
+            pass
+    try:
+        return cp.get(group, key)
+    except (configparser.Error, KeyError):
+        return default
+
+
+def accent():
+    for key in ("AccentColor", "LastUsedCustomAccentColor"):
+        parts = [p.strip() for p in kread("kdeglobals", "General", key).split(",")]
+        if len(parts) >= 3 and all(p.isdigit() for p in parts[:3]):
+            return tuple(int(x) for x in parts[:3])
+    return (232, 131, 58)
+
+
+def mix(a, b, t):
+    return tuple(round(a[i] + (b[i] - a[i]) * t) for i in range(3))
+
+
+def shape_mask(theme, size):
+    big = size * 4
+    m = Image.new("L", (big, big), 0)
+    d = ImageDraw.Draw(m)
+    if theme == "mOS-Rounded":
+        d.rounded_rectangle((0, 0, big - 1, big - 1), radius=int(big * 28 / 128), fill=255)
+    elif theme == "mOS-Squircle":
+        n, pts = 3.2, []
+        for i in range(720):
+            t = 2 * math.pi * i / 720
+            c, s = math.cos(t), math.sin(t)
+            pts.append((((abs(c) ** (2 / n)) * (1 if c >= 0 else -1) + 1) * (big - 1) / 2,
+                        ((abs(s) ** (2 / n)) * (1 if s >= 0 else -1) + 1) * (big - 1) / 2))
+        d.polygon(pts, fill=255)
+    else:
+        d.ellipse((0, 0, big - 1, big - 1), fill=255)
+    return m.resize((size, size), Image.LANCZOS)
+
+
+def find_icon(name, base_theme):
+    """Best big picture for an icon: the mOS shape theme first, then anything installed."""
+    for root in (os.path.join(HOME, ".local/share/icons", base_theme), os.path.join("/usr/share/icons", base_theme)):
+        p = os.path.join(root, "256x256/apps", name + ".png")
+        if os.path.exists(p):
+            return p, True
+    best, best_size = None, 0
+    for root in ("/usr/share/icons/hicolor", "/usr/share/icons/breeze/apps", "/usr/share/pixmaps",
+                 "/var/lib/flatpak/exports/share/icons/hicolor",
+                 os.path.join(HOME, ".local/share/flatpak/exports/share/icons/hicolor")):
+        for ext in ("svg", "png"):
+            for p in glob.glob(f"{root}/**/{name}.{ext}", recursive=True):
+                if "symbolic" in p:
+                    continue
+                size = 10000 if ext == "svg" else Image.open(p).size[0]
+                if size > best_size:
+                    best, best_size = p, size
+    return best, False
+
+
+def load(path, px):
+    if path.endswith(".svg"):
+        out = subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), "--keep-aspect-ratio", path],
+                             capture_output=True)
+        if out.returncode != 0:
+            return None
+        img = Image.open(io.BytesIO(out.stdout))
+    else:
+        img = Image.open(path)
+    return img.convert("RGBA")
+
+
+def themed(src, is_tile, base_theme, size, tile_rgb, ink_rgb, glyph=None):
+    tile = Image.new("RGBA", (size, size), tile_rgb + (255,))
+    if glyph:
+        svg = open(os.path.join(GLYPHS, glyph + ".svg")).read().replace("white", "#%02x%02x%02x" % ink_rgb)
+        g = int(size * 0.56)
+        out = subprocess.run(["rsvg-convert", "-w", str(g), "-h", str(g)], input=svg.encode(), capture_output=True)
+        if out.returncode == 0:
+            pic = Image.open(io.BytesIO(out.stdout)).convert("RGBA")
+            tile.alpha_composite(pic, ((size - g) // 2, (size - g) // 2))
+    elif is_tile:
+        # An mOS icon: its picture fills the tile, so keep the middle (the symbol)
+        pic = load(src, 256).resize((size, size), Image.LANCZOS)
+        inner = pic.crop((int(size * 0.16), int(size * 0.16), int(size * 0.84), int(size * 0.84)))
+        g = ImageOps.autocontrast(ImageOps.grayscale(inner), cutoff=2)
+        alpha = g.point(lambda v: 255 if v > 150 else int(v * 1.2) if v > 90 else 0)
+        glyph = Image.new("RGBA", inner.size, ink_rgb + (0,))
+        glyph.putalpha(alpha)
+        tile.alpha_composite(glyph.resize((int(size * 0.68), int(size * 0.68)), Image.LANCZOS),
+                             (int(size * 0.16), int(size * 0.16)))
+    else:
+        inner = int(size * 0.6)
+        pic = load(src, inner * 2)
+        if pic is None:
+            return None
+        pic.thumbnail((inner, inner), Image.LANCZOS)
+        a = pic.split()[3]
+        lum = ImageOps.grayscale(pic)
+        # One colour, keeping some detail: darker parts are more solid
+        alpha = ImageChops.multiply(lum.point(lambda v: int(255 - v * 0.45)), a)
+        glyph = Image.new("RGBA", pic.size, ink_rgb + (0,))
+        glyph.putalpha(alpha)
+        tile.alpha_composite(glyph, ((size - pic.size[0]) // 2, (size - pic.size[1]) // 2))
+    tile.putalpha(shape_mask(base_theme, size))
+    return tile
+
+
+def app_icons():
+    names = set(GLYPH_FOR)
+    for d in ("/usr/share/applications", "/var/lib/flatpak/exports/share/applications",
+              os.path.join(HOME, ".local/share/flatpak/exports/share/applications"),
+              os.path.join(HOME, ".local/share/applications")):
+        for f in glob.glob(os.path.join(d, "*.desktop")):
+            cp = configparser.ConfigParser(interpolation=None, strict=False)
+            cp.optionxform = str
+            try:
+                cp.read(f, encoding="utf-8")
+                e = cp["Desktop Entry"]
+            except (configparser.Error, KeyError, UnicodeDecodeError):
+                continue
+            icon = e.get("Icon", "").strip()
+            if icon and not os.path.isabs(icon) and e.get("NoDisplay", "false").lower() != "true":
+                names.add(icon)
+    for t in SHAPE_THEMES[:1]:
+        for p in glob.glob(f"/usr/share/icons/{t}/256x256/apps/*.png"):
+            names.add(os.path.basename(p)[:-4])
+    return sorted(names)
+
+
+def set_theme(name):
+    tool = next(iter(glob.glob("/usr/lib/*/libexec/plasma-changeicons")), None)
+    if tool:
+        run([tool, name])
+    else:
+        run(["kwriteconfig6", "--notify", "--file", "kdeglobals", "--group", "Icons", "--key", "Theme", name])
+
+
+def main():
+    current = kread("kdeglobals", "Icons", "Theme", "mOS")
+    if "--off" in sys.argv:
+        base = current if current in SHAPE_THEMES else kread("kdeglobals", "Icons", "mosShape", "mOS")
+        set_theme(base if base in SHAPE_THEMES else "mOS")
+        shutil.rmtree(OUT, ignore_errors=True)
+        return
+    base = current if current in SHAPE_THEMES else kread("kdeglobals", "Icons", "mosShape", "mOS")
+    if base not in SHAPE_THEMES:
+        base = "mOS"
+    run(["kwriteconfig6", "--file", "kdeglobals", "--group", "Icons", "--key", "mosShape", base])
+    dark = "dark" in kread("kdeglobals", "General", "ColorScheme", "mOSLight").lower()
+    acc = accent()
+    tile_rgb = mix(acc, (29, 27, 32), 0.62) if dark else mix(acc, (255, 255, 255), 0.74)
+    ink_rgb = mix(acc, (255, 255, 255), 0.72) if dark else mix(acc, (0, 0, 0), 0.55)
+
+    tmp = OUT + ".new"
+    shutil.rmtree(tmp, ignore_errors=True)
+    os.makedirs(tmp)
+    dirs = ",".join(f"{s}x{s}/apps" for s in SIZES)
+    with open(os.path.join(tmp, "index.theme"), "w") as f:
+        f.write(f"[Icon Theme]\nName=mOS Themed\nComment=Pixel-style themed icons\nInherits={base},breeze,hicolor\n"
+                f"Directories={dirs}\n\n" + "\n".join(f"[{s}x{s}/apps]\nSize={s}\nContext=Applications\nType=Threshold\n"
+                                                     for s in SIZES))
+    count = 0
+    for name in app_icons():
+        glyph = GLYPH_FOR.get(name)
+        src, is_tile = find_icon(name, base)
+        if not src and not glyph:
+            continue
+        for size in SIZES:
+            img = themed(src, is_tile, base, size, tile_rgb, ink_rgb, glyph)
+            if img is None:
+                break
+            dest = os.path.join(tmp, f"{size}x{size}", "apps", name + ".png")
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            img.save(dest)
+        else:
+            count += 1
+    shutil.rmtree(OUT, ignore_errors=True)
+    os.replace(tmp, OUT)
+    # switch away and back so every app reloads the new colours
+    set_theme(base)
+    set_theme("mOS-Themed")
+    run(["dbus-send", "--session", "--type=signal", "/KIconLoader",
+                    "org.kde.KIconLoader.iconChanged", "int32:0"])
+    print(f"mos-themed-icons: {count} icons in {'dark' if dark else 'light'} colours")
+
+
+if __name__ == "__main__":
+    main()

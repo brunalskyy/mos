@@ -2,6 +2,34 @@
 // Runs inside Plasma (org.kde.PlasmaShell.evaluateScript).
 var opts = __OPTIONS__;
 
+// Tidy system tray: Wi-Fi, sound, battery and the notification centre (bell) always show;
+// the rest go in the ^ menu
+function mosTidyTray(tray) {
+    var id = tray.readConfig("SystrayContainmentId");
+    var inner = id ? desktopById(id) : null;
+    if (!inner) {
+        return;
+    }
+    inner.currentConfigGroup = ["General"];
+    inner.writeConfig("shownItems", ["org.kde.plasma.notifications", "org.kde.plasma.networkmanagement",
+                                     "org.kde.plasma.volume", "org.kde.plasma.battery"]);
+    inner.writeConfig("hiddenItems", ["org.kde.plasma.clipboard", "org.kde.kscreen", "org.kde.plasma.keyboardindicator",
+                                      "org.kde.plasma.keyboardlayout", "org.kde.plasma.manage-inputmethod",
+                                      "org.kde.plasma.printmanager", "org.kde.plasma.vault", "org.kde.kdeconnect",
+                                      "org.kde.plasma.cameraindicator", "org.kde.plasma.brightness",
+                                      "org.kde.plasma.mediacontroller", "org.kde.plasma.bluetooth"]);
+}
+
+// Smaller clock: time with the date in small text underneath
+function mosClock(clock, small) {
+    clock.currentConfigGroup = ["Appearance"];
+    clock.writeConfig("showDate", "true");
+    clock.writeConfig("dateDisplayFormat", small ? "BesideTime" : "BelowTime");
+    clock.writeConfig("dateFormat", "shortDate");
+    clock.writeConfig("autoFontAndSize", "false");
+    clock.writeConfig("fontSize", "9");
+}
+
 // Keep the apps that are pinned now
 var pinned = ["applications:chromium.desktop", "applications:org.kde.dolphin.desktop",
               "applications:org.kde.discover.desktop", "applications:mos-settings.desktop",
@@ -60,16 +88,9 @@ if (opts.style === "centred") {
     var sp = p.addWidget("org.kde.plasma.panelspacer");
 }
 
-p.addWidget("org.kde.plasma.marginsseparator");
-p.addWidget("org.kde.plasma.systemtray");
+var tray = p.addWidget("org.kde.plasma.systemtray");
+mosTidyTray(tray);
 
 var clock = p.addWidget("org.kde.plasma.digitalclock");
-clock.currentConfigGroup = ["Appearance"];
-clock.writeConfig("showDate", "true");
-clock.writeConfig("dateDisplayFormat", opts.size === "small" ? "BesideTime" : "BelowTime");
-clock.writeConfig("dateFormat", "shortDate");
-
-if (opts.style !== "dock") {
-    p.addWidget("org.kde.plasma.showdesktop");
-}
+mosClock(clock, opts.size === "small");
 print("ok");

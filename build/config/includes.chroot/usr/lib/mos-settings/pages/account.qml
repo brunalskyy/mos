@@ -18,7 +18,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 10
             Image { Layout.alignment: Qt.AlignHCenter; source: "file:///usr/share/icons/hicolor/256x256/apps/mos-logo.png"; Layout.preferredWidth: 80; Layout.preferredHeight: 80; sourceSize: Qt.size(160, 160) }
-            Label { Layout.alignment: Qt.AlignHCenter; text: "One account for all your mOS stuff"; color: Theme.onSurface; font.pixelSize: 22; font.weight: Font.DemiBold }
+            Label { Layout.alignment: Qt.AlignHCenter; text: "One account for all your mOS stuff"; color: Theme.textColour; font.pixelSize: 22; font.weight: Font.DemiBold }
             Hint { horizontalAlignment: Text.AlignHCenter; text: "Your name and picture on mOS, mOS Insider updates, and soon settings sync and app backup." }
         }
         PillButton {
@@ -50,9 +50,9 @@ ColumnLayout {
             }
             ColumnLayout {
                 spacing: 3
-                Label { text: page.acc.name; color: Theme.onSurface; font.pixelSize: 24; font.weight: Font.DemiBold }
-                Label { text: page.acc.email; color: Theme.onSurfaceVariant }
-                Label { visible: page.acc.since !== ""; text: "Member since " + page.acc.since; color: Theme.onSurfaceVariant; font.pixelSize: 13 }
+                Label { text: page.acc.name; color: Theme.textColour; font.pixelSize: 24; font.weight: Font.DemiBold }
+                Label { text: page.acc.email; color: Theme.textVariant }
+                Label { visible: page.acc.since !== ""; text: "Member since " + page.acc.since; color: Theme.textVariant; font.pixelSize: 13 }
             }
         }
     }

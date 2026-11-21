@@ -27,13 +27,13 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.preferredWidth: lab.implicitWidth + (on ? 52 : 36)
-                color: on ? Theme.secondaryContainer : (m.containsMouse ? Theme.alpha(Theme.onSurface, 0.05) : "transparent")
+                color: on ? Theme.secondaryContainer : (m.containsMouse ? Theme.alpha(Theme.textColour, 0.05) : "transparent")
                 radius: index === 0 || index === seg.options.length - 1 ? 22 : 0
                 Rectangle { visible: index > 0; width: 1; height: parent.height; color: Theme.outline }
                 Row {
                     anchors.centerIn: parent; spacing: 6
                     Image { visible: on; source: Theme.ink("check"); width: 16; height: 16; sourceSize: Qt.size(32, 32); anchors.verticalCenter: parent.verticalCenter }
-                    Label { id: lab; text: modelData.label; color: Theme.onSurface; font.pixelSize: 14; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
+                    Label { id: lab; text: modelData.label; color: Theme.textColour; font.pixelSize: 14; font.weight: Font.Medium; anchors.verticalCenter: parent.verticalCenter }
                 }
                 MouseArea { id: m; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: seg.selected(modelData.value) }
             }

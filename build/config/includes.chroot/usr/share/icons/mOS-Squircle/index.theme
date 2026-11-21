@@ -1,6 +1,6 @@
 [Icon Theme]
 Name=mOS Squircle
-Comment=mOS app icons, squircle shape (macOS style)
+Comment=mOS app icons, One UI-style squircle
 Inherits=breeze,breeze-dark,hicolor
 Directories=16x16/apps,22x22/apps,24x24/apps,32x32/apps,48x48/apps,64x64/apps,96x96/apps,128x128/apps,256x256/apps
 
