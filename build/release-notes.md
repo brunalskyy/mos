@@ -5,6 +5,8 @@
 - **Add widgets, the mOS way**: a new widget gallery like iOS and macOS with only mOS widgets. Pick one, pick small, medium or large, and it drops into a free spot on your desktop. New widgets: Calendar (today or the whole month), Weather (now, or with the next five hours) and Notes (a sticky note that saves as you type), plus Clock, Battery and At a glance
 - **mOS right-click menu**: right-click the desktop for Add widgets, Edit widgets, New folder, Paste, Refresh, Open in Terminal, Change wallpaper, Display settings and Settings. Right-clicking files still gives the full file menu
 - **Widgets stay big**: the clock and battery widgets can't get squashed into tiny icons any more, and ones that did go back to full size
+- **Files like Windows 10 File Explorer**: the Home ribbon on top (Copy, Paste, Cut, Copy path, Delete, Rename, New folder, Properties, Select all, View), then the address row with back, forward, up, refresh and search. Square corners in Files only. Dolphin is called Files everywhere now
+- **Start menu favourites**: mOS apps instead of KDE's (no more KDE Settings or Dolphin), and your own favourites stay put when the taskbar is rebuilt
 - **Lock screen like Windows 11**: a big clock and date over your lock screen picture. Press any key or click and it slides away
 - **Sign-in like Windows 7**: your picture in a glass frame with your name, on the lock screen and when the computer starts
 - **Separate lock screen picture**: choose a different picture for the lock screen than the desktop, and use it on the sign-in screen too if you like

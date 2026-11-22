@@ -107,7 +107,7 @@ def set_key(text, section, key, value, add_section=True):
     return text[:start] + body + text[end:]
 
 
-def make(dest_dir, theme_name, accent, dark):
+def make(dest_dir, theme_name, accent, dark, square=False):
     base_dir, base = find_base(dark)
     if not base_dir:
         print("mos-kvantum: Kvantum's own themes aren't installed", file=sys.stderr)
@@ -153,10 +153,16 @@ def make(dest_dir, theme_name, accent, dark):
     for section in ("PanelButtonCommand", "PanelButtonTool", "ToolbarButton", "ComboBox"):
         cfg = set_key(cfg, section, "text.normal.color", p["onContainer"], add_section=False)
         cfg = set_key(cfg, section, "text.focus.color", p["onContainer"], add_section=False)
+    if square:
+        # Files looks like Windows 10 File Explorer: square buttons, fields, menus and selections
+        for section in ("PanelButtonCommand", "PanelButtonTool", "ToolbarButton", "ComboBox", "LineEdit",
+                        "DropDownButton", "IndicatorSpinBox", "Progressbar", "ProgressbarContents",
+                        "ScrollbarSlider", "ItemView", "Menu", "ToolTip", "MenuItem", "TabFrame", "Tab"):
+            cfg = set_key(cfg, section, "frame.expansion", 0, add_section=False)
     cfg = set_key(cfg, "%General", "comment", "mOS: Material You, made from " + base)
     cfg = set_key(cfg, "%General", "author", "Bruno Woznicki (mOS)")
     cfg = set_key(cfg, "%General", "animate_states", "true")
-    cfg = set_key(cfg, "%General", "menu_shadow_depth", "7")
+    cfg = set_key(cfg, "%General", "menu_shadow_depth", "4" if square else "7")
     cfg = set_key(cfg, "%General", "tooltip_shadow_depth", "6")
 
     os.makedirs(dest_dir, exist_ok=True)
@@ -174,16 +180,19 @@ def main(argv):
     if "--system" in argv:
         ok = make(os.path.join(SYSTEM_THEMES, "mOS"), "mOS", DEFAULT_ACCENT, False)
         ok = make(os.path.join(SYSTEM_THEMES, "mOS-Dark"), "mOS-Dark", DEFAULT_ACCENT, True) and ok
+        sq = make(os.path.join(SYSTEM_THEMES, "mOS-Square"), "mOS-Square", DEFAULT_ACCENT, False, square=True)
         if ok:
             os.makedirs("/etc/xdg/Kvantum", exist_ok=True)
             with open("/etc/xdg/Kvantum/kvantum.kvconfig", "w") as f:
-                f.write("[General]\ntheme=mOS\n")
+                f.write("[General]\ntheme=mOS\n" + ("\n[Applications]\nmOS-Square=dolphin\n" if sq else ""))
         sys.exit(0 if ok else 1)
     dark = "dark" in kread("kdeglobals", "General", "ColorScheme", "mOSLight").lower()
     if make(os.path.join(HOME, ".config", "Kvantum", "mOS-You"), "mOS-You", accent_now(), dark):
+        # Files gets the same colours with square corners (Windows 10 File Explorer)
+        sq = make(os.path.join(HOME, ".config", "Kvantum", "mOS-You-Square"), "mOS-You-Square", accent_now(), dark, square=True)
         os.makedirs(os.path.join(HOME, ".config", "Kvantum"), exist_ok=True)
         with open(os.path.join(HOME, ".config", "Kvantum", "kvantum.kvconfig"), "w") as f:
-            f.write("[General]\ntheme=mOS-You\n")
+            f.write("[General]\ntheme=mOS-You\n" + ("\n[Applications]\nmOS-You-Square=dolphin\n" if sq else ""))
         run(["kwriteconfig6", "--notify", "--file", "kdeglobals", "--group", "KDE", "--key", "widgetStyle", "kvantum"])
 
 
