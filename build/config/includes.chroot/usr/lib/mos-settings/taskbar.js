@@ -65,6 +65,11 @@ if (opts.style === "dock") {
 var startButton = p.addWidget("org.kde.plasma.kickoff");
 startButton.currentConfigGroup = ["General"];
 startButton.writeConfig("icon", "mos-logo");
+// Start menu favourites: mOS apps (not the KDE ones mOS replaces)
+startButton.writeConfig("favorites", ["preferred://browser", "applications:mos-settings.desktop", "applications:mos-store.desktop",
+                                "applications:org.kde.dolphin.desktop", "applications:org.kde.konsole.desktop",
+                                "applications:org.kde.kwrite.desktop", "applications:org.kde.spectacle.desktop"]);
+startButton.writeConfig("favoritesPortedToKAstats", "false");
 
 if (opts.style === "centred") {
     p.addWidget("org.kde.plasma.panelspacer");
