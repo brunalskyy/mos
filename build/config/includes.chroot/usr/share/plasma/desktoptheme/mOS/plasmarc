@@ -5,12 +5,12 @@ defaultWidth=1920
 defaultHeight=1080
 
 [ContrastEffect]
-# Liquid glass (0.7.2): clear glass, so the bending at the edges actually shows.
-# A light touch of contrast keeps text readable without greying out what's behind.
+# Liquid glass (0.7.3): almost clear, like the iOS dock. Barely any greying or
+# darkening, so the wallpaper shows through and the bending at the edges is visible.
 enabled=true
-contrast=0.6
-intensity=1.1
-saturation=1.5
+contrast=0.9
+intensity=1.0
+saturation=1.25
 
 [AdaptiveTransparency]
 # Off: the taskbar stays see-through even with a maximised window
