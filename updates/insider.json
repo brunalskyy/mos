@@ -1,15 +1,18 @@
 {
-  "version": "0.6.2",
-  "build": 8,
-  "name": "mOS 1.0 Amber (0.6.2)",
+  "version": "0.7",
+  "build": 9,
+  "name": "mOS 1.0 Amber (0.7)",
   "notes": [
-    "New mOS password pop-up when an app or update needs your password",
-    "New Start button: the Amber mOS logo, filling your icon shape",
-    "Open apps show their name next to the icon on the taskbar (Settings > Taskbar to turn off)",
-    "Files is laid out like Windows 11 File Explorer, and double-click opens things",
-    "No more second Settings: the KDE apps mOS replaces are hidden from Start and search"
+    "Real Liquid Glass: the taskbar, Start, Control Centre, menus and pop-ups bend light at their edges, with a shine that follows your mouse",
+    "Pop-ups drop out of the taskbar like a droplet, and glass that touches melts together",
+    "New widget gallery like iOS and macOS, with new Calendar, Weather and Notes widgets in small, medium and large",
+    "New mOS right-click menu on the desktop",
+    "New lock screen like Windows 11 and sign-in like Windows 7, with your picture in a glass frame",
+    "Pick a different picture for the lock screen and the sign-in screen",
+    "Steadier Wi-Fi on the MacBook Air 2017, also after sleep",
+    "Setup after installing is full screen, and Install mOS sits on the live USB desktop"
   ],
-  "deb": "https://github.com/brunalskyy/mos/releases/download/v0.6.2-amber/mos-desktop_0.6.2_all.deb",
-  "sha256": "4c4aa86c4578556ddcc71f923bf42cd61ce11c3eb3ad35f52ed5ff79068e5eb4",
-  "size": 6919444
+  "deb": "https://github.com/brunalskyy/mos/releases/download/v0.7.0-amber/mos-desktop_0.7_all.deb",
+  "sha256": "5d8f5114895f72b5680a50ad41ad3088ad3fc2995873c230737a633c3e44572b",
+  "size": 7001788
 }
