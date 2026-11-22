@@ -99,3 +99,6 @@ xdg-utils
 pciutils
 pkexec
 polkitd
+
+# Clock: sync the time from the internet (Settings > Date & time > Set time automatically)
+systemd-timesyncd

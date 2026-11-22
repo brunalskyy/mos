@@ -5,12 +5,9 @@ defaultWidth=1920
 defaultHeight=1080
 
 [ContrastEffect]
-# Liquid glass (0.7.2): clear glass, so the bending at the edges actually shows.
-# A light touch of contrast keeps text readable without greying out what's behind.
-enabled=true
-contrast=0.6
-intensity=1.1
-saturation=1.5
+# Liquid glass (0.7.3): 70% see-through like TranslucentTB. No contrast effect, so the
+# colours behind come through clean instead of muddy and dark. Liquid Glass does the frost.
+enabled=false
 
 [AdaptiveTransparency]
 # Off: the taskbar stays see-through even with a maximised window

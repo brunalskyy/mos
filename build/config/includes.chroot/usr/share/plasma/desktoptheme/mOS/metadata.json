@@ -6,7 +6,7 @@
         "Id": "mOS",
         "License": "LGPL",
         "Name": "mOS",
-        "Version": "0.7.2"
+        "Version": "0.7.3"
     },
     "X-Plasma-API": "5.0"
 }

@@ -129,7 +129,8 @@ jobs:
           echo "TAG=${TAG}" >> "$GITHUB_ENV"
           # Every build is a pre-release until the full mOS 1.0 Amber ("prerelease": false in the version file)
           PRE="$(python3 -c 'import json;print("--prerelease" if json.load(open("build/config/includes.chroot/usr/share/mos/version")).get("prerelease", True) else "--latest")')"
-          if [ "${PRE}" = "--prerelease" ]; then TITLE="${TITLE%)} preview)"; fi
+          # Insider builds already say "Insider Preview" in their name
+          if [ "${PRE}" = "--prerelease" ]; then case "${TITLE}" in *Preview*|*preview*) ;; *) TITLE="${TITLE%)} preview)" ;; esac; fi
           if gh release view "${TAG}" >/dev/null 2>&1; then
             gh release upload "${TAG}" out/release/* --clobber
             gh release edit "${TAG}" ${PRE} --title "${TITLE}" --notes-file build/release-notes.md
