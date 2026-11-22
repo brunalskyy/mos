@@ -11,7 +11,7 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
-find_package(KF6 REQUIRED COMPONENTS CoreAddons ConfigCore)
+find_package(KF6 REQUIRED COMPONENTS CoreAddons Config)
 find_package(Plasma REQUIRED)
 
 kcoreaddons_add_plugin(mos_desktopmenu SOURCES mosmenu.cpp mosmenu.h INSTALL_NAMESPACE "plasma/containmentactions")
