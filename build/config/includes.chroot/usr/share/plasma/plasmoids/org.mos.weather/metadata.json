@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Category": "Environment and Weather",
+        "Description": "The weather where you are, with the next few hours when it's wide",
+        "Icon": "weather-few-clouds",
+        "Id": "org.mos.weather",
+        "License": "GPL-3.0-or-later",
+        "Name": "mOS Weather",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

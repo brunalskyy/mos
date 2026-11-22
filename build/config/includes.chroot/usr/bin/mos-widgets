@@ -1,0 +1,3 @@
+#!/bin/sh
+# mOS Add widgets (the widget gallery)
+exec python3 /usr/lib/mos-settings/mos_widgets.py "$@"

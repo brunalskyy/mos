@@ -1,0 +1,89 @@
+#!/bin/sh
+# mOS desktop: our own right-click menu on empty desktop space (Add widgets, Edit widgets,
+# New folder, Paste, Refresh, Open in Terminal, Change wallpaper, Display settings, Settings),
+# and KDE's "Add Widgets" sidebar opens the mOS widget gallery instead (only mOS widgets).
+# Right-clicking files still gives the full file menu. Panels keep KDE's widget list.
+#
+# KDE's files are kept with dpkg-divert (.debian), and each run patches a fresh copy,
+# so a Plasma update can't leave a half-patched file behind.
+set -e
+
+echo "I: mOS desktop menu and widget gallery"
+
+FV=/usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/FolderView.qml
+WE=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/explorer/WidgetExplorer.qml
+
+for f in "${FV}" "${WE}"; do
+	if [ ! -f "${f}" ] && [ ! -f "${f}.debian" ]; then
+		echo "W: ${f} is missing; skipping the mOS desktop menu" >&2
+		exit 0
+	fi
+	dpkg-divert --local --rename --divert "${f}.debian" --add "${f}"
+	cp "${f}.debian" "${f}"
+done
+cp /usr/share/mos/desktop/MosDesktopMenu.qml "$(dirname "${FV}")/"
+
+python3 - "${FV}" "${WE}" <<'PY'
+import sys
+fv, we = sys.argv[1], sys.argv[2]
+
+def patch(path, pairs):
+    s = open(path).read()
+    for old, new in pairs:
+        if old not in s:
+            sys.exit("E: desktop menu: can't find in %s: %s" % (path, old.strip()[:70]))
+        s = s.replace(old, new, 1)
+    open(path, "w").write(s)
+
+# Right-click on empty desktop space -> the mOS menu (folder widgets in panels keep KDE's)
+patch(fv, [
+    ("""                if (mouse.buttons & Qt.RightButton) {
+                    clearPressState();
+                    dir.openContextMenu(main, mouse.modifiers);
+                    mouse.accepted = true;
+                }""",
+     """                if (mouse.buttons & Qt.RightButton) {
+                    clearPressState();
+                    if (root.isContainment) {
+                        var mosAt = mapToItem(main, mouse.x, mouse.y);
+                        mosDesktopMenu.popup(main, mosAt.x, mosAt.y);
+                    } else {
+                        dir.openContextMenu(main, mouse.modifiers);
+                    }
+                    mouse.accepted = true;
+                }"""),
+    ("""FocusScope {
+    id: main
+""",
+     """FocusScope {
+    id: main
+
+    MosDesktopMenu { id: mosDesktopMenu; folder: dir }
+"""),
+])
+
+# KDE's "Add Widgets" for the desktop -> the mOS widget gallery
+patch(we, [
+    ("import org.kde.plasma.private.shell 2.0\n",
+     "import org.kde.plasma.private.shell 2.0\nimport org.kde.plasma.plasma5support as P5Support\n"),
+    ("""        root.widgetExplorer.containment = main.containment
+    }""",
+     """        root.widgetExplorer.containment = main.containment
+        // mOS: on the desktop, open the mOS widget gallery instead of KDE's list
+        if (main.containment && main.containment.containmentType !== 1 && main.containment.containmentType !== 128) {
+            mosGallery.connectSource("mos-widgets")
+            Qt.callLater(main.closed)
+        }
+    }
+
+    P5Support.DataSource {
+        id: mosGallery
+        engine: "executable"
+        onNewData: function (source) { disconnectSource(source) }
+    }"""),
+])
+print("I: mOS desktop menu in; Add Widgets opens the mOS gallery")
+PY
+
+grep -q 'mosDesktopMenu.popup' "${FV}"
+grep -q 'mos-widgets' "${WE}"

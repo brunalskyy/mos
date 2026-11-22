@@ -29,7 +29,7 @@ fi
 
 # Setup steps that also run after an update (they are safe to run again)
 mkdir -p "${STAGE}/usr/lib/mos/setup"
-for step in 9000 9010 9050 9055 9056 9057 9058 9059 9060 9065 9068 9070; do
+for step in 9000 9010 9050 9055 9056 9057 9058 9059 9060 9061 9065 9068 9070; do
 	src="$(ls "${HOOKS}/${step}"-*.hook.chroot)"
 	cp "${src}" "${STAGE}/usr/lib/mos/setup/${step}-$(basename "${src}" .hook.chroot | cut -d- -f2-).sh"
 done

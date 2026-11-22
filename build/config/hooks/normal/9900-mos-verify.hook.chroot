@@ -155,6 +155,16 @@ if ! grep -q 'Window.FullScreen' /usr/lib/mos-settings/welcome/Welcome.qml; then
 	echo "E: the setup wizard isn't full screen" >&2
 	fail=1
 fi
+# 0.7: mOS desktop menu, widget gallery and the new widgets
+for f in /usr/bin/mos-widgets /usr/lib/mos-settings/mos_widgets.py /usr/lib/mos-settings/widgets/Gallery.qml \
+	/usr/share/plasma/plasmoids/org.mos.calendar/metadata.json /usr/share/plasma/plasmoids/org.mos.weather/metadata.json \
+	/usr/share/plasma/plasmoids/org.mos.notes/metadata.json; do
+	[ -e "${f}" ] || { echo "E: ${f} is missing (widget gallery)" >&2; fail=1; }
+done
+if ! grep -q 'mosDesktopMenu.popup' /usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/FolderView.qml 2>/dev/null; then
+	echo "W: the mOS desktop menu isn't in; right-click shows KDE's menu" >&2
+fi
+python3 -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" /usr/lib/mos-settings/mos_widgets.py || { echo "E: the widget gallery has a Python error" >&2; fail=1; }
 # 0.7: mOS Liquid Glass
 if ls /usr/lib/*/qt6/plugins/kwin/effects/plugins/mosglass.so >/dev/null 2>&1; then
 	echo "I: mOS Liquid Glass is in (built for KWin $(cat /usr/share/mos/glass-kwin-version 2>/dev/null))"
