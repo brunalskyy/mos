@@ -5,11 +5,13 @@ defaultWidth=1920
 defaultHeight=1080
 
 [ContrastEffect]
-# Liquid glass: frosted, lets the wallpaper's colour show through softly
+# Liquid glass (0.7.2): clear glass, so the bending at the edges actually shows.
+# A light touch of contrast keeps text readable without greying out what's behind.
 enabled=true
-contrast=0.35
-intensity=1.6
-saturation=1.7
+contrast=0.6
+intensity=1.1
+saturation=1.5
 
 [AdaptiveTransparency]
-enabled=true
+# Off: the taskbar stays see-through even with a maximised window
+enabled=false

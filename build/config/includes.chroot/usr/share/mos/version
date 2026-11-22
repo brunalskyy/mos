@@ -5,7 +5,8 @@
   "name": "mOS 1.0 Amber (0.7.2)",
   "notes": [
     "Right-click the desktop for the mOS menu (for real this time)",
-    "Clearer glass taskbar and pop-ups, so Liquid Glass shows"
+    "Liquid Glass you can actually see: clear glass that bends light at the edges, much less frost and tint",
+    "Taskbar stays see-through even if Liquid Glass can't load, and with a maximised window"
   ],
   "prerelease": true
 }
