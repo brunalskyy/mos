@@ -11,7 +11,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import mos_settings as m  # noqa: E402
-from PySide6.QtCore import QObject, Slot  # noqa: E402
+from PySide6.QtCore import QObject, Property, Slot  # noqa: E402
 from PySide6.QtGui import QGuiApplication, QIcon  # noqa: E402
 from PySide6.QtQml import QQmlApplicationEngine  # noqa: E402
 
@@ -25,11 +25,40 @@ def live_session():
         return False
 
 
+def block_shortcuts(on):
+    """First run: switch off Alt+Tab, the Start key and every other global shortcut
+    so the setup can't be skipped. Plasma turns them back on at the next sign-in anyway."""
+    try:
+        from PySide6.QtDBus import QDBusConnection, QDBusInterface
+        iface = QDBusInterface("org.kde.kglobalaccel", "/kglobalaccel",
+                               "org.kde.KGlobalAccel", QDBusConnection.sessionBus())
+        if iface.isValid():
+            iface.call("blockGlobalShortcuts", bool(on))
+    except Exception:
+        pass
+
+
 class Wizard(QObject):
+    def __init__(self, parent, locked):
+        super().__init__(parent)
+        self._locked = locked
+        self._finished = False
+
+    @Property(bool, constant=True)
+    def locked(self):
+        return self._locked
+
+    @Property(bool, constant=True)
+    def finished(self):
+        return self._finished
+
     @Slot()
     def finish(self):
         os.makedirs(m.MOS_CONFIG, exist_ok=True)
         open(DONE, "w").write("1\n")
+        self._finished = True
+        if self._locked:
+            block_shortcuts(False)
         QGuiApplication.quit()
 
 
@@ -41,7 +70,11 @@ def main():
     app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon.fromTheme("mos-logo"))
     backend = m.Backend(app)
-    wizard = Wizard(app)
+    locked = "--first-run" in sys.argv
+    wizard = Wizard(app, locked)
+    if locked:
+        block_shortcuts(True)
+        app.aboutToQuit.connect(lambda: block_shortcuts(False))
     engine = QQmlApplicationEngine()
     engine.addImageProvider("icon", m.IconProvider())
     engine.rootContext().setContextProperty("backend", backend)

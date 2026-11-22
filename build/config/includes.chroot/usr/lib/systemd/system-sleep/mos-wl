@@ -1,0 +1,18 @@
+#!/bin/sh
+# mOS: the Broadcom "wl" Wi-Fi driver often comes back dead after sleep.
+# Unload it before sleeping and load it again on wake.
+grep -q '^wl ' /proc/modules 2>/dev/null || [ -e /run/mos-wl-unloaded ] || exit 0
+case "$1" in
+	pre)
+		if grep -q '^wl ' /proc/modules; then
+			modprobe -r wl && touch /run/mos-wl-unloaded
+		fi
+		;;
+	post)
+		if [ -e /run/mos-wl-unloaded ]; then
+			rm -f /run/mos-wl-unloaded
+			modprobe wl
+		fi
+		;;
+esac
+exit 0

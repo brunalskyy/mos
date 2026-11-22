@@ -13,6 +13,10 @@ ApplicationWindow {
     minimumWidth: 820
     minimumHeight: 600
     visible: true
+    // First run after installing: full screen, always on top, can't be closed until setup is done
+    visibility: wizard.locked ? Window.FullScreen : Window.Windowed
+    flags: wizard.locked ? (Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint) : Qt.Window
+    onClosing: (close) => { if (wizard.locked && !wizard.finished) close.accepted = false }
     title: "Welcome to mOS"
     font.family: Theme.font
     color: Theme.surface

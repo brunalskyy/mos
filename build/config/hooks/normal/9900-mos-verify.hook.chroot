@@ -147,6 +147,14 @@ if ! find /lib/modules -name 'wl.ko*' | grep -q .; then
 	echo "E: the Broadcom wl Wi-Fi driver is missing (MacBook Air Wi-Fi won't work)" >&2
 	fail=1
 fi
+# 0.7: Wi-Fi stability settings for wl, and the full-screen first-run setup
+for f in /etc/NetworkManager/conf.d/90-mos-wifi.conf /etc/modprobe.d/mos-broadcom.conf /usr/lib/systemd/system-sleep/mos-wl; do
+	[ -e "${f}" ] || { echo "E: ${f} is missing (MacBook Wi-Fi fixes)" >&2; fail=1; }
+done
+if ! grep -q 'Window.FullScreen' /usr/lib/mos-settings/welcome/Welcome.qml; then
+	echo "E: the setup wizard isn't full screen" >&2
+	fail=1
+fi
 # 0.6.2: mOS password pop-up (KDE's stays as the backup)
 if ! python3 -m py_compile /usr/lib/mos-polkit/mos_polkit_agent.py 2>/dev/null; then
 	echo "E: the mOS password pop-up has a Python error" >&2

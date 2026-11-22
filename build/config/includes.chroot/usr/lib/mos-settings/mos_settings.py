@@ -532,15 +532,31 @@ class Backend(QObject):
 
     @Slot(str, str)
     def wifiConnect(self, ssid, password):
-        def go():
+        def saved():
             ok, out = sh(["nmcli", "-t", "-f", "NAME,TYPE", "connection", "show"])
-            if any(split_nm(l)[0] == ssid for l in out.splitlines()) and not password:
+            return [split_nm(l)[0] for l in out.splitlines() if split_nm(l)[0] == ssid]
+
+        def fresh(key_mgmt=None):
+            # Never stack "Name 1", "Name 2" copies: start from a clean profile.
+            for _ in saved():
+                sh(["nmcli", "connection", "delete", "id", ssid])
+            cmd = ["nmcli", "device", "wifi", "connect", ssid]
+            if password:
+                cmd += ["password", password]
+            ok, out = sh(cmd, timeout=45)
+            if not ok and key_mgmt and saved():
+                # Mixed WPA2/WPA3 routers: the Broadcom wl driver can't do WPA3, so force WPA2.
+                sh(["nmcli", "connection", "modify", "id", ssid,
+                    "802-11-wireless-security.key-mgmt", key_mgmt,
+                    "802-11-wireless-security.pmf", "1"])
+                ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
+            return ok, out
+
+        def go():
+            if saved() and not password:
                 ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
             else:
-                cmd = ["nmcli", "device", "wifi", "connect", ssid]
-                if password:
-                    cmd += ["password", password]
-                ok, out = sh(cmd, timeout=45)
+                ok, out = fresh("wpa-psk" if password else None)
             if ok:
                 return True, f"Connected to {ssid}"
             if "Secrets were required" in out or "password" in out.lower():
