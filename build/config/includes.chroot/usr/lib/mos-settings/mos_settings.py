@@ -1561,7 +1561,27 @@ def main():
         return
     QGuiApplication.setApplicationName("mOS Settings")
     QGuiApplication.setDesktopFileName("mos-settings")
+    page = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else ""
+    # Only one Settings window: if it's already open, hand it the page and bring it forward
+    try:
+        from PySide6.QtNetwork import QLocalServer, QLocalSocket
+    except ImportError:
+        QLocalServer = QLocalSocket = None
+    name = f"mos-settings-{os.getuid()}"
+    probe = QLocalSocket() if QLocalSocket else None
+    if probe:
+        probe.connectToServer(name)
+    if probe and probe.waitForConnected(300):
+        probe.write((page or "-").encode())
+        probe.waitForBytesWritten(300)
+        probe.disconnectFromServer()
+        return
     app = QGuiApplication(sys.argv)
+    server = None
+    if QLocalServer:
+        QLocalServer.removeServer(name)
+        server = QLocalServer(app)
+        server.listen(name)
     app.setWindowIcon(QIcon.fromTheme("systemsettings"))
     backend = Backend(app)
     engine = QQmlApplicationEngine()
@@ -1571,6 +1591,24 @@ def main():
     engine.load(os.path.join(HERE, "Main.qml"))
     if not engine.rootObjects():
         sys.exit(1)
+    win = engine.rootObjects()[0]
+
+    def show_again():
+        conn = server.nextPendingConnection()
+        if conn is None:
+            return
+
+        def read():
+            want = bytes(conn.readAll()).decode(errors="ignore").strip()
+            if want and want != "-":
+                win.setProperty("openPage", want)
+            win.show()
+            win.raise_()
+            win.requestActivate()
+            conn.disconnectFromServer()
+        conn.readyRead.connect(read)
+    if server:
+        server.newConnection.connect(show_again)
     sys.exit(app.exec())
 
 

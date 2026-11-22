@@ -115,5 +115,18 @@ open(path, "w").write(s)
 print("I: lock screen: Windows 11 clock first, then Windows 7 style sign-in")
 PY
 
+# No "(or scan your fingerprint / smartcard)" lines under the password box: MacBooks and
+# VMware have neither. KDE asks PAM; a module that doesn't exist makes PAM answer
+# "module unknown", which the lock screen reads as "not available" and hides the line.
+# (KDE's own files are kept next to them as .kde)
+for svc in kde-fingerprint kde-smartcard; do
+	f="/etc/pam.d/${svc}"
+	if [ -e "${f}" ] && ! grep -q 'pam_mos_none' "${f}"; then
+		cp -f "${f}" "${f}.kde"
+	fi
+	printf '%s\n' "# mOS: no ${svc#kde-} sign-in on this computer (KDE's file: ${svc}.kde)" \
+		"auth required pam_mos_none.so" "account required pam_mos_none.so" > "${f}"
+done
+
 grep -q 'MosLockClock {' "${UI}"
 grep -q 'MosUserTile {' "${UI}"
