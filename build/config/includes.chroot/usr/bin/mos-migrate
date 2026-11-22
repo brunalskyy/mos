@@ -22,6 +22,24 @@ MARK = os.path.join(m.MOS_CONFIG, "migrated")
 APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
 STEP = "0.7"
 
+# 0.7: the clock and battery widgets got squashed to their smallest size; put them back
+WIDGET_SIZE_JS = """
+var ds = desktops();
+var sizes = {"org.mos.clock": 12, "org.mos.battery": 8};
+for (var i = 0; i < ds.length; i++) {
+    var ws = ds[i].widgets();
+    for (var j = 0; j < ws.length; j++) {
+        var want = sizes[ws[j].type];
+        if (!want) continue;
+        var g = ws[j].geometry;
+        if (g.width < gridUnit * (want - 1)) {
+            ws[j].geometry = new QRectF(g.x, g.y, gridUnit * want, gridUnit * want);
+        }
+    }
+}
+print("ok");
+"""
+
 GLANCE_JS = """
 var ds = desktops();
 for (var i = 0; i < ds.length; i++) {
@@ -58,6 +76,7 @@ def main():
         js = open(os.path.join(m.HERE, "taskbar.js")).read().replace("__OPTIONS__", json.dumps(opts))
         m.plasma_script(js)
         m.plasma_script(GLANCE_JS)
+        m.plasma_script(WIDGET_SIZE_JS)
     if m.app_style_on():
         m.sh(["mos-kvantum"], timeout=60)
     # 0.7: Liquid Glass replaces KDE's blur, keeping your glass on/off choice

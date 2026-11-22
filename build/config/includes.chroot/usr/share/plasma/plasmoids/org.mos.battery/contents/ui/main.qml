@@ -31,8 +31,9 @@ PlasmoidItem {
     }
 
     fullRepresentation: BatteryFace {
-        Layout.minimumWidth: Kirigami.Units.gridUnit * 5
-        Layout.minimumHeight: Kirigami.Units.gridUnit * 5
+        // Big enough that Plasma can't squash it into a tiny icon
+        Layout.minimumWidth: Kirigami.Units.gridUnit * 7
+        Layout.minimumHeight: Kirigami.Units.gridUnit * 7
         Layout.preferredWidth: Kirigami.Units.gridUnit * 8
         Layout.preferredHeight: Kirigami.Units.gridUnit * 8
         accent: Kirigami.Theme.highlightColor
