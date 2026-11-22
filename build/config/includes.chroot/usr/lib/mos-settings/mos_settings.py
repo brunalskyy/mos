@@ -104,6 +104,13 @@ def dbus_user(*args, timeout=10):
     return sh(["busctl", "--user", *args], timeout=timeout)
 
 
+def liquid_glass_installed():
+    """mOS Liquid Glass (the mos-glass package) is in place."""
+    import glob
+    return bool(glob.glob("/usr/lib/*/qt6/plugins/kwin/effects/plugins/mosglass.so")
+                or glob.glob("/usr/lib/qt6/plugins/kwin/effects/plugins/mosglass.so"))
+
+
 def kwin_reconfigure():
     dbus_user("call", "org.kde.KWin", "/KWin", "org.kde.KWin", "reconfigure")
 
@@ -1254,7 +1261,11 @@ class Backend(QObject):
     def effects(self):
         def on(key, d):
             return kread("kwinrc", "Plugins", key, d).lower() == "true"
-        return {"glass": on("blurEnabled", "true"), "genie": on("magiclampEnabled", "true"),
+        installed = liquid_glass_installed()
+        wanted = kread("kwinrc", "Effect-mosglass", "MosWanted", "true").lower() == "true"
+        glass = (installed and on("mosglassEnabled", "true")) or on("blurEnabled", "false" if installed else "true")
+        return {"glass": glass, "liquid": installed and wanted, "liquidAvailable": liquid_glass_installed(),
+                "genie": on("magiclampEnabled", "true"),
                 "zoom": on("scaleEnabled", "true"), "wobbly": on("wobblywindowsEnabled", "false")}
 
     @Property(bool, notify=changed)
@@ -1272,6 +1283,19 @@ class Backend(QObject):
 
     @Slot(str, bool)
     def setEffect(self, name, on):
+        if name in ("glass", "liquid"):
+            # glass = any see-through glass; liquid = the bending mOS Liquid Glass instead of KDE's blur
+            if name == "liquid":
+                kwrite("kwinrc", "Effect-mosglass", "MosWanted", on)
+            glass = on if name == "glass" else self.effects["glass"]
+            liquid = liquid_glass_installed() and \
+                kread("kwinrc", "Effect-mosglass", "MosWanted", "true").lower() == "true"
+            kwrite("kwinrc", "Plugins", "mosglassEnabled", glass and liquid)
+            kwrite("kwinrc", "Plugins", "blurEnabled", glass and not liquid)
+            kwrite("kwinrc", "Plugins", "slidingpopupsEnabled", not (glass and liquid))
+            kwin_reconfigure()
+            self.changed.emit()
+            return
         key = {"glass": "blurEnabled", "genie": "magiclampEnabled", "zoom": "scaleEnabled",
                "wobbly": "wobblywindowsEnabled"}.get(name)
         if not key:

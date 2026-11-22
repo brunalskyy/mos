@@ -68,7 +68,7 @@ void main(void)
     // magnified and bent around the rim like thick curved glass.
     float lens = 1.0 - clamp(inside / e, 0.0, 1.0);
     lens *= lens;
-    float push = lens * e * min(0.48, 0.45 * glassStrength);
+    float push = lens * e * min(1.2, 1.1 * glassStrength);
     vec2 inward = vec2(-n.x, n.y) / regionSize; // inward, in texture space (y flipped)
     vec2 lo = halfpixel * 2.0;
     vec2 hi = vec2(1.0) - halfpixel * 2.0;
@@ -83,9 +83,9 @@ void main(void)
     vec2 l = length(toLight) > 1e-3 ? normalize(toLight) : vec2(-0.5, -0.86);
     float facing = dot(n, l);
     float catchLight = pow(max(facing, 0.0), 3.0) + 0.45 * pow(max(-facing, 0.0), 3.0);
-    float line = 1.0 - smoothstep(0.0, 1.6, inside);    // crisp 1-2 px edge
+    float line = 1.0 - smoothstep(0.0, 2.2, inside);    // crisp 2 px edge
     float glow = 1.0 - smoothstep(0.0, e * 0.7, inside);  // soft inner glow
-    float rim = line * (0.18 + 0.82 * catchLight) + glow * 0.12 * catchLight;
+    float rim = line * (0.3 + 0.7 * catchLight) * 0.9 + glow * 0.22 * catchLight;
 
     // A faint sheen across the top, like light on a glass slab
     float sheen = (1.0 - smoothstep(0.0, regionSize.y * 0.55, p.y)) * 0.035;

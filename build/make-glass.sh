@@ -14,7 +14,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
 	build-essential cmake extra-cmake-modules pkg-config python3 \
 	kwin-dev qt6-base-dev qt6-base-private-dev libkf6config-dev libkf6coreaddons-dev \
-	libkf6windowsystem-dev libepoxy-dev libx11-dev libxcb1-dev libdrm-dev
+	libkf6windowsystem-dev libkdecorations3-dev libepoxy-dev libx11-dev libxcb1-dev libdrm-dev
 
 BUILD="$(mktemp -d)"
 STAGE="$(mktemp -d)"

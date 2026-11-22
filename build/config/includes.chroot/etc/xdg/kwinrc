@@ -5,8 +5,13 @@ ButtonsOnLeft=
 ButtonsOnRight=IAX
 
 [Plugins]
-blurEnabled=true
+# mOS Liquid Glass (bending glass) replaces KDE's blur; mos-glass-guard switches
+# KDE's blur back on for the session if Liquid Glass ever fails to load
+blurEnabled=false
+mosglassEnabled=true
 contrastEnabled=true
+# Pop-ups drop out of the taskbar like a droplet (Liquid Glass) instead of sliding
+slidingpopupsEnabled=false
 # macOS-style: zoom windows in and out, genie (magic lamp) when minimising
 scaleEnabled=true
 fadeEnabled=false
@@ -17,6 +22,10 @@ startupfeedbackEnabled=false
 
 [Effect-blur]
 BlurStrength=12
+NoiseStrength=2
+
+[Effect-mosglass]
+BlurStrength=9
 NoiseStrength=2
 
 [Effect-magiclamp]

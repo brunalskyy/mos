@@ -243,8 +243,8 @@ private:
 
     // mOS Liquid Glass settings
     float m_glassStrength = 1.0;
-    float m_glassEdgeSize = 18.0;
-    float m_glassCornerRadius = 14.0;
+    float m_glassEdgeSize = 26.0;
+    float m_glassCornerRadius = 16.0;
     float m_glassFringing = 0.35;
     float m_glassShine = 1.0;
     bool m_glassFollowMouse = true;
