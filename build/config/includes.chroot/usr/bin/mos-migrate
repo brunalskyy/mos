@@ -7,6 +7,7 @@ round Material buttons.
 0.6.2: the KDE apps mOS replaces disappear from the Start menu and search.
 0.7: mOS Liquid Glass takes over from KDE's blur (if you had glass switched on).
 0.7.1: the taskbar is rebuilt always see-through, so the glass shows over maximised windows.
+0.7.2: the mOS right-click menu on the desktop, and the floating glass taskbar.
 
 SPDX-FileCopyrightText: 2026 Bruno Woznicki
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -21,7 +22,7 @@ import mos_settings as m  # noqa: E402
 
 MARK = os.path.join(m.MOS_CONFIG, "migrated")
 APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
-STEP = "0.7.1"
+STEP = "0.7.2"
 
 # 0.7: the clock and battery widgets got squashed to their smallest size; put them back
 WIDGET_SIZE_JS = """
@@ -88,6 +89,14 @@ def main():
         m.kwrite("kwinrc", "Plugins", "blurEnabled", False)
         m.kwrite("kwinrc", "Plugins", "slidingpopupsEnabled", not glass)
         m.kwin_reconfigure()
+    # 0.7.2: right-click on the desktop gives the mOS menu (needs the desktop restarted once)
+    import glob
+    if glob.glob("/usr/lib/*/qt6/plugins/plasma/containmentactions/org.mos.desktopmenu.so"):
+        current = m.kread("plasma-org.kde.plasma.desktop-appletsrc", ["ActionPlugins", "0"], "RightButton;NoModifier", "")
+        if current != "org.mos.desktopmenu":
+            m.kwrite("plasma-org.kde.plasma.desktop-appletsrc", ["ActionPlugins", "0"], "RightButton;NoModifier",
+                     "org.mos.desktopmenu")
+            m.sh(["systemctl", "--user", "restart", "plasma-plasmashell.service"], timeout=60)
     # 0.6.2: pick up the hidden KDE apps (no second Settings in search)
     m.sh(["kbuildsycoca6"], timeout=180)
     os.makedirs(m.MOS_CONFIG, exist_ok=True)

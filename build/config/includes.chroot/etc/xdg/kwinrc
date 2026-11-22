@@ -21,12 +21,15 @@ squashEnabled=false
 startupfeedbackEnabled=false
 
 [Effect-blur]
-BlurStrength=12
-NoiseStrength=2
+BlurStrength=6
+NoiseStrength=0
 
 [Effect-mosglass]
-BlurStrength=9
-NoiseStrength=2
+# 0.7.2: much less frost, so it looks like real clear glass that bends light
+BlurStrength=4
+NoiseStrength=0
+GlassStrength=1.1
+GlassShine=1.15
 
 [Effect-magiclamp]
 AnimationDuration=300

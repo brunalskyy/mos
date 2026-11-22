@@ -1,15 +1,13 @@
 {
-  "version": "0.7.1",
-  "build": 10,
+  "version": "0.7.2",
+  "build": 11,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.7.1)",
+  "name": "mOS 1.0 Amber (0.7.2)",
   "notes": [
-    "Settings opens again",
-    "Right-click the desktop for the mOS menu",
-    "New Apple Control Panel on Macs: fans, temperatures, keyboard light, F-keys and battery health",
-    "New password box on the lock and sign-in screens",
-    "Your picture shows on the sign-in screen when the computer starts",
-    "Taskbar stays see-through so Liquid Glass always shows, and its icons are white in dark mode"
+    "Right-click the desktop for the mOS menu (for real this time)",
+    "Liquid Glass you can actually see: clear glass that bends light at the edges, much less frost and tint",
+    "Taskbar stays see-through even if Liquid Glass can't load, and with a maximised window",
+    "Games tab in the mOS Store shows games again"
   ],
   "prerelease": true
 }

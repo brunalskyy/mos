@@ -14,7 +14,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
 	build-essential cmake extra-cmake-modules pkg-config python3 \
 	kwin-dev qt6-base-dev qt6-base-private-dev libkf6config-dev libkf6coreaddons-dev \
-	libkf6windowsystem-dev libkdecorations3-dev libepoxy-dev libx11-dev libxcb1-dev libdrm-dev \
+	libkf6windowsystem-dev libkdecorations3-dev libplasma-dev libepoxy-dev libx11-dev libxcb1-dev libdrm-dev \
 	libxcb-composite0-dev libxcb-damage0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev \
 	libxcb-randr0-dev libxcb-shape0-dev libxcb-shm0-dev libxcb-sync-dev libxcb-xfixes0-dev \
 	libxcb-cursor-dev libxkbcommon-dev libwayland-dev
@@ -25,6 +25,17 @@ trap 'rm -rf "${BUILD}" "${STAGE}"' EXIT
 cmake -S "${ROOT}/glass" -B "${BUILD}" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
 cmake --build "${BUILD}" -j"$(nproc)"
 DESTDIR="${STAGE}" cmake --install "${BUILD}"
+
+# mOS desktop menu (right-click on the desktop): a Plasma containment-actions plugin
+MENU_BUILD="$(mktemp -d)"
+cmake -S "${ROOT}/desktopmenu" -B "${MENU_BUILD}" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+cmake --build "${MENU_BUILD}" -j"$(nproc)"
+DESTDIR="${STAGE}" cmake --install "${MENU_BUILD}"
+rm -rf "${MENU_BUILD}"
+menu="$(find "${STAGE}" -name 'org.mos.desktopmenu.so')"
+[ -n "${menu}" ] || { echo "E: the mOS desktop menu plugin wasn't built" >&2; exit 1; }
+case "${menu}" in */qt6/plugins/plasma/containmentactions/*) ;; *) echo "E: desktop menu plugin in the wrong place: ${menu}" >&2; exit 1 ;; esac
+strip --strip-unneeded "${menu}"
 find "${STAGE}" -type f
 so="$(find "${STAGE}" -name 'mosglass.so')"
 [ -n "${so}" ] || { echo "E: mosglass.so wasn't built" >&2; exit 1; }
