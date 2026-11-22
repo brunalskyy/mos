@@ -23,52 +23,38 @@ for f in "${FV}" "${WE}"; do
 done
 cp /usr/share/mos/desktop/MosDesktopMenu.qml "$(dirname "${FV}")/"
 
+set +e
 python3 - "${FV}" "${WE}" <<'PY'
-import sys
+import re, sys
 fv, we = sys.argv[1], sys.argv[2]
 
-def patch(path, pairs):
+def patch(path, steps):
     s = open(path).read()
-    for old, new in pairs:
-        if old not in s:
-            sys.exit("E: desktop menu: can't find in %s: %s" % (path, old.strip()[:70]))
-        s = s.replace(old, new, 1)
+    for pattern, repl in steps:
+        s2, n = re.subn(pattern, repl, s, count=1, flags=re.S)
+        if n == 0:
+            i = s.find("openContextMenu")
+            sys.stderr.write("E: desktop menu: no match in %s for %r\n--- near:\n%s\n" % (path, pattern[:60], s[max(0, i - 400):i + 200]))
+            sys.exit(1)
+        s = s2
     open(path, "w").write(s)
 
-# Right-click on empty desktop space -> the mOS menu (folder widgets in panels keep KDE's)
+# Right-click on empty desktop space -> the mOS menu (the first openContextMenu(main, ...) is the
+# empty-space one; right-clicking a file keeps the full file menu)
 patch(fv, [
-    ("""                if (mouse.buttons & Qt.RightButton) {
-                    clearPressState();
-                    dir.openContextMenu(main, mouse.modifiers);
-                    mouse.accepted = true;
-                }""",
-     """                if (mouse.buttons & Qt.RightButton) {
-                    clearPressState();
-                    if (root.isContainment) {
-                        var mosAt = mapToItem(main, mouse.x, mouse.y);
-                        mosDesktopMenu.popup(main, mosAt.x, mosAt.y);
-                    } else {
-                        dir.openContextMenu(main, mouse.modifiers);
-                    }
-                    mouse.accepted = true;
-                }"""),
-    ("""FocusScope {
-    id: main
-""",
-     """FocusScope {
-    id: main
-
-    MosDesktopMenu { id: mosDesktopMenu; folder: dir }
-"""),
+    (r"dir\.openContextMenu\(main,\s*mouse\.modifiers\);",
+     "if (root.isContainment) { var mosAt = mapToItem(main, mouse.x, mouse.y); "
+     "mosDesktopMenu.popup(main, mosAt.x, mosAt.y); } else { dir.openContextMenu(main, mouse.modifiers); }"),
+    (r"(FocusScope\s*\{\s*id:\s*main\s*\n)",
+     r"\1\n    MosDesktopMenu { id: mosDesktopMenu; folder: dir }\n"),
 ])
 
 # KDE's "Add Widgets" for the desktop -> the mOS widget gallery
 patch(we, [
-    ("import org.kde.plasma.private.shell 2.0\n",
-     "import org.kde.plasma.private.shell 2.0\nimport org.kde.plasma.plasma5support as P5Support\n"),
-    ("""        root.widgetExplorer.containment = main.containment
-    }""",
-     """        root.widgetExplorer.containment = main.containment
+    (r"(import org\.kde\.plasma\.private\.shell[^\n]*\n)",
+     r"\1import org.kde.plasma.plasma5support as P5Support\n"),
+    (r"root\.widgetExplorer\.containment\s*=\s*main\.containment\s*\n\s*\}",
+     """root.widgetExplorer.containment = main.containment
         // mOS: on the desktop, open the mOS widget gallery instead of KDE's list
         if (main.containment && main.containment.containmentType !== 1 && main.containment.containmentType !== 128) {
             mosGallery.connectSource("mos-widgets")
@@ -84,6 +70,15 @@ patch(we, [
 ])
 print("I: mOS desktop menu in; Add Widgets opens the mOS gallery")
 PY
+rc=$?
+set -e
+if [ "${rc}" -ne 0 ]; then
+	# Couldn't match KDE's file: keep KDE's own menu and sidebar rather than break anything
+	echo "W: mOS desktop menu not applied; KDE's menu stays" >&2
+	cp "${FV}.debian" "${FV}"
+	cp "${WE}.debian" "${WE}"
+	exit 0
+fi
 
-grep -q 'mosDesktopMenu.popup' "${FV}"
-grep -q 'mos-widgets' "${WE}"
+grep -q 'mosDesktopMenu.popup' "${FV}" || echo "W: mOS desktop menu missing" >&2
+exit 0
