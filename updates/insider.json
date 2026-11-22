@@ -1,14 +1,13 @@
 {
-  "version": "0.7.2",
-  "build": 11,
-  "name": "mOS 1.0 Amber (0.7.2)",
+  "version": "0.7.3",
+  "build": 12,
+  "name": "mOS 1.0 Amber (0.7.3 Insider Preview)",
   "notes": [
-    "Right-click the desktop for the mOS menu (for real this time)",
-    "Liquid Glass you can actually see: clear glass that bends light at the edges, much less frost and tint",
-    "Taskbar stays see-through even if Liquid Glass can't load, and with a maximised window",
-    "Games tab in the mOS Store shows games again"
+    "Taskbar is 70% see-through Liquid Glass, like TranslucentTB",
+    "Taskbar always floats and stays rounded, even with a maximised window",
+    "Clock sets itself from the internet"
   ],
-  "deb": "https://github.com/brunalskyy/mos/releases/download/v0.7.2-amber/mos-desktop_0.7.2_all.deb",
-  "sha256": "8dc4bff92c0c5cc24f66c32fe50e8dd11489059d0e39bc3001620b120b237777",
-  "size": 7016280
+  "deb": "https://github.com/brunalskyy/mos/releases/download/v0.7.3-amber/mos-desktop_0.7.3_all.deb",
+  "sha256": "ca05ea321247cd5242d293aea1e8800fa381397eba32b31091868a1dba5f1006",
+  "size": 7016644
 }
