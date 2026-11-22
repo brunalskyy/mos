@@ -1,0 +1,72 @@
+cmake_minimum_required(VERSION 3.16.0)
+
+project(mos_glass)
+set(PROJECT_VERSION "0.7")
+set(PROJECT_VERSION_MAJOR 0)
+
+set(KF_MIN_VERSION "5.240.0")
+set(QT_MIN_VERSION "6.6.0")
+set(QT_MAJOR_VERSION 6)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
+endif()
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT")
+
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
+
+include(FeatureSummary)
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+
+find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+    Gui
+    Core
+    DBus
+    Widgets
+    OpenGL
+)
+
+include_directories(${Qt6Widgets_INCLUDE_DIRS} ${Qt6OpenGL_INCLUDE_DIRS})
+add_definitions(${Qt6Widgets_DEFINITIONS})
+
+find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
+    Config
+    CoreAddons
+    WindowSystem
+)
+
+find_package(epoxy REQUIRED)
+
+find_package(X11 REQUIRED)
+find_package(XCB REQUIRED COMPONENTS XCB)
+
+find_package(KWin REQUIRED COMPONENTS
+    kwineffects
+)
+
+if(${KWin_VERSION} VERSION_LESS_EQUAL 6.0.5)
+    add_compile_definitions(KWIN_6_0)
+endif()
+
+find_package(KDecoration2)
+find_package(KDecoration3)
+if (${KDecoration3_FOUND})
+    add_compile_definitions(KDECORATION3)
+endif()
+if(NOT ${KDecoration3_FOUND} AND NOT ${KDecoration2_FOUND})
+    message(FATAL_ERROR "Could not find KDecoration2 or KDecoration3.")
+endif()
+
+
+find_package(KWinDBusInterface CONFIG REQUIRED)
+
+add_subdirectory(src)
+
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
