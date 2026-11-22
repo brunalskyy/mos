@@ -1,0 +1,11 @@
+# Put the boot loader packages on the USB itself, so the mOS installer can set up
+# booting without an internet connection (it failed offline on the MacBook Air).
+grub-efi-amd64
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+efibootmgr
+grub-pc
+grub-pc-bin
+cryptsetup
+keyutils
