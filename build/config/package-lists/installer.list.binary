@@ -5,7 +5,6 @@ grub-efi-amd64-bin
 grub-efi-amd64-signed
 shim-signed
 efibootmgr
-grub-pc
 grub-pc-bin
 cryptsetup
 keyutils
