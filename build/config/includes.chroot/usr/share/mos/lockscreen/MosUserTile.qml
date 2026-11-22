@@ -16,7 +16,7 @@ Item {
         id: frame
         anchors.horizontalCenter: parent.horizontalCenter
         width: tile.size; height: tile.size
-        radius: tile.size * 0.11
+        radius: Math.round(tile.size * 0.045)   // slightly rounded, like Windows 7
         border.width: 1
         border.color: Qt.rgba(1, 1, 1, 0.8)
         gradient: Gradient {
@@ -37,15 +37,12 @@ Item {
         Rectangle {
             id: photoBox
             anchors.fill: parent
-            anchors.margins: Math.round(tile.size * 0.065)
-            radius: tile.size * 0.06
-            color: "#2b1d18"
+            anchors.margins: 3                       // the picture fills the frame, just inside the glass rim
+            radius: 2
+            color: "transparent"
             clip: true
-            border.width: 1
-            border.color: Qt.rgba(0, 0, 0, 0.3)
             Image {
                 anchors.fill: parent
-                anchors.margins: 1
                 source: tile.image !== "" ? tile.image : "file:///usr/share/mos/avatar-default.png"
                 fillMode: Image.PreserveAspectCrop
                 sourceSize: Qt.size(320, 320)
