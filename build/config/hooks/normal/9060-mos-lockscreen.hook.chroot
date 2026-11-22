@@ -25,6 +25,13 @@ fi
 
 dpkg-divert --local --rename --divert "${UI}.debian" --add "${UI}"
 cp "${UI}.debian" "${UI}"
+# Password box: one clean field with the arrow button joined on (Windows 7 style)
+MB="${DIR}/MainBlock.qml"
+if [ -f "${MB}" ] || [ -f "${MB}.debian" ]; then
+	dpkg-divert --local --rename --divert "${MB}.debian" --add "${MB}"
+	cp "${MB}.debian" "${MB}"
+	python3 /usr/share/mos/lockscreen/mos-password-box.py "${MB}" || cp "${MB}.debian" "${MB}"
+fi
 cp /usr/share/mos/lockscreen/MosClock.qml /usr/share/mos/lockscreen/MosLockClock.qml /usr/share/mos/lockscreen/MosUserTile.qml "${DIR}/"
 
 python3 - "${UI}" <<'PY'

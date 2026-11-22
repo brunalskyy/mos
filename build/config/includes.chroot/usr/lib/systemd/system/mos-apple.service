@@ -1,0 +1,10 @@
+[Unit]
+Description=mOS: Apple Control Panel settings (fans, keyboard) on Macs
+After=local-fs.target systemd-modules-load.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/mos-settings/mos-apple-helper boot
+
+[Install]
+WantedBy=multi-user.target

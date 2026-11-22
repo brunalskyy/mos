@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>mOS</vendor>
+  <vendor_url>https://brunalskyy.github.io/mos/</vendor_url>
+  <action id="org.mos.apple">
+    <description>Change your Mac's fan and keyboard settings</description>
+    <message>Apple Control Panel wants to change your Mac's fan or keyboard settings</message>
+    <icon_name>computer-laptop</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/mos-settings/mos-apple-helper</annotate>
+  </action>
+</policyconfig>

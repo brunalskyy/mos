@@ -30,8 +30,9 @@ so="$(find "${STAGE}" -name 'mosglass.so')"
 [ -n "${so}" ] || { echo "E: mosglass.so wasn't built" >&2; exit 1; }
 strip --strip-unneeded "${so}"
 
-KWIN_VER="$(dpkg-query -W -f '${Version}' kwin-wayland 2>/dev/null || dpkg-query -W -f '${Version}' kwin-dev)"
-KWIN_UP="$(echo "${KWIN_VER}" | sed 's/-[^-]*$//')"
+KWIN_VER="$(dpkg-query -W -f '${Version}' kwin-dev)"
+KWIN_UP="$(echo "${KWIN_VER}" | sed 's/^[0-9]*://; s/-[^-]*$//')"
+[ -n "${KWIN_UP}" ] || { echo "E: could not tell which KWin this is" >&2; exit 1; }
 mkdir -p "${STAGE}/DEBIAN" "${STAGE}/usr/share/doc/mos-glass"
 cp "${ROOT}/glass/LICENSE" "${STAGE}/usr/share/doc/mos-glass/copyright"
 cat > "${STAGE}/DEBIAN/control" <<CONTROL

@@ -621,6 +621,28 @@ class Store(QObject):
         subprocess.Popen(["flatpak", "run", app_id], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          start_new_session=True)
 
+    # ------------------------------------------------------------ apps included with your device
+    DEVICE_APPS = [
+        {"vendor": "apple", "id": "mos-apple", "name": "Apple Control Panel", "exec": ["mos-apple"],
+         "icon": "computer-laptop", "summary": "Fans, temperatures, keyboard light, F-keys and battery health for your Mac"},
+    ]
+
+    @Slot(result="QVariantList")
+    def deviceApps(self):
+        """mOS apps made for this computer (only on that brand), shown in the Store's Today page."""
+        try:
+            vendor = open("/sys/class/dmi/id/sys_vendor").read().strip().lower()
+        except OSError:
+            vendor = ""
+        return [{k: v for k, v in a.items() if k != "exec"} for a in self.DEVICE_APPS
+                if a["vendor"] in vendor and shutil.which(a["exec"][0])]
+
+    @Slot(str)
+    def openDeviceApp(self, app_id):
+        for a in self.DEVICE_APPS:
+            if a["id"] == app_id:
+                subprocess.Popen(a["exec"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+
     @Slot()
     def openSoftwareUpdate(self):
         subprocess.Popen(["mos-settings", "update"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

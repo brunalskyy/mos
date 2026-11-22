@@ -17,6 +17,8 @@ fi
 rm -rf "${DEST}"
 cp -a "${SRC}" "${DEST}"
 cp /usr/share/mos/lockscreen/MosClock.qml /usr/share/mos/lockscreen/MosLockClock.qml /usr/share/mos/lockscreen/MosUserTile.qml "${DEST}/"
+# Password box: one clean field with the arrow button joined on (Windows 7 style)
+python3 /usr/share/mos/lockscreen/mos-password-box.py "${DEST}/Login.qml" || cp "${SRC}/Login.qml" "${DEST}/Login.qml"
 
 python3 - "${DEST}/Main.qml" <<'PY'
 import re, sys

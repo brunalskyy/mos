@@ -1,0 +1,11 @@
+[Unit]
+Description=mOS: your profile picture on the sign-in screen
+Before=display-manager.service
+After=local-fs.target home.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/mos/mos-avatar-sync
+
+[Install]
+WantedBy=multi-user.target

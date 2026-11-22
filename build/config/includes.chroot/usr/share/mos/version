@@ -1,17 +1,15 @@
 {
-  "version": "0.7",
-  "build": 9,
+  "version": "0.7.1",
+  "build": 10,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.7)",
+  "name": "mOS 1.0 Amber (0.7.1)",
   "notes": [
-    "Real Liquid Glass: the taskbar, Start, Control Centre, menus and pop-ups bend light at their edges, with a shine that follows your mouse",
-    "Pop-ups drop out of the taskbar like a droplet, and glass that touches melts together",
-    "New widget gallery like iOS and macOS, with new Calendar, Weather and Notes widgets in small, medium and large",
-    "New mOS right-click menu on the desktop",
-    "New lock screen like Windows 11 and sign-in like Windows 7, with your picture in a glass frame",
-    "Pick a different picture for the lock screen and the sign-in screen",
-    "Steadier Wi-Fi on the MacBook Air 2017, also after sleep",
-    "Setup after installing is full screen, and Install mOS sits on the live USB desktop"
+    "Settings opens again",
+    "Right-click the desktop for the mOS menu",
+    "New Apple Control Panel on Macs: fans, temperatures, keyboard light, F-keys and battery health",
+    "New password box on the lock and sign-in screens",
+    "Your picture shows on the sign-in screen when the computer starts",
+    "Taskbar stays see-through so Liquid Glass always shows, and its icons are white in dark mode"
   ],
   "prerelease": true
 }

@@ -6,6 +6,7 @@ the mOS Store replaces Discover, At a glance joins the desktop, and apps get
 round Material buttons.
 0.6.2: the KDE apps mOS replaces disappear from the Start menu and search.
 0.7: mOS Liquid Glass takes over from KDE's blur (if you had glass switched on).
+0.7.1: the taskbar is rebuilt always see-through, so the glass shows over maximised windows.
 
 SPDX-FileCopyrightText: 2026 Bruno Woznicki
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -20,7 +21,7 @@ import mos_settings as m  # noqa: E402
 
 MARK = os.path.join(m.MOS_CONFIG, "migrated")
 APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
-STEP = "0.7"
+STEP = "0.7.1"
 
 # 0.7: the clock and battery widgets got squashed to their smallest size; put them back
 WIDGET_SIZE_JS = """
