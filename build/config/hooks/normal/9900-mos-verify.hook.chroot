@@ -43,7 +43,7 @@ for initrd in /boot/initrd.img-*; do
 done
 
 # mOS 0.4: lock screen clock, Settings app, icon shapes
-if ! grep -q 'MosClock {' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/LockScreenUi.qml; then
+if ! grep -qE 'Mos(Lock)?Clock \{' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/LockScreenUi.qml; then
 	echo "E: the mOS lock screen clock is not in place" >&2
 	fail=1
 fi
@@ -70,7 +70,7 @@ if [ -d /usr/share/plasma/look-and-feel/org.mos.desktop/contents/splash ]; then
 	echo "E: the KDE splash is still in the mOS global theme" >&2
 	fail=1
 fi
-if [ -f /usr/share/sddm/themes/breeze/Main.qml ] && ! grep -q 'MosClock {' /usr/share/sddm/themes/mos/Main.qml 2>/dev/null; then
+if [ -f /usr/share/sddm/themes/breeze/Main.qml ] && ! grep -qE 'Mos(Lock)?Clock \{' /usr/share/sddm/themes/mos/Main.qml 2>/dev/null; then
 	echo "E: the mOS login screen is not in place" >&2
 	fail=1
 fi
