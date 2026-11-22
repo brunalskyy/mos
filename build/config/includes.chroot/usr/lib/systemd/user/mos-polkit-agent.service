@@ -1,0 +1,18 @@
+[Unit]
+Description=mOS password pop-up (polkit authentication agent)
+PartOf=graphical-session.target
+After=plasma-core.target
+Before=plasma-polkit-agent.service
+# If the mOS pop-up ever stops, KDE's password dialog takes over straight away
+OnFailure=plasma-polkit-agent.service
+
+[Service]
+Type=dbus
+BusName=org.mos.PolkitAgent
+# touch ~/.config/mos/classic-password-dialog to use KDE's dialog instead
+ExecCondition=/bin/sh -c '[ ! -e %h/.config/mos/classic-password-dialog ]'
+ExecStart=/usr/bin/python3 /usr/lib/mos-polkit/mos_polkit_agent.py
+Slice=background.slice
+TimeoutStartSec=25
+TimeoutStopSec=5
+Restart=no

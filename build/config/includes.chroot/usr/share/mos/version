@@ -4,6 +4,7 @@
   "codename": "Amber",
   "name": "mOS 1.0 Amber (0.6.2)",
   "notes": [
+    "New mOS password pop-up when an app or update needs your password",
     "New Start button: the Amber mOS logo, filling your icon shape",
     "Open apps show their name next to the icon on the taskbar (Settings > Taskbar to turn off)",
     "Files is laid out like Windows 11 File Explorer, and double-click opens things",
