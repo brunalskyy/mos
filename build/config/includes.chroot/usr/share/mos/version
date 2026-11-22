@@ -5,7 +5,7 @@
   "name": "mOS 1.0 Amber (0.7.3 Insider Preview)",
   "notes": [
     "Taskbar is 70% see-through Liquid Glass, like TranslucentTB",
-    "Taskbar always floats; windows slide underneath it so you see them through the glass",
+    "Taskbar always floats and stays rounded, even with a maximised window",
     "Clock sets itself from the internet"
   ],
   "prerelease": true

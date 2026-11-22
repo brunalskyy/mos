@@ -80,6 +80,25 @@ if [ "${rc}" -ne 0 ]; then
 	exit 0
 fi
 
+# The taskbar always floats: KDE un-floats it (stretches it to the edges, square) whenever a
+# window touches it. mOS keeps it floating and rounded; maximised windows still stop above it.
+PV=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/views/Panel.qml
+if [ -f "${PV}" ] || [ -f "${PV}.debian" ]; then
+	dpkg-divert --local --rename --divert "${PV}.debian" --add "${PV}"
+	cp "${PV}.debian" "${PV}"
+	python3 - "${PV}" <<'PY3' || cp "${PV}.debian" "${PV}"
+import re, sys
+p = sys.argv[1]
+s = open(p).read()
+s2, n = re.subn(r"readonly property bool screenCovered:[^\n]*",
+                "readonly property bool screenCovered: false // mOS: the taskbar always floats", s, count=1)
+if n == 0:
+    sys.exit("W: taskbar float patch didn't match; KDE's behaviour stays")
+open(p, "w").write(s2)
+print("I: mOS taskbar always floats")
+PY3
+fi
+
 # The right-click menu on empty desktop space comes from the desktop's "containment action".
 # New accounts get the mOS one (org.mos.desktopmenu plugin) from the Plasma shell defaults.
 DEF=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/defaults

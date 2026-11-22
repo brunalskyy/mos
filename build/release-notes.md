@@ -3,7 +3,7 @@
 The first mOS Insider Preview: try the newest mOS before everyone else. Expect a few rough edges, and please send feedback on the website.
 
 - **See-through Liquid Glass taskbar**: 70% see-through like TranslucentTB on Windows, with no more grey haze, and Liquid Glass frost, bending edges and rim on top
-- **Taskbar always floats**: it stays rounded and floating even with a maximised window, and windows slide underneath it so you see them through the glass
+- **Taskbar always floats**: it stays rounded and floating even with a maximised window. Maximised windows stop just above it, and you can drag a window under it to see the glass bend it
 - **Clock sets itself**: mOS now syncs the time from the internet (Settings > Date & time > Set time automatically)
 
 Heads up: on a physical machine, drivers for your hardware may not all be installed yet. In VMware it runs fine, but some features may be limited.

@@ -67,9 +67,9 @@ var sizes = { small: 2.2, medium: 2.75, large: 3.4 };
 var p = new Panel;
 p.location = opts.position;
 p.height = Math.round(gridUnit * (sizes[opts.size] || 2.75));
-// "Windows go below": the taskbar always stays floating and rounded, and windows (even
-// maximised ones) slide underneath it, so you see them through the Liquid Glass
-p.hiding = opts.autohide ? "autohide" : "windowsgobelow";
+// Always visible: maximised windows stop above the taskbar. It still always floats (see the
+// 9061 hook), and you can drag a window under it to see the Liquid Glass
+p.hiding = opts.autohide ? "autohide" : "none";
 // Always see-through, so the Liquid Glass shows even when a window is maximised
 p.opacity = "translucent";
 
