@@ -2,7 +2,7 @@
   "version": "0.7.3",
   "build": 12,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.7.3)",
+  "name": "mOS 1.0 Amber (0.7.3 Insider Preview)",
   "notes": [
     "Taskbar is 70% see-through Liquid Glass, like TranslucentTB",
     "Taskbar always floats; windows slide underneath it so you see them through the glass",

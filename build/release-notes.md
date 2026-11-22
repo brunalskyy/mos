@@ -1,4 +1,6 @@
-**mOS 1.0 Amber (0.7.3 preview)**
+**mOS 1.0 Amber (0.7.3 Insider Preview)**
+
+The first mOS Insider Preview: try the newest mOS before everyone else. Expect a few rough edges, and please send feedback on the website.
 
 - **See-through Liquid Glass taskbar**: 70% see-through like TranslucentTB on Windows, with no more grey haze, and Liquid Glass frost, bending edges and rim on top
 - **Taskbar always floats**: it stays rounded and floating even with a maximised window, and windows slide underneath it so you see them through the glass
