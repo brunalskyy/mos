@@ -8,18 +8,18 @@ StorePage {
     id: games
     title: "Games"
     property int shown: 60
-    property var top: { store.appCount; return store.category("games", 8) }
+    property var topGames: { store.appCount; return store.category("games", 8) }
 
     HeroCard {
         Layout.fillWidth: true
-        visible: games.top.length > 0
-        app: games.top[0] || ({})
+        visible: games.topGames.length > 0
+        app: games.topGames[0] || ({})
         label: "TOP GAME"
         onOpen: function (id) { games.open(id) }
     }
     Shelf {
         title: "Popular games"; subtitle: "Launchers, classics and more"
-        apps: games.top.slice(1)
+        apps: games.topGames.slice(1)
         onOpen: function (id) { games.open(id) }
     }
     ColumnLayout {
