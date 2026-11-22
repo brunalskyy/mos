@@ -1,0 +1,10 @@
+{
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki (mOS)" }],
+        "Description": "The mOS menu when you right-click the desktop",
+        "Icon": "mos-logo",
+        "Id": "org.mos.desktopmenu",
+        "License": "GPL",
+        "Name": "mOS desktop menu"
+    }
+}

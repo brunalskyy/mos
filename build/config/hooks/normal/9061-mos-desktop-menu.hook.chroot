@@ -42,9 +42,6 @@ def patch(path, steps):
 # Right-click on empty desktop space -> the mOS menu (the first openContextMenu(main, ...) is the
 # empty-space one; right-clicking a file keeps the full file menu)
 patch(fv, [
-    # KDE lets right-clicks on empty desktop space fall through to its own menu; catch them here
-    (r"(return root\.isPopup \? \(Qt\.LeftButton \| Qt\.MiddleButton \| Qt\.BackButton\)\s*:\s*)Qt\.LeftButton;",
-     r"\1(Qt.LeftButton | Qt.RightButton);"),
     (r"dir\.openContextMenu\(main,\s*mouse\.modifiers\);",
      "if (root.isContainment) { var mosAt = mapToItem(main, mouse.x, mouse.y); "
      "mosDesktopMenu.popup(main, mosAt.x, mosAt.y); } else { dir.openContextMenu(main, mouse.modifiers); }"),
@@ -83,5 +80,24 @@ if [ "${rc}" -ne 0 ]; then
 	exit 0
 fi
 
-grep -q 'mosDesktopMenu.popup' "${FV}" || echo "W: mOS desktop menu missing" >&2
+# The right-click menu on empty desktop space comes from the desktop's "containment action".
+# New accounts get the mOS one (org.mos.desktopmenu plugin) from the Plasma shell defaults.
+DEF=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/defaults
+if ls /usr/lib/*/qt6/plugins/plasma/containmentactions/org.mos.desktopmenu.so >/dev/null 2>&1 && \
+	{ [ -f "${DEF}" ] || [ -f "${DEF}.debian" ]; }; then
+	dpkg-divert --local --rename --divert "${DEF}.debian" --add "${DEF}"
+	python3 - "${DEF}.debian" "${DEF}" <<'PY2'
+import sys
+src, dst = sys.argv[1], sys.argv[2]
+out, group = [], ""
+for line in open(src).read().splitlines():
+    if line.startswith("["):
+        group = line
+    if group == "[Desktop][ContainmentActions]" and line.startswith("RightButton;NoModifier="):
+        line = "RightButton;NoModifier=org.mos.desktopmenu"
+    out.append(line)
+open(dst, "w").write("\n".join(out) + "\n")
+PY2
+	grep -q 'org.mos.desktopmenu' "${DEF}" && echo "I: mOS right-click menu is the desktop default"
+fi
 exit 0

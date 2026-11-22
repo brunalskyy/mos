@@ -5,6 +5,7 @@ on:
     branches-ignore: [main]
     paths:
       - "build/glass/**"
+      - "build/desktopmenu/**"
       - "build/make-glass.sh"
       - "build/make-deb.sh"
       - ".github/workflows/glass-check.yml"
@@ -26,6 +27,7 @@ jobs:
           build/make-deb.sh out/deb
           dpkg-deb -c out/deb/*.deb | grep -E "mosglass|glass-kwin|mos-glass"
           dpkg-deb -c out/deb/*.deb | grep -q mosglass.so
+          dpkg-deb -c out/deb/*.deb | grep -q org.mos.desktopmenu.so
       - uses: actions/upload-artifact@v4
         with:
           name: mos-glass

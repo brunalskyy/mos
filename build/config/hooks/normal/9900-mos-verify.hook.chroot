@@ -162,8 +162,8 @@ for f in /usr/bin/mos-apple /usr/lib/mos-settings/mos_apple.py /usr/lib/mos-sett
 done
 grep -q 'mos-widgets' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/explorer/WidgetExplorer.qml 2>/dev/null \
 	|| echo "W: Add Widgets still opens KDE's list" >&2
-grep -q 'Qt.LeftButton | Qt.RightButton);' /usr/share/plasma/plasmoids/org.kde.desktopcontainment/contents/ui/FolderView.qml 2>/dev/null \
-	|| echo "W: right-click on the desktop still goes to KDE's menu" >&2
+grep -q 'org.mos.desktopmenu' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/defaults 2>/dev/null \
+	|| echo "W: right-click on the desktop still gives KDE's menu" >&2
 grep -q 'mOS password box' /usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen/MainBlock.qml 2>/dev/null \
 	|| echo "W: lock screen password box is KDE's" >&2
 # 0.7: mOS desktop menu, widget gallery and the new widgets
