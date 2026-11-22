@@ -1,6 +1,7 @@
 #!/bin/sh
-# mOS lock screen: swap the Plasma lock screen clock for the Pixel-style
-# stacked mOS clock (left side, Material You accent on the minutes).
+# mOS lock screen, like Windows 11 then Windows 7: first your wallpaper with a big
+# time and date; press any key or click and the sign-in appears, with your
+# picture in a glass frame, your name, and the password box with an arrow.
 #
 # The original file is kept with dpkg-divert, so a Plasma update installs its
 # copy next to ours instead of over it. If our lock screen ever failed to load,
@@ -19,30 +20,100 @@ fi
 
 dpkg-divert --local --rename --divert "${UI}.debian" --add "${UI}"
 cp "${UI}.debian" "${UI}"
-cp /usr/share/mos/lockscreen/MosClock.qml "${DIR}/MosClock.qml"
+cp /usr/share/mos/lockscreen/MosClock.qml /usr/share/mos/lockscreen/MosLockClock.qml /usr/share/mos/lockscreen/MosUserTile.qml "${DIR}/"
 
 python3 - "${UI}" <<'PY'
 import re, sys
 path = sys.argv[1]
 s = open(path).read()
+
+def must(old, new, count=1):
+    global s
+    if old not in s:
+        sys.exit("E: lock screen: can't find: " + old[:60])
+    s = s.replace(old, new, count)
+
+# 1. Windows 11 style clock: big time and date, centred near the top; it slides
+#    away when the sign-in box appears
 m = re.search(r"\n(\s*)Clock \{\n\s*id: clock\n.*?\n\1\}\n", s, re.S)
 if not m:
     sys.exit("E: could not find the clock in LockScreenUi.qml")
-ind = m.group(1)
-new = f"""
-{ind}MosClock {{
-{ind}    id: clock
-{ind}    property Item shadow: clockShadow
-{ind}    visible: config.alwaysShowClock
-{ind}    digitSize: Math.round(Math.max(72, Math.min(parent.height * 0.17, 210)))
-{ind}    anchors.left: parent.left
-{ind}    anchors.leftMargin: Math.round(parent.width * 0.07)
-{ind}    anchors.verticalCenter: parent.verticalCenter
-{ind}}}
-"""
-s = s[:m.start()] + new + s[m.end():]
+i = m.group(1)
+s = s[:m.start()] + f"""
+{i}MosLockClock {{
+{i}    id: clock
+{i}    property Item shadow: clockShadow
+{i}    visible: config.alwaysShowClock
+{i}    hidden: lockScreenRoot.uiVisible
+{i}    digitSize: Math.round(Math.max(80, Math.min(parent.height * 0.17, 180)))
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    y: Math.round(parent.height * 0.13)
+{i}}}
+{i}Rectangle {{
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    anchors.bottom: parent.bottom
+{i}    anchors.bottomMargin: Kirigami.Units.gridUnit * 4
+{i}    width: mosHint.implicitWidth + Kirigami.Units.gridUnit * 2
+{i}    height: mosHint.implicitHeight + Kirigami.Units.gridUnit * 0.8
+{i}    radius: height / 2
+{i}    color: Qt.rgba(0, 0, 0, 0.32)
+{i}    opacity: lockScreenRoot.uiVisible ? 0 : 1
+{i}    Behavior on opacity {{ NumberAnimation {{ duration: 250 }} }}
+{i}    Text {{
+{i}        id: mosHint
+{i}        anchors.centerIn: parent
+{i}        text: "Press any key or click to unlock"
+{i}        color: "white"
+{i}        font.family: "Inter"
+{i}        font.pixelSize: Kirigami.Units.gridUnit * 0.9
+{i}    }}
+{i}}}
+""" + s[m.end():]
+
+# 2. the clock draws its own soft shadow
+must("visible: !softwareRendering && config.alwaysShowClock", "visible: false")
+
+# 3. Windows 7 style sign-in: our framed picture instead of KDE's round one
+must("showUserList: userList.y + mainStack.y > 0", "showUserList: false")
+m = re.search(r"\n(\s*)ListModel \{\n\s*id: users\n", s)
+if not m:
+    sys.exit("E: could not find the user list in LockScreenUi.qml")
+i = m.group(1)
+s = s[:m.start()] + f"""
+{i}MosUserTile {{
+{i}    id: mosUserTile
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    y: Math.round(parent.height / 2 - height - Kirigami.Units.gridUnit * 0.5)
+{i}    size: Math.round(Math.max(120, Math.min(parent.height * 0.19, 180)))
+{i}    opacity: mainStack.opacity
+{i}    visible: opacity > 0 && mainStack.depth === 1
+{i}    name: kscreenlocker_userName
+{i}    image: kscreenlocker_userImage !== "" ? "file://" + kscreenlocker_userImage : ""
+{i}}}
+{i}Rectangle {{
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    anchors.bottom: parent.bottom
+{i}    anchors.bottomMargin: Kirigami.Units.gridUnit * 4
+{i}    width: mosBrand.implicitWidth + Kirigami.Units.gridUnit * 2
+{i}    height: mosBrand.implicitHeight + Kirigami.Units.gridUnit * 0.8
+{i}    radius: height / 2
+{i}    color: Qt.rgba(0, 0, 0, 0.32)
+{i}    opacity: mainStack.opacity
+{i}    Text {{
+{i}        id: mosBrand
+{i}        anchors.centerIn: parent
+{i}        text: "<b>m</b>OS 1.0 Amber"
+{i}        textFormat: Text.StyledText
+{i}        color: "white"
+{i}        font.family: "Inter"
+{i}        font.pixelSize: Kirigami.Units.gridUnit * 1.2
+{i}    }}
+{i}}}
+""" + s[m.start():]
+
 open(path, "w").write(s)
-print("I: lock screen clock swapped for MosClock")
+print("I: lock screen: Windows 11 clock first, then Windows 7 style sign-in")
 PY
 
-grep -q 'MosClock {' "${UI}"
+grep -q 'MosLockClock {' "${UI}"
+grep -q 'MosUserTile {' "${UI}"

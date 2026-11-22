@@ -439,15 +439,57 @@ class Backend(QObject):
     @Slot(str)
     def setWallpaper(self, path):
         sh(["plasma-apply-wallpaperimage", path])
-        # lock screen and login screen follow the desktop
-        kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + path)
         data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
         data["wallpaper"] = path
         save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        # the lock screen follows the desktop, unless you picked its own picture
+        if not data.get("lockWallpaper"):
+            kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + path)
         if themed_icons_on():
             # wait a moment for mOS to pick the new colours from the wallpaper
             self._job("icons", lambda: (__import__("time").sleep(4) or sh(["mos-themed-icons"], timeout=600)[0], "ok"))
         self.changed.emit()
+
+    # ------------------------------------------------------------ Lock screen picture
+    @Property(str, notify=changed)
+    def lockWallpaper(self):
+        """The lock screen's own picture, or "" when it's the same as the desktop."""
+        return load_json(os.path.join(MOS_CONFIG, "style.json"), {}).get("lockWallpaper", "")
+
+    @Property(bool, notify=changed)
+    def loginFollowsLock(self):
+        return load_json(os.path.join(MOS_CONFIG, "style.json"), {}).get("loginFollowsLock", True)
+
+    @Slot(str)
+    def setLockWallpaper(self, path):
+        if path.startswith("file://"):
+            path = QUrl(path).toLocalFile()
+        data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
+        data["lockWallpaper"] = path
+        save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        shown = path or data.get("wallpaper") or "/usr/share/wallpapers/mOS/contents/images/2880x1800.png"
+        kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + shown)
+        dbus_user("call", "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.kde.screensaver", "configure")
+        if data.get("loginFollowsLock", True):
+            self._set_login_wallpaper(shown)
+        self.changed.emit()
+
+    @Slot(bool)
+    def setLoginFollowsLock(self, on):
+        data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
+        data["loginFollowsLock"] = bool(on)
+        save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        if on:
+            self._set_login_wallpaper(data.get("lockWallpaper") or data.get("wallpaper")
+                                      or "/usr/share/wallpapers/mOS/contents/images/2880x1800.png")
+        self.changed.emit()
+
+    def _set_login_wallpaper(self, path):
+        # the sign-in screen belongs to the whole computer, so this asks for your password
+        def go():
+            ok = sh(["pkexec", "/usr/lib/mos-settings/mos-login-wallpaper", path], timeout=180)[0]
+            return ok, "Sign-in screen picture changed" if ok else "The sign-in screen picture wasn't changed"
+        self._job("login-wallpaper", go)
 
     # ------------------------------------------------------------ Wi-Fi
     @Slot(result="QVariantMap")

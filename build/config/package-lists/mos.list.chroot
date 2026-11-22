@@ -86,6 +86,7 @@ librsvg2-bin
 
 # mOS Settings pages (0.5): tools each page uses
 qml6-module-qtquick-effects
+qml6-module-qtquick-dialogs
 network-manager
 bluez
 brightnessctl

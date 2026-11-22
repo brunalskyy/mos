@@ -31,7 +31,7 @@ Version: ${VER}
 Architecture: all
 Maintainer: Bruno Woznicki <brunalskyy@users.noreply.github.com>
 Installed-Size: ${SIZE}
-Depends: python3, python3-pil, librsvg2-bin, python3-pyside6.qtquick, python3-pyside6.qtquickcontrols2, qml6-module-qtquick-effects, python3-gi, gir1.2-flatpak-1.0, gir1.2-polkit-1.0, flatpak, qt-style-kvantum, qt-style-kvantum-themes
+Depends: python3, python3-pil, librsvg2-bin, python3-pyside6.qtquick, python3-pyside6.qtquickcontrols2, qml6-module-qtquick-effects, qml6-module-qtquick-dialogs, python3-gi, gir1.2-flatpak-1.0, gir1.2-polkit-1.0, flatpak, qt-style-kvantum, qt-style-kvantum-themes
 Section: x11
 Priority: optional
 Homepage: https://brunalskyy.github.io/mos/
