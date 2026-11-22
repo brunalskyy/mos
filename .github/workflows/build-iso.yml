@@ -55,7 +55,7 @@ jobs:
               export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt-get install -y --no-install-recommends \
-                live-build debootstrap ca-certificates \
+                live-build debootstrap ca-certificates apt-utils \
                 squashfs-tools xorriso mtools dosfstools cpio \
                 grub-efi-amd64-bin grub-pc-bin syslinux syslinux-common isolinux
               lb --version
