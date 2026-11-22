@@ -39,6 +39,8 @@ input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--container)}
 .btn:disabled{opacity:.6;cursor:wait}
 .btn.ghost{background:#fff;color:var(--text);border:1px solid #CFCBDC;display:flex;align-items:center;justify-content:center;gap:10px}
 .btn.ghost:hover{background:#F6F4FB}
+.insider{margin:22px 0 6px;padding:18px;border-radius:20px;background:rgba(232,131,58,.10);border:1px solid rgba(232,131,58,.25)}
+.insider-title{margin:0;font:700 17px Inter,system-ui,sans-serif;color:var(--text)}
 .btn.text{background:transparent;color:var(--primary-dark);margin-top:8px;padding:8px}
 .or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:18px 0 0}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -150,6 +152,15 @@ Continue with phone number
 <div class="row" id="phoneInfoRow"><span>Phone</span><span id="infoPhone"></span></div>
 <div class="row"><span>Email checked</span><span id="infoVerified"></span></div>
 <div class="row"><span>Member since</span><span id="infoSince"></span></div>
+</div>
+<div class="insider">
+<p class="insider-title">mOS Insider Preview</p>
+<p class="sub" style="margin:4px 0 0">Try the newest mOS before everyone else. Previews can have rough edges.</p>
+<button class="btn" id="insiderJoin" type="button">Join the Insider Preview</button>
+<div id="insiderIn" hidden>
+<p class="sub" style="margin:14px 0 0">You're in! Download the newest mOS preview here. The ISO comes in two parts (.7z.001 and .7z.002): download both into one folder and open the .001 file with 7-Zip to get the .iso.</p>
+<a class="btn" id="insiderLink" href="https://github.com/brunalskyy/mos/releases" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box">Get mOS 0.7.1 Insider Preview</a>
+</div>
 </div>
 <label for="newName">Change your name</label>
 <input id="newName" autocomplete="name">
@@ -291,6 +302,10 @@ $("verify").onclick = async () => {
 };
 
 $("signOut").onclick = () => signOut(auth);
+// mOS Insider Preview: remembered on this browser
+function showInsider(on) { $("insiderIn").hidden = !on; $("insiderJoin").hidden = on; }
+try { showInsider(localStorage.getItem("mosInsider") === "1"); } catch (e) {}
+$("insiderJoin").onclick = () => { try { localStorage.setItem("mosInsider", "1"); } catch (e) {} showInsider(true); };
 
 // Sign in with a phone number (text message code)
 let verifier = null;
