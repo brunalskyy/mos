@@ -34,6 +34,7 @@ DESTDIR="${STAGE}" cmake --install "${MENU_BUILD}"
 rm -rf "${MENU_BUILD}"
 menu="$(find "${STAGE}" -name 'org.mos.desktopmenu.so')"
 [ -n "${menu}" ] || { echo "E: the mOS desktop menu plugin wasn't built" >&2; exit 1; }
+case "${menu}" in */qt6/plugins/plasma/containmentactions/*) ;; *) echo "E: desktop menu plugin in the wrong place: ${menu}" >&2; exit 1 ;; esac
 strip --strip-unneeded "${menu}"
 find "${STAGE}" -type f
 so="$(find "${STAGE}" -name 'mosglass.so')"
