@@ -193,8 +193,8 @@ fi
 
 # Desktop (KDE Plasma): mOS global theme with the top bar + dock layout, and desktop icons
 LAYOUT=/usr/share/plasma/look-and-feel/org.mos.desktop/contents/layouts/org.kde.plasma.desktop-layout.js
-if ! grep -q 'org.kde.plasma.icontasks' "${LAYOUT}" 2>/dev/null; then
-	echo "E: the mOS desktop layout (dock) is missing" >&2
+if ! grep -qE 'org.kde.plasma.(icontasks|taskmanager)' "${LAYOUT}" 2>/dev/null; then
+	echo "E: the mOS desktop layout (taskbar) is missing" >&2
 	fail=1
 fi
 if ! grep -q '^LookAndFeelPackage=org.mos.desktop' /etc/xdg/kdeglobals; then
