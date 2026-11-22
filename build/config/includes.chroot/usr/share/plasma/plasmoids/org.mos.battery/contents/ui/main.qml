@@ -25,7 +25,7 @@ PlasmoidItem {
         onNewData: function (source, data) {
             var lines = (data.stdout || "").trim().split("\n")
             root.present = lines.length >= 2 && lines[0] !== ""
-            root.percent = parseInt(lines[0]) || 0
+            root.percent = Math.max(0, Math.min(100, parseInt(lines[0]) || 0))   // some MacBooks report 101-102%
             root.charging = (lines[1] || "") === "Charging" || (lines[1] || "") === "Full"
         }
     }

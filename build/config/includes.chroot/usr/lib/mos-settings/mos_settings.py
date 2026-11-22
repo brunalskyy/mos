@@ -729,7 +729,7 @@ class Backend(QObject):
                 k, _, v = line.strip().partition(":")
                 v = v.strip()
                 if k == "percentage":
-                    res["percent"] = int(float(v.rstrip("%").replace(",", ".") or 0))
+                    res["percent"] = max(0, min(100, int(float(v.rstrip("%").replace(",", ".") or 0))))
                 elif k == "state":
                     res["state"] = {"charging": "Charging", "discharging": "On battery",
                                     "fully-charged": "Fully charged"}.get(v, v.capitalize())
