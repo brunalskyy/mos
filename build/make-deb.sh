@@ -15,9 +15,21 @@ trap 'rm -rf "${STAGE}"' EXIT
 cp -a "${INC}/." "${STAGE}/"
 find "${STAGE}" -name '__pycache__' -prune -exec rm -rf {} +
 
+# mOS Liquid Glass (KWin effect, built in Debian 13 by make-glass.sh) rides along in this
+# package, so computers that update from an older mOS get it too
+GLASS_DEB="$(ls "${ROOT}"/../out/glass/mos-glass_*_amd64.deb 2>/dev/null | head -n 1 || true)"
+if [ -n "${GLASS_DEB}" ]; then
+	dpkg-deb -x "${GLASS_DEB}" "${STAGE}"
+	rm -rf "${STAGE}/usr/share/doc/mos-glass"
+	cp "${ROOT}/../out/glass/mos-glass.kwin-version" "${STAGE}/usr/share/mos/glass-kwin-version"
+	echo "I: mOS Liquid Glass included (built for KWin $(cat "${STAGE}/usr/share/mos/glass-kwin-version"))"
+else
+	echo "W: mOS Liquid Glass wasn't built; this package has KDE's normal blur only" >&2
+fi
+
 # Setup steps that also run after an update (they are safe to run again)
 mkdir -p "${STAGE}/usr/lib/mos/setup"
-for step in 9000 9010 9050 9055 9056 9057 9058 9059 9060 9065 9068 9070; do
+for step in 9000 9010 9050 9055 9056 9057 9058 9059 9060 9061 9065 9068 9070; do
 	src="$(ls "${HOOKS}/${step}"-*.hook.chroot)"
 	cp "${src}" "${STAGE}/usr/lib/mos/setup/${step}-$(basename "${src}" .hook.chroot | cut -d- -f2-).sh"
 done
@@ -31,7 +43,7 @@ Version: ${VER}
 Architecture: all
 Maintainer: Bruno Woznicki <brunalskyy@users.noreply.github.com>
 Installed-Size: ${SIZE}
-Depends: python3, python3-pil, librsvg2-bin, python3-pyside6.qtquick, python3-pyside6.qtquickcontrols2, qml6-module-qtquick-effects, python3-gi, gir1.2-flatpak-1.0, gir1.2-polkit-1.0, flatpak, qt-style-kvantum, qt-style-kvantum-themes
+Depends: python3, python3-pil, librsvg2-bin, python3-pyside6.qtquick, python3-pyside6.qtnetwork, python3-pyside6.qtquickcontrols2, qml6-module-qtquick-effects, qml6-module-qtquick-dialogs, python3-gi, gir1.2-flatpak-1.0, gir1.2-polkit-1.0, flatpak, qt-style-kvantum, qt-style-kvantum-themes
 Section: x11
 Priority: optional
 Homepage: https://brunalskyy.github.io/mos/

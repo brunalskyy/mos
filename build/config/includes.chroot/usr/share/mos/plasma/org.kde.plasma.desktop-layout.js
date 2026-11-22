@@ -61,6 +61,11 @@ taskbar.hiding = "none";
 var start = taskbar.addWidget("org.kde.plasma.kickoff");
 start.currentConfigGroup = ["General"];
 start.writeConfig("icon", "mos-logo");
+// Start menu favourites: mOS apps (not the KDE ones mOS replaces)
+start.writeConfig("favorites", ["preferred://browser", "applications:mos-settings.desktop", "applications:mos-store.desktop",
+                                "applications:org.kde.dolphin.desktop", "applications:org.kde.konsole.desktop",
+                                "applications:org.kde.kwrite.desktop", "applications:org.kde.spectacle.desktop"]);
+start.writeConfig("favoritesPortedToKAstats", "false");
 
 // Open apps show their name next to the icon, like Windows 10 (Settings > Taskbar to turn off)
 var tasks = taskbar.addWidget("org.kde.plasma.taskmanager");

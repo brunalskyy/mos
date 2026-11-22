@@ -16,30 +16,76 @@ fi
 
 rm -rf "${DEST}"
 cp -a "${SRC}" "${DEST}"
-cp /usr/share/mos/lockscreen/MosClock.qml "${DEST}/MosClock.qml"
+cp /usr/share/mos/lockscreen/MosClock.qml /usr/share/mos/lockscreen/MosLockClock.qml /usr/share/mos/lockscreen/MosUserTile.qml "${DEST}/"
 
 python3 - "${DEST}/Main.qml" <<'PY'
 import re, sys
 path = sys.argv[1]
 s = open(path).read()
+
+def must(old, new):
+    global s
+    if old not in s:
+        sys.exit("E: login screen: can't find: " + old[:60])
+    s = s.replace(old, new, 1)
+
+# start on the clock (like Windows 11); any key or click shows the sign-in
+must("property bool uiVisible: true", "property bool uiVisible: false")
+
 m = re.search(r"\n(\s*)Clock \{\n\s*id: clock\n.*?\n\1\}\n", s, re.S)
 if not m:
     sys.exit("E: could not find the clock in the login screen")
-ind = m.group(1)
-new = f"""
-{ind}MosClock {{
-{ind}    id: clock
-{ind}    property Item shadow: clockShadow
-{ind}    visible: config.showClock === "true"
-{ind}    digitSize: Math.round(Math.max(72, Math.min(parent.height * 0.17, 210)))
-{ind}    anchors.left: parent.left
-{ind}    anchors.leftMargin: Math.round(parent.width * 0.07)
-{ind}    anchors.verticalCenter: parent.verticalCenter
-{ind}}}
-"""
-s = s[:m.start()] + new + s[m.end():]
+i = m.group(1)
+s = s[:m.start()] + f"""
+{i}MosLockClock {{
+{i}    id: clock
+{i}    property Item shadow: clockShadow
+{i}    visible: config.showClock === "true"
+{i}    hidden: loginScreenRoot.uiVisible
+{i}    digitSize: Math.round(Math.max(80, Math.min(parent.height * 0.17, 180)))
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    y: Math.round(parent.height * 0.13)
+{i}}}
+{i}Rectangle {{
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    anchors.bottom: parent.bottom
+{i}    anchors.bottomMargin: Kirigami.Units.gridUnit * 4
+{i}    width: mosHint.implicitWidth + Kirigami.Units.gridUnit * 2
+{i}    height: mosHint.implicitHeight + Kirigami.Units.gridUnit * 0.8
+{i}    radius: height / 2
+{i}    color: Qt.rgba(0, 0, 0, 0.32)
+{i}    Text {{
+{i}        id: mosHint
+{i}        anchors.centerIn: parent
+{i}        text: loginScreenRoot.uiVisible ? "<b>m</b>OS 1.0 Amber" : "Press any key or click to sign in"
+{i}        textFormat: Text.StyledText
+{i}        color: "white"
+{i}        font.family: "Inter"
+{i}        font.pixelSize: Kirigami.Units.gridUnit * (loginScreenRoot.uiVisible ? 1.2 : 0.9)
+{i}    }}
+{i}}}
+{i}MosUserTile {{
+{i}    readonly property Item cur: userListComponent.userList.currentItem
+{i}    anchors.horizontalCenter: parent.horizontalCenter
+{i}    y: Math.round(parent.height / 2 - height - Kirigami.Units.gridUnit * 0.5)
+{i}    size: Math.round(Math.max(120, Math.min(parent.height * 0.19, 180)))
+{i}    opacity: mainStack.opacity
+{i}    visible: opacity > 0 && mainStack.depth === 1 && userListComponent.showUserList
+{i}    name: cur ? (cur.name || cur.userName) : ""
+{i}    image: cur && cur.avatarPath ? (cur.avatarPath.indexOf("file:") === 0 ? cur.avatarPath : "file://" + cur.avatarPath) : ""
+{i}}}
+""" + s[m.end():]
+
+must('visible: !softwareRendering && config.showClock === "true"', "visible: false")
+
+# hide KDE's round pictures (our framed one shows the chosen person; arrow keys switch)
+m = re.search(r"\n(\s*)initialItem: Login \{\n\s*id: userListComponent\n", s)
+if not m:
+    sys.exit("E: could not find the sign-in box in the login screen")
+s = s[:m.end()] + m.group(1) + "    Component.onCompleted: userList.opacity = 0\n" + s[m.end():]
+
 open(path, "w").write(s)
-print("I: login screen clock swapped for MosClock")
+print("I: login screen: Windows 11 clock first, then Windows 7 style sign-in")
 PY
 
 cat > "${DEST}/theme.conf.user" <<'CONF'

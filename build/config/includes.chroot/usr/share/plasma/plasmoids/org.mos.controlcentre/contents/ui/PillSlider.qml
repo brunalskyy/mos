@@ -19,6 +19,15 @@ Rectangle {
     color: off
     clip: true
 
+    // Liquid: the pill swells while you drag it, then settles with a little wobble
+    transform: Scale {
+        origin.x: s.width / 2; origin.y: s.height / 2
+        xScale: drag.pressed ? 1.02 : 1
+        yScale: drag.pressed ? 1.14 : 1
+        Behavior on xScale { SpringAnimation { spring: 4.5; damping: 0.22; epsilon: 0.002 } }
+        Behavior on yScale { SpringAnimation { spring: 4.5; damping: 0.22; epsilon: 0.002 } }
+    }
+
     Rectangle {
         id: fill
         height: parent.height

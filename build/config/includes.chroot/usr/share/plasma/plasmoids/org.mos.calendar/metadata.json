@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [{ "Name": "Bruno Woznicki" }],
+        "Category": "Date and Time",
+        "Description": "Today's date, or the whole month when it's big",
+        "Icon": "view-calendar",
+        "Id": "org.mos.calendar",
+        "License": "GPL-3.0-or-later",
+        "Name": "mOS Calendar",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

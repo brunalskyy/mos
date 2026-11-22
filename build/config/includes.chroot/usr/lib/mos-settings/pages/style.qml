@@ -110,6 +110,9 @@ ColumnLayout {
                      MSwitch { checked: backend.appStyle; onToggled: function (v) { backend.setAppStyle(v) } } }
         SettingRow { title: "Liquid glass"; sub: "See-through frosted taskbar, menus and pop-ups"
                      MSwitch { checked: backend.effects.glass; onToggled: function (v) { backend.setEffect("glass", v) } } }
+        SettingRow { title: "Light-bending edges"; sub: "Real liquid glass: edges bend and magnify what's behind, the rim shines towards your mouse and pop-ups drop out of the taskbar"
+                     visible: backend.effects.liquidAvailable; enabled: backend.effects.glass
+                     MSwitch { checked: backend.effects.liquid; onToggled: function (v) { backend.setEffect("liquid", v) } } }
         SettingRow { title: "Zoom windows open and closed"
                      MSwitch { checked: backend.effects.zoom; onToggled: function (v) { backend.setEffect("zoom", v) } } }
         SettingRow { title: "Genie when minimising"; sub: "Like a Mac"

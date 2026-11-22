@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Authors": [
+            { "Name": "Bruno Woznicki (mOS)" },
+            { "Name": "KWin development team" },
+            { "Name": "taj_ny (Better Blur)" },
+            { "Name": "DaddelZeit and iGerman00 (refraction)" }
+        ],
+        "Category": "Appearance",
+        "Description": "mOS Liquid Glass: frosted glass that bends light at its edges, with a shiny rim that follows the mouse",
+        "EnabledByDefault": false,
+        "License": "GPL",
+        "Name": "mOS Liquid Glass"
+    }
+}

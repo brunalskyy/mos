@@ -113,7 +113,7 @@ def state():
     s["muted"] = "yes" in out
     for b in sorted(glob.glob("/sys/class/power_supply/BAT*")):
         try:
-            s["battery"] = int(open(os.path.join(b, "capacity")).read().strip())
+            s["battery"] = max(0, min(100, int(open(os.path.join(b, "capacity")).read().strip())))
             s["charging"] = open(os.path.join(b, "status")).read().strip() in ("Charging", "Full")
         except (OSError, ValueError):
             pass

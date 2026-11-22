@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>mOS</vendor>
+  <vendor_url>https://brunalskyy.github.io/mos</vendor_url>
+  <action id="org.mos.login-wallpaper">
+    <description>Change the picture on the sign-in screen</description>
+    <message>Settings wants to change the picture on the sign-in screen.</message>
+    <icon_name>preferences-desktop-wallpaper</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/mos-settings/mos-login-wallpaper</annotate>
+  </action>
+</policyconfig>

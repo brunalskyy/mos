@@ -8,6 +8,9 @@ import QtQuick.Layouts
 import "components"
 
 ApplicationWindow {
+    // Set from Python when Settings is opened again on a page (only one window)
+    property string openPage: ""
+    onOpenPageChanged: if (openPage !== "") { if (isGeneral(openPage)) { Nav.top("general"); Nav.go(openPage) } else Nav.top(openPage); openPage = "" }
     id: win
     width: 1100
     height: 740
@@ -166,6 +169,33 @@ ApplicationWindow {
                     clip: true
                     spacing: 2
                     boundsBehavior: Flickable.StopAtBounds
+
+                    // Liquid pill: one pill that stretches like a droplet to the page you pick
+                    // (the front edge races ahead, the back edge catches up)
+                    property Item pillOwner: null
+                    Rectangle {
+                        id: pill
+                        parent: list.contentItem
+                        z: -1
+                        x: 0
+                        width: list.width
+                        radius: 25
+                        color: Theme.primaryContainer
+                        visible: list.pillOwner !== null && list.pillOwner.current
+                        property real targetTop: list.pillOwner ? list.pillOwner.y : 0
+                        property real targetBottom: list.pillOwner ? list.pillOwner.y + list.pillOwner.height : 0
+                        property real top: targetTop
+                        property real bottom: targetBottom
+                        property bool down: true
+                        property bool ready: false
+                        onTargetTopChanged: down = targetTop >= top
+                        y: top
+                        height: Math.max(20, bottom - top)
+                        Behavior on top { enabled: pill.ready; SpringAnimation { spring: pill.down ? 2.2 : 4.2; damping: 0.3; epsilon: 0.25 } }
+                        Behavior on bottom { enabled: pill.ready; SpringAnimation { spring: pill.down ? 4.2 : 2.2; damping: 0.3; epsilon: 0.25 } }
+                        Component.onCompleted: Qt.callLater(function () { pill.ready = true })
+                    }
+
                     model: {
                         if (win.query === "") return win.sections
                         var hits = []
@@ -183,6 +213,8 @@ ApplicationWindow {
                         width: list.width
                         height: modelData.section ? 34 : 50
                         readonly property bool current: Nav.page === modelData.id || (modelData.id === "general" && win.isGeneral(Nav.page))
+                        onCurrentChanged: if (current) list.pillOwner = row
+                        Component.onCompleted: if (current) list.pillOwner = row
                         Label {
                             visible: !!row.modelData.section
                             text: row.modelData.section || ""
@@ -195,8 +227,7 @@ ApplicationWindow {
                             visible: !row.modelData.section
                             anchors.fill: parent
                             radius: 25
-                            color: row.current ? Theme.primaryContainer
-                                 : rowMa.containsMouse ? Theme.alpha(Theme.textColour, 0.06) : "transparent"
+                            color: !row.current && rowMa.containsMouse ? Theme.alpha(Theme.textColour, 0.06) : "transparent"
                             Behavior on color { ColorAnimation { duration: 140 } }
                             RowLayout {
                                 anchors.fill: parent; anchors.leftMargin: 9; anchors.rightMargin: 14; spacing: 14

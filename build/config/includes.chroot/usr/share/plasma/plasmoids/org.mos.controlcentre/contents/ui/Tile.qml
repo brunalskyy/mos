@@ -23,9 +23,17 @@ Rectangle {
     implicitHeight: Kirigami.Units.gridUnit * 3.6
     radius: height / 2
     color: on ? accent : off
-    scale: ma.pressed ? 0.96 : 1
     Behavior on color { ColorAnimation { duration: 180 } }
-    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack } }
+
+    // Liquid: squishes flat when you press it and wobbles back like jelly
+    transform: Scale {
+        id: squish
+        origin.x: tile.width / 2; origin.y: tile.height / 2
+        xScale: ma.pressed ? 1.04 : 1
+        yScale: ma.pressed ? 0.88 : 1
+        Behavior on xScale { SpringAnimation { spring: 5; damping: 0.22; epsilon: 0.002 } }
+        Behavior on yScale { SpringAnimation { spring: 5; damping: 0.22; epsilon: 0.002 } }
+    }
 
     RowLayout {
         anchors.fill: parent

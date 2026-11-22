@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Add widgets
+Comment=Put mOS widgets on your desktop: clock, calendar, weather, battery and notes
+Exec=mos-widgets
+Icon=view-grid
+Categories=Settings;DesktopSettings;
+Keywords=widgets;desktop;clock;calendar;weather;notes;

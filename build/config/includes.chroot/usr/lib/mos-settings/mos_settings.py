@@ -104,6 +104,13 @@ def dbus_user(*args, timeout=10):
     return sh(["busctl", "--user", *args], timeout=timeout)
 
 
+def liquid_glass_installed():
+    """mOS Liquid Glass (the mos-glass package) is in place."""
+    import glob
+    return bool(glob.glob("/usr/lib/*/qt6/plugins/kwin/effects/plugins/mosglass.so")
+                or glob.glob("/usr/lib/qt6/plugins/kwin/effects/plugins/mosglass.so"))
+
+
 def kwin_reconfigure():
     dbus_user("call", "org.kde.KWin", "/KWin", "org.kde.KWin", "reconfigure")
 
@@ -439,15 +446,57 @@ class Backend(QObject):
     @Slot(str)
     def setWallpaper(self, path):
         sh(["plasma-apply-wallpaperimage", path])
-        # lock screen and login screen follow the desktop
-        kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + path)
         data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
         data["wallpaper"] = path
         save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        # the lock screen follows the desktop, unless you picked its own picture
+        if not data.get("lockWallpaper"):
+            kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + path)
         if themed_icons_on():
             # wait a moment for mOS to pick the new colours from the wallpaper
             self._job("icons", lambda: (__import__("time").sleep(4) or sh(["mos-themed-icons"], timeout=600)[0], "ok"))
         self.changed.emit()
+
+    # ------------------------------------------------------------ Lock screen picture
+    @Property(str, notify=changed)
+    def lockWallpaper(self):
+        """The lock screen's own picture, or "" when it's the same as the desktop."""
+        return load_json(os.path.join(MOS_CONFIG, "style.json"), {}).get("lockWallpaper", "")
+
+    @Property(bool, notify=changed)
+    def loginFollowsLock(self):
+        return load_json(os.path.join(MOS_CONFIG, "style.json"), {}).get("loginFollowsLock", True)
+
+    @Slot(str)
+    def setLockWallpaper(self, path):
+        if path.startswith("file://"):
+            path = QUrl(path).toLocalFile()
+        data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
+        data["lockWallpaper"] = path
+        save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        shown = path or data.get("wallpaper") or "/usr/share/wallpapers/mOS/contents/images/2880x1800.png"
+        kwrite("kscreenlockerrc", ["Greeter", "Wallpaper", "org.kde.image", "General"], "Image", "file://" + shown)
+        dbus_user("call", "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.kde.screensaver", "configure")
+        if data.get("loginFollowsLock", True):
+            self._set_login_wallpaper(shown)
+        self.changed.emit()
+
+    @Slot(bool)
+    def setLoginFollowsLock(self, on):
+        data = load_json(os.path.join(MOS_CONFIG, "style.json"), {})
+        data["loginFollowsLock"] = bool(on)
+        save_json(os.path.join(MOS_CONFIG, "style.json"), data)
+        if on:
+            self._set_login_wallpaper(data.get("lockWallpaper") or data.get("wallpaper")
+                                      or "/usr/share/wallpapers/mOS/contents/images/2880x1800.png")
+        self.changed.emit()
+
+    def _set_login_wallpaper(self, path):
+        # the sign-in screen belongs to the whole computer, so this asks for your password
+        def go():
+            ok = sh(["pkexec", "/usr/lib/mos-settings/mos-login-wallpaper", path], timeout=180)[0]
+            return ok, "Sign-in screen picture changed" if ok else "The sign-in screen picture wasn't changed"
+        self._job("login-wallpaper", go)
 
     # ------------------------------------------------------------ Wi-Fi
     @Slot(result="QVariantMap")
@@ -490,15 +539,31 @@ class Backend(QObject):
 
     @Slot(str, str)
     def wifiConnect(self, ssid, password):
-        def go():
+        def saved():
             ok, out = sh(["nmcli", "-t", "-f", "NAME,TYPE", "connection", "show"])
-            if any(split_nm(l)[0] == ssid for l in out.splitlines()) and not password:
+            return [split_nm(l)[0] for l in out.splitlines() if split_nm(l)[0] == ssid]
+
+        def fresh(key_mgmt=None):
+            # Never stack "Name 1", "Name 2" copies: start from a clean profile.
+            for _ in saved():
+                sh(["nmcli", "connection", "delete", "id", ssid])
+            cmd = ["nmcli", "device", "wifi", "connect", ssid]
+            if password:
+                cmd += ["password", password]
+            ok, out = sh(cmd, timeout=45)
+            if not ok and key_mgmt and saved():
+                # Mixed WPA2/WPA3 routers: the Broadcom wl driver can't do WPA3, so force WPA2.
+                sh(["nmcli", "connection", "modify", "id", ssid,
+                    "802-11-wireless-security.key-mgmt", key_mgmt,
+                    "802-11-wireless-security.pmf", "1"])
+                ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
+            return ok, out
+
+        def go():
+            if saved() and not password:
                 ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
             else:
-                cmd = ["nmcli", "device", "wifi", "connect", ssid]
-                if password:
-                    cmd += ["password", password]
-                ok, out = sh(cmd, timeout=45)
+                ok, out = fresh("wpa-psk" if password else None)
             if ok:
                 return True, f"Connected to {ssid}"
             if "Secrets were required" in out or "password" in out.lower():
@@ -729,7 +794,7 @@ class Backend(QObject):
                 k, _, v = line.strip().partition(":")
                 v = v.strip()
                 if k == "percentage":
-                    res["percent"] = int(float(v.rstrip("%").replace(",", ".") or 0))
+                    res["percent"] = max(0, min(100, int(float(v.rstrip("%").replace(",", ".") or 0))))
                 elif k == "state":
                     res["state"] = {"charging": "Charging", "discharging": "On battery",
                                     "fully-charged": "Fully charged"}.get(v, v.capitalize())
@@ -1196,7 +1261,11 @@ class Backend(QObject):
     def effects(self):
         def on(key, d):
             return kread("kwinrc", "Plugins", key, d).lower() == "true"
-        return {"glass": on("blurEnabled", "true"), "genie": on("magiclampEnabled", "true"),
+        installed = liquid_glass_installed()
+        wanted = kread("kwinrc", "Effect-mosglass", "MosWanted", "true").lower() == "true"
+        glass = (installed and on("mosglassEnabled", "true")) or on("blurEnabled", "false" if installed else "true")
+        return {"glass": glass, "liquid": installed and wanted, "liquidAvailable": liquid_glass_installed(),
+                "genie": on("magiclampEnabled", "true"),
                 "zoom": on("scaleEnabled", "true"), "wobbly": on("wobblywindowsEnabled", "false")}
 
     @Property(bool, notify=changed)
@@ -1214,6 +1283,19 @@ class Backend(QObject):
 
     @Slot(str, bool)
     def setEffect(self, name, on):
+        if name in ("glass", "liquid"):
+            # glass = any see-through glass; liquid = the bending mOS Liquid Glass instead of KDE's blur
+            if name == "liquid":
+                kwrite("kwinrc", "Effect-mosglass", "MosWanted", on)
+            glass = on if name == "glass" else self.effects["glass"]
+            liquid = liquid_glass_installed() and \
+                kread("kwinrc", "Effect-mosglass", "MosWanted", "true").lower() == "true"
+            kwrite("kwinrc", "Plugins", "mosglassEnabled", glass and liquid)
+            kwrite("kwinrc", "Plugins", "blurEnabled", glass and not liquid)
+            kwrite("kwinrc", "Plugins", "slidingpopupsEnabled", not (glass and liquid))
+            kwin_reconfigure()
+            self.changed.emit()
+            return
         key = {"glass": "blurEnabled", "genie": "magiclampEnabled", "zoom": "scaleEnabled",
                "wobbly": "wobblywindowsEnabled"}.get(name)
         if not key:
@@ -1479,7 +1561,27 @@ def main():
         return
     QGuiApplication.setApplicationName("mOS Settings")
     QGuiApplication.setDesktopFileName("mos-settings")
+    page = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else ""
+    # Only one Settings window: if it's already open, hand it the page and bring it forward
+    try:
+        from PySide6.QtNetwork import QLocalServer, QLocalSocket
+    except ImportError:
+        QLocalServer = QLocalSocket = None
+    name = f"mos-settings-{os.getuid()}"
+    probe = QLocalSocket() if QLocalSocket else None
+    if probe:
+        probe.connectToServer(name)
+    if probe and probe.waitForConnected(300):
+        probe.write((page or "-").encode())
+        probe.waitForBytesWritten(300)
+        probe.disconnectFromServer()
+        return
     app = QGuiApplication(sys.argv)
+    server = None
+    if QLocalServer:
+        QLocalServer.removeServer(name)
+        server = QLocalServer(app)
+        server.listen(name)
     app.setWindowIcon(QIcon.fromTheme("systemsettings"))
     backend = Backend(app)
     engine = QQmlApplicationEngine()
@@ -1489,6 +1591,24 @@ def main():
     engine.load(os.path.join(HERE, "Main.qml"))
     if not engine.rootObjects():
         sys.exit(1)
+    win = engine.rootObjects()[0]
+
+    def show_again():
+        conn = server.nextPendingConnection()
+        if conn is None:
+            return
+
+        def read():
+            want = bytes(conn.readAll()).decode(errors="ignore").strip()
+            if want and want != "-":
+                win.setProperty("openPage", want)
+            win.show()
+            win.raise_()
+            win.requestActivate()
+            conn.disconnectFromServer()
+        conn.readyRead.connect(read)
+    if server:
+        server.newConnection.connect(show_again)
     sys.exit(app.exec())
 
 

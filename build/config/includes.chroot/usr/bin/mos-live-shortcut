@@ -1,0 +1,9 @@
+#!/bin/sh
+# On the live USB only: put "Install mOS" on the desktop so it's one click away.
+[ -d /run/live/medium ] || exit 0
+src="$(grep -lE '^Exec=.*(calamares|install-debian)' /usr/share/applications/*.desktop 2>/dev/null | head -n 1)"
+[ -n "${src}" ] || exit 0
+desk="$(xdg-user-dir DESKTOP 2>/dev/null || echo "${HOME}/Desktop")"
+mkdir -p "${desk}"
+cp "${src}" "${desk}/install-mos.desktop"
+chmod +x "${desk}/install-mos.desktop"   # KDE trusts launchers that are executable

@@ -25,14 +25,15 @@ PlasmoidItem {
         onNewData: function (source, data) {
             var lines = (data.stdout || "").trim().split("\n")
             root.present = lines.length >= 2 && lines[0] !== ""
-            root.percent = parseInt(lines[0]) || 0
+            root.percent = Math.max(0, Math.min(100, parseInt(lines[0]) || 0))   // some MacBooks report 101-102%
             root.charging = (lines[1] || "") === "Charging" || (lines[1] || "") === "Full"
         }
     }
 
     fullRepresentation: BatteryFace {
-        Layout.minimumWidth: Kirigami.Units.gridUnit * 5
-        Layout.minimumHeight: Kirigami.Units.gridUnit * 5
+        // Big enough that Plasma can't squash it into a tiny icon
+        Layout.minimumWidth: Kirigami.Units.gridUnit * 7
+        Layout.minimumHeight: Kirigami.Units.gridUnit * 7
         Layout.preferredWidth: Kirigami.Units.gridUnit * 8
         Layout.preferredHeight: Kirigami.Units.gridUnit * 8
         accent: Kirigami.Theme.highlightColor

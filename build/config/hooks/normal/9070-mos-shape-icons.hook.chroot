@@ -12,6 +12,8 @@ systemctl --global enable mos-update-check.timer
 systemctl --global enable mos-auto-theme.timer
 systemctl --global enable mos-backup.timer
 systemctl enable mos-cleanup.service 2>/dev/null || true
+systemctl enable mos-glass-check.service 2>/dev/null || true
+/usr/lib/mos/mos-glass-check || true
 
 # Hide the old KDE System Settings from the Start menu: mOS Settings does it all
 for f in /usr/share/applications/systemsettings.desktop /usr/share/applications/kdesystemsettings.desktop; do

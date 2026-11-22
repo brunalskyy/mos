@@ -1,0 +1,33 @@
+name: Check mOS Liquid Glass builds
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - "build/glass/**"
+      - "build/make-glass.sh"
+      - "build/make-deb.sh"
+      - ".github/workflows/glass-check.yml"
+  workflow_dispatch:
+
+jobs:
+  glass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the effect in Debian 13
+        run: |
+          sudo docker run --rm -v "${GITHUB_WORKSPACE}:/work" -w /work debian:trixie \
+            sh -euc 'build/make-glass.sh /work/out/glass'
+      - name: Check it rides along in mos-desktop
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" out
+          build/make-deb.sh out/deb
+          dpkg-deb -c out/deb/*.deb | grep -E "mosglass|glass-kwin|mos-glass"
+          dpkg-deb -c out/deb/*.deb | grep -q mosglass.so
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mos-glass
+          path: out/glass/
+          retention-days: 7

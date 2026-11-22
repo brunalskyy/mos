@@ -24,6 +24,16 @@ for id in ${APPS}; do
 	echo "   hidden: ${name:-${id}}"
 done
 
+# Dolphin is "Files" in mOS (Start, search, taskbar, Open with). Same trick: a copy in
+# /usr/local/share/applications wins, with every translated name replaced by Files.
+src=/usr/share/applications/org.kde.dolphin.desktop
+if [ -f "${src}" ]; then
+	sed -e '/^Name\[/d' -e '/^GenericName\[/d' -e '/^X-KDE-.*Name\[/d' \
+		-e 's/^Name=.*/Name=Files/' -e 's/^GenericName=.*/GenericName=File Explorer/' \
+		"${src}" > /usr/local/share/applications/org.kde.dolphin.desktop
+	echo "   renamed: Dolphin -> Files"
+fi
+
 # KDE's System Settings pages in search would open the old KDE settings window.
 # mOS Settings answers those searches instead (its search words cover every page).
 for runner in /usr/lib/*/qt6/plugins/kf6/krunner/krunner_systemsettings.so; do

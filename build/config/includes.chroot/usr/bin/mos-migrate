@@ -5,6 +5,7 @@
 the mOS Store replaces Discover, At a glance joins the desktop, and apps get
 round Material buttons.
 0.6.2: the KDE apps mOS replaces disappear from the Start menu and search.
+0.7: mOS Liquid Glass takes over from KDE's blur (if you had glass switched on).
 
 SPDX-FileCopyrightText: 2026 Bruno Woznicki
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -19,7 +20,25 @@ import mos_settings as m  # noqa: E402
 
 MARK = os.path.join(m.MOS_CONFIG, "migrated")
 APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
-STEP = "0.6.2"
+STEP = "0.7"
+
+# 0.7: the clock and battery widgets got squashed to their smallest size; put them back
+WIDGET_SIZE_JS = """
+var ds = desktops();
+var sizes = {"org.mos.clock": 12, "org.mos.battery": 8};
+for (var i = 0; i < ds.length; i++) {
+    var ws = ds[i].widgets();
+    for (var j = 0; j < ws.length; j++) {
+        var want = sizes[ws[j].type];
+        if (!want) continue;
+        var g = ws[j].geometry;
+        if (g.width < gridUnit * (want - 1)) {
+            ws[j].geometry = new QRectF(g.x, g.y, gridUnit * want, gridUnit * want);
+        }
+    }
+}
+print("ok");
+"""
 
 GLANCE_JS = """
 var ds = desktops();
@@ -57,8 +76,17 @@ def main():
         js = open(os.path.join(m.HERE, "taskbar.js")).read().replace("__OPTIONS__", json.dumps(opts))
         m.plasma_script(js)
         m.plasma_script(GLANCE_JS)
+        m.plasma_script(WIDGET_SIZE_JS)
     if m.app_style_on():
         m.sh(["mos-kvantum"], timeout=60)
+    # 0.7: Liquid Glass replaces KDE's blur, keeping your glass on/off choice
+    if m.liquid_glass_installed():
+        glass = m.kread("kwinrc", "Plugins", "blurEnabled", "true").lower() == "true" or \
+            m.kread("kwinrc", "Plugins", "mosglassEnabled", "false").lower() == "true"
+        m.kwrite("kwinrc", "Plugins", "mosglassEnabled", glass)
+        m.kwrite("kwinrc", "Plugins", "blurEnabled", False)
+        m.kwrite("kwinrc", "Plugins", "slidingpopupsEnabled", not glass)
+        m.kwin_reconfigure()
     # 0.6.2: pick up the hidden KDE apps (no second Settings in search)
     m.sh(["kbuildsycoca6"], timeout=180)
     os.makedirs(m.MOS_CONFIG, exist_ok=True)

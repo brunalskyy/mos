@@ -1,0 +1,11 @@
+[Unit]
+Description=mOS Liquid Glass: make sure it matches this KWin
+Before=display-manager.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/mos/mos-glass-check
+
+[Install]
+WantedBy=multi-user.target

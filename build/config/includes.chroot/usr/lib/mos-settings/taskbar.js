@@ -41,6 +41,24 @@ for (var i = 0; i < old.length; i++) {
         }
     }
 }
+// Keep your Start menu favourites too, unless they're still KDE's (Settings, Discover, Kate...)
+var mosFavourites = ["preferred://browser", "applications:mos-settings.desktop", "applications:mos-store.desktop",
+                     "applications:org.kde.dolphin.desktop", "applications:org.kde.konsole.desktop",
+                     "applications:org.kde.kwrite.desktop", "applications:org.kde.spectacle.desktop"];
+var favourites = mosFavourites;
+for (var f = 0; f < old.length; f++) {
+    var ko = old[f].widgets("org.kde.plasma.kickoff");
+    if (ko.length === 0) continue;
+    ko[0].currentConfigGroup = ["General"];
+    var fav = ko[0].readConfig("favorites", "");
+    var list = (typeof fav === "string") ? (fav ? fav.split(",") : []) : (fav || []);
+    var kde = /systemsettings|org\.kde\.discover|org\.kde\.kate|kontact|kinfocenter|khelpcenter|konqueror/;
+    var stillKde = list.length === 0;
+    for (var g = 0; g < list.length; g++) {
+        if (kde.test(list[g])) stillKde = true;
+    }
+    if (!stillKde) favourites = list;
+}
 for (var j = 0; j < old.length; j++) {
     old[j].remove();
 }
@@ -65,6 +83,9 @@ if (opts.style === "dock") {
 var startButton = p.addWidget("org.kde.plasma.kickoff");
 startButton.currentConfigGroup = ["General"];
 startButton.writeConfig("icon", "mos-logo");
+// Start menu favourites: mOS apps (not the KDE ones mOS replaces)
+startButton.writeConfig("favorites", favourites);
+startButton.writeConfig("favoritesPortedToKAstats", "false");
 
 if (opts.style === "centred") {
     p.addWidget("org.kde.plasma.panelspacer");

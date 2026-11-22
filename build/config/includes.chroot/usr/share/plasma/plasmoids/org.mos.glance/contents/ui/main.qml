@@ -105,6 +105,9 @@ PlasmoidItem {
                     Layout.preferredHeight: Layout.preferredWidth
                     source: root.icon(root.code)
                     fallback: "weather-few-clouds"
+                    // white like the text, so a grey cloud doesn't vanish on a dark wallpaper
+                    isMask: true
+                    color: "white"
                 }
                 Text {
                     text: Math.round(root.temp) + "°C · " + root.words(root.code)

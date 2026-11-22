@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=mOS Liquid Glass guard
+Exec=/usr/lib/mos/mos-glass-guard
+NoDisplay=true
+X-KDE-autostart-phase=2

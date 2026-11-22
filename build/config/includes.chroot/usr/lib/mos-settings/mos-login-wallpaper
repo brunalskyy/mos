@@ -1,0 +1,65 @@
+#!/usr/bin/python3
+"""Set the picture on the mOS sign-in screen (runs as root through pkexec).
+
+Only copies a real image that belongs to you or comes with mOS, so it can't be
+used to read other files.
+
+SPDX-FileCopyrightText: 2026 Bruno Woznicki
+SPDX-License-Identifier: GPL-3.0-or-later
+"""
+import glob
+import os
+import stat
+import sys
+
+THEME_CONF = "/usr/share/sddm/themes/mos/theme.conf.user"
+DEST_DIR = "/var/lib/mos"
+MAGIC = {b"\x89PNG": ".png", b"\xff\xd8\xff": ".jpg"}
+
+
+def fail(msg, code=2):
+    print("mos-login-wallpaper:", msg, file=sys.stderr)
+    sys.exit(code)
+
+
+def main():
+    if len(sys.argv) != 2:
+        fail("usage: mos-login-wallpaper PICTURE")
+    caller = int(os.environ.get("PKEXEC_UID", "-1"))
+    path = os.path.realpath(sys.argv[1])
+    if not os.path.isfile(path):
+        fail("not a file")
+    st = os.stat(path)
+    shipped = path.startswith("/usr/share/wallpapers/") or path.startswith("/usr/share/mos/")
+    if not shipped and st.st_uid != caller:
+        fail("that picture isn't yours")
+    if st.st_size > 60 * 1024 * 1024:
+        fail("picture too big")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(fd, "rb") as f:
+        data = f.read()
+    ext = next((e for m, e in MAGIC.items() if data.startswith(m)), None)
+    if ext is None and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        ext = ".webp"
+    if ext is None:
+        fail("not a PNG, JPEG or WebP picture")
+    os.makedirs(DEST_DIR, exist_ok=True)
+    for old in glob.glob(os.path.join(DEST_DIR, "login-wallpaper.*")):
+        os.remove(old)
+    dest = os.path.join(DEST_DIR, "login-wallpaper" + ext)
+    with open(dest, "wb") as f:
+        f.write(data)
+    os.chmod(dest, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+    lines = []
+    if os.path.exists(THEME_CONF):
+        lines = [l for l in open(THEME_CONF).read().splitlines() if not l.startswith("background=")]
+    if "[General]" not in lines:
+        lines.insert(0, "[General]")
+    lines.insert(lines.index("[General]") + 1, "background=" + dest)
+    with open(THEME_CONF, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    print("ok")
+
+
+if __name__ == "__main__":
+    main()
