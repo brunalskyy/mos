@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Apple Control Panel
+Comment=Fans, temperatures, keyboard and battery on your Mac
+Exec=mos-apple
+Icon=computer-laptop
+Categories=Settings;HardwareSettings;
+Keywords=apple;mac;macbook;fan;fans;temperature;keyboard;backlight;fn;battery;

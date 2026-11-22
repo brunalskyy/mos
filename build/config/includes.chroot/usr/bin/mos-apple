@@ -1,0 +1,3 @@
+#!/bin/sh
+# mOS Apple Control Panel
+exec python3 /usr/lib/mos-settings/mos_apple.py "$@"

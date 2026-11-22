@@ -9,6 +9,40 @@ StorePage {
     title: "Today"
     subtitle: Qt.formatDate(new Date(), "dddd d MMMM")
     property var data: { store.appCount; return store.today() }
+    readonly property var deviceApps: store.deviceApps()
+
+    // Apps included with your device (e.g. Apple Control Panel on Macs)
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: today.deviceApps.length > 0
+        spacing: 6
+        Label { text: "Apps included with your device"; color: Theme.textColour; font.pixelSize: 22; font.weight: Font.Bold }
+        Label { text: "Made by mOS for this computer, already installed"; color: Theme.textVariant; font.pixelSize: 13 }
+        Repeater {
+            model: today.deviceApps
+            Rectangle {
+                required property var modelData
+                Layout.fillWidth: true
+                Layout.topMargin: 6
+                implicitHeight: 88; radius: 22
+                color: Theme.primaryContainer
+                RowLayout {
+                    anchors.fill: parent; anchors.leftMargin: 16; anchors.rightMargin: 16; spacing: 16
+                    Rectangle {
+                        Layout.preferredWidth: 56; Layout.preferredHeight: 56; radius: 16; color: Theme.surfaceHigh
+                        Text { anchors.centerIn: parent; text: "💻"; font.pixelSize: 30 }
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true; spacing: 2
+                        Label { text: modelData.name; color: Theme.primaryContainerText; font.pixelSize: 17; font.weight: Font.DemiBold }
+                        Label { text: modelData.summary; color: Theme.primaryContainerText; opacity: 0.8; font.pixelSize: 13
+                                Layout.fillWidth: true; elide: Text.ElideRight }
+                    }
+                    PillButton { text: "Open"; onClicked: store.openDeviceApp(modelData.id) }
+                }
+            }
+        }
+    }
 
     HeroCard {
         Layout.fillWidth: true

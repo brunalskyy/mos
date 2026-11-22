@@ -100,9 +100,9 @@ PlasmoidItem {
             id: row
             anchors.centerIn: parent
             spacing: Kirigami.Units.smallSpacing * 1.5
-            Kirigami.Icon { source: root.netIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth }
-            Kirigami.Icon { source: root.volIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth }
-            Kirigami.Icon { visible: root.batIcon !== ""; source: root.batIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth }
+            Kirigami.Icon { source: root.netIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth ; isMask: true; color: Kirigami.Theme.textColor }
+            Kirigami.Icon { source: root.volIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth ; isMask: true; color: Kirigami.Theme.textColor }
+            Kirigami.Icon { visible: root.batIcon !== ""; source: root.batIcon; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth ; isMask: true; color: Kirigami.Theme.textColor }
         }
     }
 

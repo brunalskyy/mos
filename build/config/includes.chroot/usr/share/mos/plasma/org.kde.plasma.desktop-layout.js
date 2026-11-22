@@ -57,6 +57,8 @@ taskbar.floating = true;
 taskbar.alignment = "left";
 taskbar.lengthMode = "fill";
 taskbar.hiding = "none";
+// Always see-through, so the Liquid Glass shows even when a window is maximised
+taskbar.opacity = "translucent";
 
 var start = taskbar.addWidget("org.kde.plasma.kickoff");
 start.currentConfigGroup = ["General"];

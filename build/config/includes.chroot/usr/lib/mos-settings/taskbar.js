@@ -68,6 +68,8 @@ var p = new Panel;
 p.location = opts.position;
 p.height = Math.round(gridUnit * (sizes[opts.size] || 2.75));
 p.hiding = opts.autohide ? "autohide" : "none";
+// Always see-through, so the Liquid Glass shows even when a window is maximised
+p.opacity = "translucent";
 
 if (opts.style === "dock") {
     // macOS: only as wide as the apps, in the middle, always floating

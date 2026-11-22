@@ -42,6 +42,9 @@ def patch(path, steps):
 # Right-click on empty desktop space -> the mOS menu (the first openContextMenu(main, ...) is the
 # empty-space one; right-clicking a file keeps the full file menu)
 patch(fv, [
+    # KDE lets right-clicks on empty desktop space fall through to its own menu; catch them here
+    (r"(return root\.isPopup \? \(Qt\.LeftButton \| Qt\.MiddleButton \| Qt\.BackButton\)\s*:\s*)Qt\.LeftButton;",
+     r"\1(Qt.LeftButton | Qt.RightButton);"),
     (r"dir\.openContextMenu\(main,\s*mouse\.modifiers\);",
      "if (root.isContainment) { var mosAt = mapToItem(main, mouse.x, mouse.y); "
      "mosDesktopMenu.popup(main, mosAt.x, mosAt.y); } else { dir.openContextMenu(main, mouse.modifiers); }"),
