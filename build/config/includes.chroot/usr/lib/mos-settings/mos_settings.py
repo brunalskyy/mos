@@ -20,6 +20,7 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 
 from PySide6.QtCore import QObject, Property, Signal, Slot, QUrl, QSize, Qt
 from PySide6.QtGui import QGuiApplication, QIcon, QPixmap
@@ -539,36 +540,77 @@ class Backend(QObject):
 
     @Slot(str, str)
     def wifiConnect(self, ssid, password):
+        log_path = os.path.expanduser("~/.cache/mos/wifi.log")
+
+        def log(step, ok, out):
+            try:
+                os.makedirs(os.path.dirname(log_path), exist_ok=True)
+                with open(log_path, "a") as f:
+                    f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {ssid} {step}: "
+                            f"{'ok' if ok else 'FAILED'} {out.strip()}\n")
+            except OSError:
+                pass
+
+        def run(step, cmd, timeout=10):
+            ok, out = sh(cmd, timeout=timeout)
+            log(step, ok, out)
+            return ok, out
+
         def saved():
             ok, out = sh(["nmcli", "-t", "-f", "NAME,TYPE", "connection", "show"])
             return [split_nm(l)[0] for l in out.splitlines() if split_nm(l)[0] == ssid]
 
-        def fresh(key_mgmt=None):
+        def up(step):
+            return run(step, ["nmcli", "-w", "40", "connection", "up", "id", ssid], timeout=45)
+
+        def retune(step, pmf, key_mgmt=None):
+            # Broadcom "wl" (MacBook Air 2017) can't do WPA3 and is picky about protected
+            # management frames, so try the profile again with safer security settings.
+            cmd = ["nmcli", "connection", "modify", "id", ssid, "802-11-wireless-security.pmf", pmf]
+            if key_mgmt:
+                cmd += ["802-11-wireless-security.key-mgmt", key_mgmt]
+            run(step + " (modify)", cmd)
+            return up(step)
+
+        def ladder(first, secured):
+            ok, out = first
+            if ok or not secured or not saved():
+                return ok, out
+            for step, pmf, km in (("wpa2 + pmf off", "1", "wpa-psk"),
+                                  ("wpa2 + pmf optional", "2", "wpa-psk"),
+                                  ("pmf default", "0", None)):
+                ok, out2 = retune(step, pmf, km)
+                if ok:
+                    return ok, out2
+                out = out2 or out
+            return ok, out
+
+        def fresh():
             # Never stack "Name 1", "Name 2" copies: start from a clean profile.
             for _ in saved():
                 sh(["nmcli", "connection", "delete", "id", ssid])
-            cmd = ["nmcli", "device", "wifi", "connect", ssid]
+            cmd = ["nmcli", "-w", "40", "device", "wifi", "connect", ssid]
             if password:
                 cmd += ["password", password]
-            ok, out = sh(cmd, timeout=45)
-            if not ok and key_mgmt and saved():
-                # Mixed WPA2/WPA3 routers: the Broadcom wl driver can't do WPA3, so force WPA2.
-                sh(["nmcli", "connection", "modify", "id", ssid,
-                    "802-11-wireless-security.key-mgmt", key_mgmt,
-                    "802-11-wireless-security.pmf", "1"])
-                ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
-            return ok, out
+            return ladder(run("connect", cmd, timeout=45), bool(password))
 
         def go():
+            sh(["nmcli", "radio", "wifi", "on"])
             if saved() and not password:
-                ok, out = sh(["nmcli", "connection", "up", "id", ssid], timeout=45)
+                ok, out = ladder(up("saved"), True)
             else:
-                ok, out = fresh("wpa-psk" if password else None)
+                ok, out = fresh()
             if ok:
                 return True, f"Connected to {ssid}"
-            if "Secrets were required" in out or "password" in out.lower():
+            low = out.lower()
+            if "secrets were required" in low or "password" in low or "no secrets" in low:
                 return False, "Wrong password"
-            return False, f"Couldn't connect to {ssid}"
+            if not password:
+                # A saved network that won't come up: ask for the password again.
+                return False, "Wrong password"
+            reason = out.strip().splitlines()[-1] if out.strip() else ""
+            reason = re.sub(r"^Error:\s*", "", reason)[:90]
+            return False, f"Couldn't connect to {ssid}" + (f": {reason}" if reason else "")
         self._job("wifi-connect", go)
 
     @Slot(str)

@@ -8,13 +8,16 @@ ColumnLayout {
     spacing: 18
     property var w: backend.wifi()
     property string busySsid: ""
+    property string lastSsid: ""
     function reload() { w = backend.wifi() }
     Timer { interval: 6000; running: true; repeat: true; onTriggered: page.reload() }
     Connections {
         target: backend
         function onJobDone(key, ok, msg) {
+            if (key === "wifi-connect" && !ok && msg === "Wrong password" && page.lastSsid !== "") {
+                pw.ssid = page.lastSsid; pw.open()
+            }
             if (key.indexOf("wifi") === 0) { page.busySsid = ""; page.reload() }
-            if (key === "wifi-connect" && !ok && msg === "Wrong password") pw.open()
         }
     }
 
@@ -57,7 +60,7 @@ ColumnLayout {
                 onClicked: {
                     if (modelData.active) { netSheet.net = modelData; netSheet.open() }
                     else if (modelData.secure && !modelData.saved) { pw.ssid = modelData.ssid; pw.open() }
-                    else { page.busySsid = modelData.ssid; backend.wifiConnect(modelData.ssid, "") }
+                    else { page.busySsid = modelData.ssid; page.lastSsid = modelData.ssid; backend.wifiConnect(modelData.ssid, "") }
                 }
             }
         }
@@ -75,7 +78,7 @@ ColumnLayout {
         RowLayout {
             Layout.alignment: Qt.AlignRight
             PillButton { text: "Cancel"; outlined: true; onClicked: pw.close() }
-            PillButton { id: go; text: "Connect"; onClicked: { page.busySsid = pw.ssid; backend.wifiConnect(pw.ssid, pass.text); pass.text = ""; pw.close() } }
+            PillButton { id: go; text: "Connect"; onClicked: { page.busySsid = pw.ssid; page.lastSsid = pw.ssid; backend.wifiConnect(pw.ssid, pass.text); pass.text = ""; pw.close() } }
         }
     }
 
