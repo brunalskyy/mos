@@ -6,6 +6,7 @@ on:
     paths:
       - "build/glass/**"
       - "build/make-glass.sh"
+      - "build/make-deb.sh"
       - ".github/workflows/glass-check.yml"
   workflow_dispatch:
 
@@ -19,6 +20,12 @@ jobs:
         run: |
           sudo docker run --rm -v "${GITHUB_WORKSPACE}:/work" -w /work debian:trixie \
             sh -euc 'build/make-glass.sh /work/out/glass'
+      - name: Check it rides along in mos-desktop
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" out
+          build/make-deb.sh out/deb
+          dpkg-deb -c out/deb/*.deb | grep -E "mosglass|glass-kwin|mos-glass"
+          dpkg-deb -c out/deb/*.deb | grep -q mosglass.so
       - uses: actions/upload-artifact@v4
         with:
           name: mos-glass
