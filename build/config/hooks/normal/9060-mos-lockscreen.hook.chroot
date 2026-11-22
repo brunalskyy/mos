@@ -10,6 +10,11 @@ set -e
 
 echo "I: mOS lock screen"
 
+# New accounts get the Amber mOS picture (made here, not stored as a link in the repo:
+# the website build can't handle a link to a file that only exists inside mOS)
+mkdir -p /etc/skel
+ln -sf /usr/share/mos/avatar-default.png /etc/skel/.face.icon
+
 DIR=/usr/share/plasma/shells/org.kde.plasma.desktop/contents/lockscreen
 UI="${DIR}/LockScreenUi.qml"
 
