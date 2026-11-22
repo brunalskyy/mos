@@ -44,7 +44,8 @@ def main():
         layout = open(APPLETS).read()
     except OSError:
         layout = ""
-    if "org.mos.taskclock" not in layout:
+    # each update rebuilds the taskbar once (your pinned apps and choices are kept)
+    if True:
         # wait for Plasma to be ready
         for _ in range(30):
             ok, _ = m.plasma_script("print('ok')")

@@ -75,6 +75,12 @@ ColumnLayout {
         }
         Divider {}
         SettingRow {
+            title: "Show app names"
+            sub: page.t.style === "dock" ? "The dock shows icons only" : "Open apps show their name next to the icon, like Windows 10"
+            MSwitch { enabled: page.t.style !== "dock"; checked: page.t.labels !== false && page.t.style !== "dock"; onToggled: function (v) { page.set("labels", v) } }
+        }
+        Divider {}
+        SettingRow {
             title: "Hide automatically"
             sub: "Shows when you move the pointer to the edge"
             MSwitch { checked: page.t.autohide; onToggled: function (v) { page.set("autohide", v) } }
