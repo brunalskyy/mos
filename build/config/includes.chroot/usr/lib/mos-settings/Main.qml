@@ -184,15 +184,15 @@ ApplicationWindow {
                         visible: list.pillOwner !== null && list.pillOwner.current
                         property real targetTop: list.pillOwner ? list.pillOwner.y : 0
                         property real targetBottom: list.pillOwner ? list.pillOwner.y + list.pillOwner.height : 0
-                        property real top: targetTop
-                        property real bottom: targetBottom
+                        property real edgeTop: targetTop
+                        property real edgeBottom: targetBottom
                         property bool down: true
                         property bool ready: false
-                        onTargetTopChanged: down = targetTop >= top
-                        y: top
-                        height: Math.max(20, bottom - top)
-                        Behavior on top { enabled: pill.ready; SpringAnimation { spring: pill.down ? 2.2 : 4.2; damping: 0.3; epsilon: 0.25 } }
-                        Behavior on bottom { enabled: pill.ready; SpringAnimation { spring: pill.down ? 4.2 : 2.2; damping: 0.3; epsilon: 0.25 } }
+                        onTargetTopChanged: down = targetTop >= edgeTop
+                        y: edgeTop
+                        height: Math.max(20, edgeBottom - edgeTop)
+                        Behavior on edgeTop { enabled: pill.ready; SpringAnimation { spring: pill.down ? 2.2 : 4.2; damping: 0.3; epsilon: 0.25 } }
+                        Behavior on edgeBottom { enabled: pill.ready; SpringAnimation { spring: pill.down ? 4.2 : 2.2; damping: 0.3; epsilon: 0.25 } }
                         Component.onCompleted: Qt.callLater(function () { pill.ready = true })
                     }
 
