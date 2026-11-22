@@ -51,7 +51,7 @@ sed -i \
 	-e 's/^\(\s*componentName:\).*/\1 mos/' \
 	-e 's/^\(\s*productName:\).*/\1 mOS/' \
 	-e 's/^\(\s*shortProductName:\).*/\1 mOS/' \
-	-e 's/^\(\s*version:\).*/\1 1.0 Amber (0.7.2)/' \
+	-e 's/^\(\s*version:\).*/\1 1.0 Amber (0.7.3)/' \
 	-e 's/^\(\s*shortVersion:\).*/\1 1.0/' \
 	-e 's/^\(\s*versionedName:\).*/\1 mOS 1.0 Amber/' \
 	-e 's/^\(\s*shortVersionedName:\).*/\1 mOS 1.0/' \

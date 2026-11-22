@@ -56,7 +56,7 @@ taskbar.height = Math.round(gridUnit * 2.75);
 taskbar.floating = true;
 taskbar.alignment = "left";
 taskbar.lengthMode = "fill";
-taskbar.hiding = "none";
+taskbar.hiding = "windowsgobelow"; // stays floating; windows go under the glass
 // Always see-through, so the Liquid Glass shows even when a window is maximised
 taskbar.opacity = "translucent";
 
