@@ -117,6 +117,24 @@ tr:last-child td { border-bottom: 0; }
 #download .small { font-size: 14px; color: #9A9A9A; margin-top: 22px; }
 #download a { color: #F4A266; }
 
+/* feedback */
+.feedback { padding: 72px 0; border-top: 1px solid var(--line); }
+.feedback .box { max-width: 640px; margin: 0 auto; text-align: center; }
+.feedback h2 { font-size: 32px; letter-spacing: -0.6px; margin: 0 0 10px; }
+.feedback .box > p { font-size: 17px; line-height: 1.6; color: var(--grey); margin: 0 0 28px; }
+.choices { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+.choice { font: inherit; font-size: 15px; font-weight: 600; padding: 11px 20px; border-radius: 6px; border: 1px solid #CFCFCF; background: #FFFFFF; color: var(--ink); cursor: pointer; }
+.choice:hover { border-color: var(--ink); }
+.choice[aria-pressed="true"] { background: var(--amber); border-color: var(--amber); color: #FFFFFF; }
+.feedback textarea, .feedback input[type=text] { width: 100%; font: inherit; font-size: 15px; padding: 12px 14px; border: 1px solid #CFCFCF; border-radius: 6px; margin-bottom: 12px; color: var(--ink); background: #FFFFFF; }
+.feedback textarea { min-height: 110px; resize: vertical; }
+.feedback textarea:focus, .feedback input[type=text]:focus { outline: 2px solid var(--amber); outline-offset: -1px; border-color: var(--amber); }
+.feedback button[type=submit] { font: inherit; cursor: pointer; }
+.feedback button[disabled] { opacity: 0.5; cursor: default; }
+.fb-msg { font-size: 15px; margin-top: 14px; min-height: 22px; }
+.fb-msg.ok { color: #2E7D32; }
+.fb-msg.err { color: #C62828; }
+
 footer { border-top: 1px solid var(--line); padding: 28px 0; font-size: 13px; color: var(--grey); }
 footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
 footer .brand { font-size: 15px; }
@@ -139,6 +157,7 @@ footer .brand img { width: 24px; height: 24px; }
     <nav>
       <a href="#features">Features</a>
       <a href="#requirements">Requirements</a>
+      <a href="#feedback">Feedback</a>
       <a href="account.html">mOS Account</a>
       <a class="btn btn-main" href="#download">Download</a>
     </nav>
@@ -210,6 +229,28 @@ footer .brand img { width: 24px; height: 24px; }
     </div>
   </section>
 
+  <section class="feedback" id="feedback">
+    <div class="wrap">
+      <div class="box">
+        <h2>Would you use mOS?</h2>
+        <p>Let me know if you'd want mOS as your OS in the future, and what you'd change to make it work for you.</p>
+        <form id="fb-form">
+          <div class="choices" role="group" aria-label="Would you use mOS?">
+            <button type="button" class="choice" data-answer="yes" aria-pressed="false">Yes, I would</button>
+            <button type="button" class="choice" data-answer="maybe" aria-pressed="false">Maybe, with changes</button>
+            <button type="button" class="choice" data-answer="no" aria-pressed="false">Not for me</button>
+          </div>
+          <label for="fb-changes" class="sr" style="position:absolute;left:-9999px">What would you change?</label>
+          <textarea id="fb-changes" maxlength="2000" placeholder="What would you change or add? (optional)"></textarea>
+          <label for="fb-name" class="sr" style="position:absolute;left:-9999px">Your name</label>
+          <input type="text" id="fb-name" maxlength="60" placeholder="Your name (optional)">
+          <button type="submit" class="btn btn-main" id="fb-send" disabled>Send</button>
+          <p class="fb-msg" id="fb-msg" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <section id="download">
     <div class="wrap">
       <div class="head">
@@ -252,5 +293,57 @@ footer .brand img { width: 24px; height: 24px; }
   </div>
 </footer>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyB2_U65oZbMrrhRC0D5ZcBunF2P3IQVZNQ",
+  authDomain: "mos-data.firebaseapp.com",
+  projectId: "mos-data",
+  storageBucket: "mos-data.firebasestorage.app",
+  messagingSenderId: "16708622190",
+  appId: "1:16708622190:web:6eaa46fd18c2731450537f"
+});
+const db = getFirestore(app);
+
+const form = document.getElementById("fb-form");
+const send = document.getElementById("fb-send");
+const msg = document.getElementById("fb-msg");
+let answer = "";
+
+document.querySelectorAll(".choice").forEach(function (b) {
+  b.addEventListener("click", function () {
+    answer = b.dataset.answer;
+    document.querySelectorAll(".choice").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+    send.disabled = false;
+  });
+});
+
+let sent = false;
+try { sent = localStorage.getItem("mos-feedback-sent") === "1"; } catch (e) {}
+if (sent) { msg.textContent = "Thanks, you've already sent feedback. You can send more if you like."; msg.className = "fb-msg ok"; }
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  if (!answer) return;
+  send.disabled = true;
+  msg.textContent = "Sending…"; msg.className = "fb-msg";
+  const data = { answer: answer, changes: document.getElementById("fb-changes").value.trim().slice(0, 2000), createdAt: serverTimestamp() };
+  const name = document.getElementById("fb-name").value.trim().slice(0, 60);
+  if (name) data.name = name;
+  try {
+    await addDoc(collection(db, "feedback"), data);
+    msg.textContent = "Thanks! I read every answer."; msg.className = "fb-msg ok";
+    form.reset();
+    document.querySelectorAll(".choice").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+    answer = "";
+    try { localStorage.setItem("mos-feedback-sent", "1"); } catch (e) {}
+  } catch (err) {
+    msg.textContent = "Sorry, that didn't send. Please try again later."; msg.className = "fb-msg err";
+    send.disabled = false;
+  }
+});
+</script>
 </body>
 </html>
