@@ -1,16 +1,14 @@
 {
-  "version": "0.6.1",
-  "build": 7,
+  "version": "0.6.2",
+  "build": 8,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.6.1)",
+  "name": "mOS 1.0 Amber (0.6.2)",
   "notes": [
-    "Control Centre: Wi-Fi, Bluetooth, dark mode, Night Shift, Do not disturb, power mode, brightness and volume",
-    "Click the clock for your notifications and the calendar",
-    "The mOS Store replaces Discover: Today, categories, screenshots, reviews and install progress with speed and time left",
-    "At a glance on the desktop: the date and the weather",
-    "Round Material buttons, fields and menus inside apps, in your colours",
-    "mOS Account: back up and restore your settings and apps, and join mOS Insider",
-    "New in Settings: Fonts, Keyboard shortcuts and Printers"
+    "New mOS password pop-up when an app or update needs your password",
+    "New Start button: the Amber mOS logo, filling your icon shape",
+    "Open apps show their name next to the icon on the taskbar (Settings > Taskbar to turn off)",
+    "Files is laid out like Windows 11 File Explorer, and double-click opens things",
+    "No more second Settings: the KDE apps mOS replaces are hidden from Start and search"
   ],
   "prerelease": true
 }

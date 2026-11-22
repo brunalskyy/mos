@@ -36,6 +36,8 @@ flatpak
 
 # mOS Store (installs with real progress through libflatpak)
 gir1.2-flatpak-1.0
+# mOS password pop-up (polkit agent)
+gir1.2-polkit-1.0
 python3-gi
 
 # Round Material buttons inside apps

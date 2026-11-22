@@ -1,97 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
-    <clipPath id="sq">
-      <rect x="0" y="0" width="1024" height="1024" rx="232" ry="232"/>
-    </clipPath>
+    <clipPath id="shape"><path transform="scale(8)" d="M128.00 64.00 L127.99 69.10 L127.98 71.86 L127.95 74.13 L127.90 76.12 L127.85 77.93 L127.78 79.60 L127.70 81.17 L127.61 82.66 L127.51 84.07 L127.39 85.43 L127.26 86.73 L127.12 87.98 L126.97 89.19 L126.81 90.36 L126.63 91.50 L126.44 92.60 L126.24 93.67 L126.02 94.72 L125.80 95.74 L125.56 96.73 L125.31 97.70 L125.05 98.65 L124.77 99.57 L124.48 100.48 L124.18 101.36 L123.87 102.22 L123.55 103.07 L123.21 103.90 L122.86 104.71 L122.50 105.50 L122.12 106.27 L121.74 107.03 L121.34 107.78 L120.92 108.50 L120.50 109.22 L120.06 109.91 L119.61 110.60 L119.15 111.26 L118.67 111.92 L118.18 112.55 L117.68 113.18 L117.16 113.79 L116.63 114.38 L116.09 114.97 L115.54 115.54 L114.97 116.09 L114.38 116.63 L113.79 117.16 L113.18 117.68 L112.55 118.18 L111.92 118.67 L111.26 119.15 L110.60 119.61 L109.91 120.06 L109.22 120.50 L108.50 120.92 L107.78 121.34 L107.03 121.74 L106.27 122.12 L105.50 122.50 L104.71 122.86 L103.90 123.21 L103.07 123.55 L102.22 123.87 L101.36 124.18 L100.48 124.48 L99.57 124.77 L98.65 125.05 L97.70 125.31 L96.73 125.56 L95.74 125.80 L94.72 126.02 L93.67 126.24 L92.60 126.44 L91.50 126.63 L90.36 126.81 L89.19 126.97 L87.98 127.12 L86.73 127.26 L85.43 127.39 L84.07 127.51 L82.66 127.61 L81.17 127.70 L79.60 127.78 L77.93 127.85 L76.12 127.90 L74.13 127.95 L71.86 127.98 L69.10 127.99 L64.00 128.00 L58.90 127.99 L56.14 127.98 L53.87 127.95 L51.88 127.90 L50.07 127.85 L48.40 127.78 L46.83 127.70 L45.34 127.61 L43.93 127.51 L42.57 127.39 L41.27 127.26 L40.02 127.12 L38.81 126.97 L37.64 126.81 L36.50 126.63 L35.40 126.44 L34.33 126.24 L33.28 126.02 L32.26 125.80 L31.27 125.56 L30.30 125.31 L29.35 125.05 L28.43 124.77 L27.52 124.48 L26.64 124.18 L25.78 123.87 L24.93 123.55 L24.10 123.21 L23.29 122.86 L22.50 122.50 L21.73 122.12 L20.97 121.74 L20.22 121.34 L19.50 120.92 L18.78 120.50 L18.09 120.06 L17.40 119.61 L16.74 119.15 L16.08 118.67 L15.45 118.18 L14.82 117.68 L14.21 117.16 L13.62 116.63 L13.03 116.09 L12.46 115.54 L11.91 114.97 L11.37 114.38 L10.84 113.79 L10.32 113.18 L9.82 112.55 L9.33 111.92 L8.85 111.26 L8.39 110.60 L7.94 109.91 L7.50 109.22 L7.08 108.50 L6.66 107.78 L6.26 107.03 L5.88 106.27 L5.50 105.50 L5.14 104.71 L4.79 103.90 L4.45 103.07 L4.13 102.22 L3.82 101.36 L3.52 100.48 L3.23 99.57 L2.95 98.65 L2.69 97.70 L2.44 96.73 L2.20 95.74 L1.98 94.72 L1.76 93.67 L1.56 92.60 L1.37 91.50 L1.19 90.36 L1.03 89.19 L0.88 87.98 L0.74 86.73 L0.61 85.43 L0.49 84.07 L0.39 82.66 L0.30 81.17 L0.22 79.60 L0.15 77.93 L0.10 76.12 L0.05 74.13 L0.02 71.86 L0.01 69.10 L0.00 64.00 L0.01 58.90 L0.02 56.14 L0.05 53.87 L0.10 51.88 L0.15 50.07 L0.22 48.40 L0.30 46.83 L0.39 45.34 L0.49 43.93 L0.61 42.57 L0.74 41.27 L0.88 40.02 L1.03 38.81 L1.19 37.64 L1.37 36.50 L1.56 35.40 L1.76 34.33 L1.98 33.28 L2.20 32.26 L2.44 31.27 L2.69 30.30 L2.95 29.35 L3.23 28.43 L3.52 27.52 L3.82 26.64 L4.13 25.78 L4.45 24.93 L4.79 24.10 L5.14 23.29 L5.50 22.50 L5.88 21.73 L6.26 20.97 L6.66 20.22 L7.08 19.50 L7.50 18.78 L7.94 18.09 L8.39 17.40 L8.85 16.74 L9.33 16.08 L9.82 15.45 L10.32 14.82 L10.84 14.21 L11.37 13.62 L11.91 13.03 L12.46 12.46 L13.03 11.91 L13.62 11.37 L14.21 10.84 L14.82 10.32 L15.45 9.82 L16.08 9.33 L16.74 8.85 L17.40 8.39 L18.09 7.94 L18.78 7.50 L19.50 7.08 L20.22 6.66 L20.97 6.26 L21.73 5.88 L22.50 5.50 L23.29 5.14 L24.10 4.79 L24.93 4.45 L25.78 4.13 L26.64 3.82 L27.52 3.52 L28.43 3.23 L29.35 2.95 L30.30 2.69 L31.27 2.44 L32.26 2.20 L33.28 1.98 L34.33 1.76 L35.40 1.56 L36.50 1.37 L37.64 1.19 L38.81 1.03 L40.02 0.88 L41.27 0.74 L42.57 0.61 L43.93 0.49 L45.34 0.39 L46.83 0.30 L48.40 0.22 L50.07 0.15 L51.88 0.10 L53.87 0.05 L56.14 0.02 L58.90 0.01 L64.00 0.00 L69.10 0.01 L71.86 0.02 L74.13 0.05 L76.12 0.10 L77.93 0.15 L79.60 0.22 L81.17 0.30 L82.66 0.39 L84.07 0.49 L85.43 0.61 L86.73 0.74 L87.98 0.88 L89.19 1.03 L90.36 1.19 L91.50 1.37 L92.60 1.56 L93.67 1.76 L94.72 1.98 L95.74 2.20 L96.73 2.44 L97.70 2.69 L98.65 2.95 L99.57 3.23 L100.48 3.52 L101.36 3.82 L102.22 4.13 L103.07 4.45 L103.90 4.79 L104.71 5.14 L105.50 5.50 L106.27 5.88 L107.03 6.26 L107.78 6.66 L108.50 7.08 L109.22 7.50 L109.91 7.94 L110.60 8.39 L111.26 8.85 L111.92 9.33 L112.55 9.82 L113.18 10.32 L113.79 10.84 L114.38 11.37 L114.97 11.91 L115.54 12.46 L116.09 13.03 L116.63 13.62 L117.16 14.21 L117.68 14.82 L118.18 15.45 L118.67 16.08 L119.15 16.74 L119.61 17.40 L120.06 18.09 L120.50 18.78 L120.92 19.50 L121.34 20.22 L121.74 20.97 L122.12 21.73 L122.50 22.50 L122.86 23.29 L123.21 24.10 L123.55 24.93 L123.87 25.78 L124.18 26.64 L124.48 27.52 L124.77 28.43 L125.05 29.35 L125.31 30.30 L125.56 31.27 L125.80 32.26 L126.02 33.28 L126.24 34.33 L126.44 35.40 L126.63 36.50 L126.81 37.64 L126.97 38.81 L127.12 40.02 L127.26 41.27 L127.39 42.57 L127.51 43.93 L127.61 45.34 L127.70 46.83 L127.78 48.40 L127.85 50.07 L127.90 51.88 L127.95 53.87 L127.98 56.14 L127.99 58.90Z"/></clipPath>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#8B5CF6"/>
-      <stop offset="0.5" stop-color="#3B5BFD"/>
-      <stop offset="1" stop-color="#06B6A4"/>
+      <stop offset="0" stop-color="#FFD36B"/><stop offset="0.5" stop-color="#FF9A3C"/><stop offset="1" stop-color="#E8505B"/>
     </linearGradient>
     <radialGradient id="glowA" cx="0.22" cy="0.18" r="0.6">
-      <stop offset="0" stop-color="#F0ABFC" stop-opacity="0.85"/>
-      <stop offset="1" stop-color="#F0ABFC" stop-opacity="0"/>
+      <stop offset="0" stop-color="#FFF4C2" stop-opacity="0.8"/><stop offset="1" stop-color="#FFF4C2" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="glowB" cx="0.85" cy="0.9" r="0.55">
-      <stop offset="0" stop-color="#5EEAD4" stop-opacity="0.8"/>
-      <stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
+      <stop offset="0" stop-color="#C2185B" stop-opacity="0.45"/><stop offset="1" stop-color="#C2185B" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
-      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.04"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.25"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="frameRim" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.75"/>
-      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.08"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.45"/>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.7"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.35"/>
     </linearGradient>
-    <linearGradient id="glassFill" gradientUnits="userSpaceOnUse" x1="0" y1="290" x2="0" y2="780">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.62"/>
-      <stop offset="0.55" stop-color="#FFFFFF" stop-opacity="0.16"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.34"/>
+    <linearGradient id="mfill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFF3E6"/>
     </linearGradient>
-    <linearGradient id="rim" gradientUnits="userSpaceOnUse" x1="230" y1="290" x2="790" y2="780">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="1"/>
-      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.35"/>
-      <stop offset="0.8" stop-color="#FFFFFF" stop-opacity="0.2"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.85"/>
-    </linearGradient>
-    <mask id="rimMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-      <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" fill="none" stroke="#FFFFFF" stroke-width="132" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" fill="none" stroke="#000000" stroke-width="114" stroke-linecap="round" stroke-linejoin="round"/>
-    </mask>
-    <mask id="innerShade" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-      <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" fill="none" stroke="#FFFFFF" stroke-width="132" stroke-linecap="round" stroke-linejoin="round"/>
-    </mask>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
-      <feGaussianBlur stdDeviation="22"/>
-    </filter>
-    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4"/>
-    </filter>
-    <filter id="softer" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="14"/>
-    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/></filter>
   </defs>
-
-  <g clip-path="url(#sq)">
-    <!-- background -->
+  <g clip-path="url(#shape)">
     <rect width="1024" height="1024" fill="url(#bg)"/>
     <rect width="1024" height="1024" fill="url(#glowA)"/>
     <rect width="1024" height="1024" fill="url(#glowB)"/>
     <rect width="1024" height="1024" fill="url(#sheen)"/>
-
-    <!-- glyph shadow -->
-    <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" transform="translate(0 30)" fill="none" stroke="#1E1B4B" stroke-opacity="0.45" stroke-width="132" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)"/>
-
-    <!-- refraction: background bent inside the glass -->
-    <g mask="url(#innerShade)">
-      <g transform="translate(512 512) scale(1.35) rotate(18) translate(-512 -512)">
-        <rect width="1024" height="1024" fill="url(#bg)"/>
-        <rect width="1024" height="1024" fill="url(#glowA)"/>
-        <rect width="1024" height="1024" fill="url(#glowB)"/>
-      </g>
-    </g>
-
-    <!-- glass body -->
-    <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" fill="none" stroke="url(#glassFill)" stroke-width="132" stroke-linecap="round" stroke-linejoin="round"/>
-
-    <!-- inner bottom shade, gives thickness -->
-    <g mask="url(#innerShade)">
-      <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" transform="translate(10 18)" fill="none" stroke="#312E81" stroke-opacity="0.12" stroke-width="96" stroke-linecap="round" stroke-linejoin="round" filter="url(#softer)"/>
-    </g>
-
-    <!-- bright rim -->
-    <rect width="1024" height="1024" fill="url(#rim)" mask="url(#rimMask)"/>
-
-    <!-- specular highlights -->
-    <path d="M262 425 A146 146 0 0 1 370 312" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" filter="url(#soft)"/>
-    <path d="M478 336 A146 146 0 0 1 560 307" fill="none" stroke="#FFFFFF" stroke-opacity="0.8" stroke-width="12" stroke-linecap="round" filter="url(#soft)"/>
-    <path d="M254 470 V600" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round" filter="url(#soft)"/>
-    <path d="M770 610 V700" fill="none" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round" filter="url(#soft)"/>
-
-    <!-- icon frame rim -->
-    <rect x="5" y="5" width="1014" height="1014" rx="227" ry="227" fill="none" stroke="url(#frameRim)" stroke-width="10"/>
+    <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" transform="translate(0 26)" fill="none" stroke="#8A2E12" stroke-opacity="0.4"
+          stroke-width="140" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)"/>
+    <path d="M300 680 V450 A106 106 0 0 1 512 450 V680 M512 450 A106 106 0 0 1 724 450 V680" fill="none" stroke="url(#mfill)" stroke-width="140" stroke-linecap="round" stroke-linejoin="round"/>
+    <path transform="scale(8)" d="M128.00 64.00 L127.99 69.10 L127.98 71.86 L127.95 74.13 L127.90 76.12 L127.85 77.93 L127.78 79.60 L127.70 81.17 L127.61 82.66 L127.51 84.07 L127.39 85.43 L127.26 86.73 L127.12 87.98 L126.97 89.19 L126.81 90.36 L126.63 91.50 L126.44 92.60 L126.24 93.67 L126.02 94.72 L125.80 95.74 L125.56 96.73 L125.31 97.70 L125.05 98.65 L124.77 99.57 L124.48 100.48 L124.18 101.36 L123.87 102.22 L123.55 103.07 L123.21 103.90 L122.86 104.71 L122.50 105.50 L122.12 106.27 L121.74 107.03 L121.34 107.78 L120.92 108.50 L120.50 109.22 L120.06 109.91 L119.61 110.60 L119.15 111.26 L118.67 111.92 L118.18 112.55 L117.68 113.18 L117.16 113.79 L116.63 114.38 L116.09 114.97 L115.54 115.54 L114.97 116.09 L114.38 116.63 L113.79 117.16 L113.18 117.68 L112.55 118.18 L111.92 118.67 L111.26 119.15 L110.60 119.61 L109.91 120.06 L109.22 120.50 L108.50 120.92 L107.78 121.34 L107.03 121.74 L106.27 122.12 L105.50 122.50 L104.71 122.86 L103.90 123.21 L103.07 123.55 L102.22 123.87 L101.36 124.18 L100.48 124.48 L99.57 124.77 L98.65 125.05 L97.70 125.31 L96.73 125.56 L95.74 125.80 L94.72 126.02 L93.67 126.24 L92.60 126.44 L91.50 126.63 L90.36 126.81 L89.19 126.97 L87.98 127.12 L86.73 127.26 L85.43 127.39 L84.07 127.51 L82.66 127.61 L81.17 127.70 L79.60 127.78 L77.93 127.85 L76.12 127.90 L74.13 127.95 L71.86 127.98 L69.10 127.99 L64.00 128.00 L58.90 127.99 L56.14 127.98 L53.87 127.95 L51.88 127.90 L50.07 127.85 L48.40 127.78 L46.83 127.70 L45.34 127.61 L43.93 127.51 L42.57 127.39 L41.27 127.26 L40.02 127.12 L38.81 126.97 L37.64 126.81 L36.50 126.63 L35.40 126.44 L34.33 126.24 L33.28 126.02 L32.26 125.80 L31.27 125.56 L30.30 125.31 L29.35 125.05 L28.43 124.77 L27.52 124.48 L26.64 124.18 L25.78 123.87 L24.93 123.55 L24.10 123.21 L23.29 122.86 L22.50 122.50 L21.73 122.12 L20.97 121.74 L20.22 121.34 L19.50 120.92 L18.78 120.50 L18.09 120.06 L17.40 119.61 L16.74 119.15 L16.08 118.67 L15.45 118.18 L14.82 117.68 L14.21 117.16 L13.62 116.63 L13.03 116.09 L12.46 115.54 L11.91 114.97 L11.37 114.38 L10.84 113.79 L10.32 113.18 L9.82 112.55 L9.33 111.92 L8.85 111.26 L8.39 110.60 L7.94 109.91 L7.50 109.22 L7.08 108.50 L6.66 107.78 L6.26 107.03 L5.88 106.27 L5.50 105.50 L5.14 104.71 L4.79 103.90 L4.45 103.07 L4.13 102.22 L3.82 101.36 L3.52 100.48 L3.23 99.57 L2.95 98.65 L2.69 97.70 L2.44 96.73 L2.20 95.74 L1.98 94.72 L1.76 93.67 L1.56 92.60 L1.37 91.50 L1.19 90.36 L1.03 89.19 L0.88 87.98 L0.74 86.73 L0.61 85.43 L0.49 84.07 L0.39 82.66 L0.30 81.17 L0.22 79.60 L0.15 77.93 L0.10 76.12 L0.05 74.13 L0.02 71.86 L0.01 69.10 L0.00 64.00 L0.01 58.90 L0.02 56.14 L0.05 53.87 L0.10 51.88 L0.15 50.07 L0.22 48.40 L0.30 46.83 L0.39 45.34 L0.49 43.93 L0.61 42.57 L0.74 41.27 L0.88 40.02 L1.03 38.81 L1.19 37.64 L1.37 36.50 L1.56 35.40 L1.76 34.33 L1.98 33.28 L2.20 32.26 L2.44 31.27 L2.69 30.30 L2.95 29.35 L3.23 28.43 L3.52 27.52 L3.82 26.64 L4.13 25.78 L4.45 24.93 L4.79 24.10 L5.14 23.29 L5.50 22.50 L5.88 21.73 L6.26 20.97 L6.66 20.22 L7.08 19.50 L7.50 18.78 L7.94 18.09 L8.39 17.40 L8.85 16.74 L9.33 16.08 L9.82 15.45 L10.32 14.82 L10.84 14.21 L11.37 13.62 L11.91 13.03 L12.46 12.46 L13.03 11.91 L13.62 11.37 L14.21 10.84 L14.82 10.32 L15.45 9.82 L16.08 9.33 L16.74 8.85 L17.40 8.39 L18.09 7.94 L18.78 7.50 L19.50 7.08 L20.22 6.66 L20.97 6.26 L21.73 5.88 L22.50 5.50 L23.29 5.14 L24.10 4.79 L24.93 4.45 L25.78 4.13 L26.64 3.82 L27.52 3.52 L28.43 3.23 L29.35 2.95 L30.30 2.69 L31.27 2.44 L32.26 2.20 L33.28 1.98 L34.33 1.76 L35.40 1.56 L36.50 1.37 L37.64 1.19 L38.81 1.03 L40.02 0.88 L41.27 0.74 L42.57 0.61 L43.93 0.49 L45.34 0.39 L46.83 0.30 L48.40 0.22 L50.07 0.15 L51.88 0.10 L53.87 0.05 L56.14 0.02 L58.90 0.01 L64.00 0.00 L69.10 0.01 L71.86 0.02 L74.13 0.05 L76.12 0.10 L77.93 0.15 L79.60 0.22 L81.17 0.30 L82.66 0.39 L84.07 0.49 L85.43 0.61 L86.73 0.74 L87.98 0.88 L89.19 1.03 L90.36 1.19 L91.50 1.37 L92.60 1.56 L93.67 1.76 L94.72 1.98 L95.74 2.20 L96.73 2.44 L97.70 2.69 L98.65 2.95 L99.57 3.23 L100.48 3.52 L101.36 3.82 L102.22 4.13 L103.07 4.45 L103.90 4.79 L104.71 5.14 L105.50 5.50 L106.27 5.88 L107.03 6.26 L107.78 6.66 L108.50 7.08 L109.22 7.50 L109.91 7.94 L110.60 8.39 L111.26 8.85 L111.92 9.33 L112.55 9.82 L113.18 10.32 L113.79 10.84 L114.38 11.37 L114.97 11.91 L115.54 12.46 L116.09 13.03 L116.63 13.62 L117.16 14.21 L117.68 14.82 L118.18 15.45 L118.67 16.08 L119.15 16.74 L119.61 17.40 L120.06 18.09 L120.50 18.78 L120.92 19.50 L121.34 20.22 L121.74 20.97 L122.12 21.73 L122.50 22.50 L122.86 23.29 L123.21 24.10 L123.55 24.93 L123.87 25.78 L124.18 26.64 L124.48 27.52 L124.77 28.43 L125.05 29.35 L125.31 30.30 L125.56 31.27 L125.80 32.26 L126.02 33.28 L126.24 34.33 L126.44 35.40 L126.63 36.50 L126.81 37.64 L126.97 38.81 L127.12 40.02 L127.26 41.27 L127.39 42.57 L127.51 43.93 L127.61 45.34 L127.70 46.83 L127.78 48.40 L127.85 50.07 L127.90 51.88 L127.95 53.87 L127.98 56.14 L127.99 58.90Z" fill="none" stroke="url(#rim)" stroke-width="1.6"/>
   </g>
 </svg>

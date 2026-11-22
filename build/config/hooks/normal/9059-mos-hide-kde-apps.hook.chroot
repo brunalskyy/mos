@@ -1,0 +1,36 @@
+#!/bin/sh
+# mOS has its own Settings, Store, Welcome, Printers and backup, so the KDE ones that do the
+# same job are hidden everywhere (Start menu, search, Spotlight). They stay installed, because
+# parts of KDE still need them, but you never see two of anything.
+#
+# A copy in /usr/local/share/applications with Hidden=true wins over /usr/share and
+# survives KDE updates.
+echo "I: mOS: hiding the KDE apps mOS replaces"
+APPS="systemsettings kdesystemsettings org.kde.kinfocenter org.kde.plasma-welcome org.kde.discover
+org.kde.discover.urlhandler org.kde.discover.snap org.kde.discover.notifier org.kde.kmenuedit
+org.kde.khelpcenter org.kde.konqueror kfmclient kfmclient_dir kfmclient_html kfmclient_war konqbrowser
+org.kde.kate org.kde.kfind org.kde.kwalletmanager5 org.kde.kwalletmanager kwalletmanager5-kwalletd
+system-config-printer cups org.kde.kup org.kde.drkonqi.coredump.gui org.kde.knetattach
+org.kde.kdeconnect-settings org.kde.kdeconnect.sms org.kde.kdeconnect.nonplasma org.kde.kdeconnect_open
+org.kde.kuserfeedback-console org.kde.plasma.themeexplorer org.kde.kcolorschemeeditor
+org.freedesktop.IBus.Setup ibus-setup im-config debian-xterm debian-uxterm display-im6.q16 vim htop"
+mkdir -p /usr/local/share/applications
+for id in ${APPS}; do
+	src="/usr/share/applications/${id}.desktop"
+	[ -f "${src}" ] || continue
+	name="$(sed -n 's/^Name=//p' "${src}" | head -n 1)"
+	printf '[Desktop Entry]\nType=Application\nName=%s\nNoDisplay=true\nHidden=true\n' "${name:-${id}}" \
+		> "/usr/local/share/applications/${id}.desktop"
+	echo "   hidden: ${name:-${id}}"
+done
+
+# KDE's System Settings pages in search would open the old KDE settings window.
+# mOS Settings answers those searches instead (its search words cover every page).
+for runner in /usr/lib/*/qt6/plugins/kf6/krunner/krunner_systemsettings.so; do
+	[ -f "${runner}" ] || continue
+	dpkg-divert --local --rename --add --divert "${runner}.mos-off" "${runner}" >/dev/null 2>&1 || true
+	echo "   KDE settings search turned off"
+done
+
+command -v update-desktop-database >/dev/null && update-desktop-database -q /usr/local/share/applications || true
+exit 0

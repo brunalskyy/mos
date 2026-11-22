@@ -2,6 +2,8 @@
 LookAndFeelPackage=org.mos.desktop
 # Round Material buttons inside apps (mOS Kvantum theme; Settings > Wallpaper & style)
 widgetStyle=kvantum
+# Double-click to open files and folders, like Windows
+SingleClick=false
 
 [General]
 ColorScheme=mOSLight

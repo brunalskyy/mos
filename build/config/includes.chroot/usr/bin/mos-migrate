@@ -4,6 +4,7 @@
 0.6.1: the taskbar gets the Control Centre and the clock with notifications,
 the mOS Store replaces Discover, At a glance joins the desktop, and apps get
 round Material buttons.
+0.6.2: the KDE apps mOS replaces disappear from the Start menu and search.
 
 SPDX-FileCopyrightText: 2026 Bruno Woznicki
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -18,7 +19,7 @@ import mos_settings as m  # noqa: E402
 
 MARK = os.path.join(m.MOS_CONFIG, "migrated")
 APPLETS = os.path.join(m.CONFIG, "plasma-org.kde.plasma.desktop-appletsrc")
-STEP = "0.6.1"
+STEP = "0.6.2"
 
 GLANCE_JS = """
 var ds = desktops();
@@ -43,7 +44,8 @@ def main():
         layout = open(APPLETS).read()
     except OSError:
         layout = ""
-    if "org.mos.taskclock" not in layout:
+    # each update rebuilds the taskbar once (your pinned apps and choices are kept)
+    if True:
         # wait for Plasma to be ready
         for _ in range(30):
             ok, _ = m.plasma_script("print('ok')")
@@ -57,6 +59,8 @@ def main():
         m.plasma_script(GLANCE_JS)
     if m.app_style_on():
         m.sh(["mos-kvantum"], timeout=60)
+    # 0.6.2: pick up the hidden KDE apps (no second Settings in search)
+    m.sh(["kbuildsycoca6"], timeout=180)
     os.makedirs(m.MOS_CONFIG, exist_ok=True)
     with open(MARK, "w") as f:
         f.write(STEP)

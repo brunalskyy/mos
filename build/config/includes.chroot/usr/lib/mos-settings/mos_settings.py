@@ -801,7 +801,7 @@ class Backend(QObject):
 
     # ------------------------------------------------------------ Taskbar
     TASKBAR_DEFAULTS = {"style": "windows", "floating": True, "position": "bottom", "size": "medium",
-                        "autohide": False, "spacing": 2}
+                        "autohide": False, "spacing": 2, "labels": True}
 
     @Property("QVariantMap", notify=changed)
     def taskbar(self):

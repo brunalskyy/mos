@@ -7,4 +7,4 @@ Exec=mos-settings
 Icon=systemsettings
 StartupWMClass=mos-settings
 Categories=Settings;System;
-Keywords=settings;preferences;wallpaper;theme;wifi;bluetooth;display;sound;mOS;
+Keywords=settings;system settings;control panel;preferences;wallpaper;background;theme;dark mode;colours;colors;accent;icons;taskbar;dock;lock screen;wifi;wi-fi;internet;network;ethernet;bluetooth;display;screen;brightness;resolution;night shift;night light;sound;volume;audio;microphone;battery;power;sleep;notifications;do not disturb;privacy;camera;permissions;about;version;update;software update;storage;disk;apps;default apps;language;region;date;time;time zone;keyboard;layout;mouse;trackpad;touchpad;startup;users;account;password;accessibility;fonts;shortcuts;printers;printing;reset;mOS;

@@ -28,7 +28,7 @@ var pinned = ["applications:chromium.desktop", "applications:org.kde.dolphin.des
               "applications:org.kde.konsole.desktop"];
 var old = panels();
 for (var i = 0; i < old.length; i++) {
-    var tw = old[i].widgets("org.kde.plasma.icontasks");
+    var tw = old[i].widgets("org.kde.plasma.icontasks").concat(old[i].widgets("org.kde.plasma.taskmanager"));
     if (tw.length > 0) {
         tw[0].currentConfigGroup = ["General"];
         var l = tw[0].readConfig("launchers", "");
@@ -70,13 +70,19 @@ if (opts.style === "centred") {
     p.addWidget("org.kde.plasma.panelspacer");
 }
 
-var tasks = p.addWidget("org.kde.plasma.icontasks");
+// App names next to the icons of open apps (like Windows 10), or icons only
+var labels = opts.labels !== false && opts.style !== "dock";
+var tasks = p.addWidget(labels ? "org.kde.plasma.taskmanager" : "org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", pinned);
 tasks.writeConfig("showOnlyCurrentDesktop", "false");
 tasks.writeConfig("indicateAudioStreams", "true");
 tasks.writeConfig("iconSpacing", String(opts.spacing));
 tasks.writeConfig("fill", "false");
+if (labels) {
+    tasks.writeConfig("maxStripes", "1");
+    tasks.writeConfig("groupingStrategy", "0");   // one button per window, each with its name
+}
 
 if (opts.style === "centred") {
     p.addWidget("org.kde.plasma.panelspacer");

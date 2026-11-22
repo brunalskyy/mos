@@ -62,7 +62,8 @@ var start = taskbar.addWidget("org.kde.plasma.kickoff");
 start.currentConfigGroup = ["General"];
 start.writeConfig("icon", "mos-logo");
 
-var tasks = taskbar.addWidget("org.kde.plasma.icontasks");
+// Open apps show their name next to the icon, like Windows 10 (Settings > Taskbar to turn off)
+var tasks = taskbar.addWidget("org.kde.plasma.taskmanager");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [
     "applications:chromium.desktop",
@@ -71,6 +72,8 @@ tasks.writeConfig("launchers", [
     "applications:mos-settings.desktop",
     "applications:org.kde.konsole.desktop"
 ]);
+tasks.writeConfig("maxStripes", "1");
+tasks.writeConfig("groupingStrategy", "0");
 tasks.writeConfig("showOnlyCurrentDesktop", "false");
 tasks.writeConfig("indicateAudioStreams", "true");
 tasks.writeConfig("fill", "false");
