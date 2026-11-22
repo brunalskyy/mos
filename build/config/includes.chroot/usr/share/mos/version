@@ -1,14 +1,15 @@
 {
-  "version": "0.6.2",
-  "build": 8,
+  "version": "0.7",
+  "build": 9,
   "codename": "Amber",
-  "name": "mOS 1.0 Amber (0.6.2)",
+  "name": "mOS 1.0 Amber (0.7)",
   "notes": [
-    "New mOS password pop-up when an app or update needs your password",
-    "New Start button: the Amber mOS logo, filling your icon shape",
-    "Open apps show their name next to the icon on the taskbar (Settings > Taskbar to turn off)",
-    "Files is laid out like Windows 11 File Explorer, and double-click opens things",
-    "No more second Settings: the KDE apps mOS replaces are hidden from Start and search"
+    "Real Liquid Glass: the taskbar, Start, Control Centre, menus and pop-ups bend light at their edges, with a shine that follows your mouse",
+    "Pop-ups drop out of the taskbar like a droplet, and glass that touches melts together",
+    "New lock screen like Windows 11 and sign-in like Windows 7, with your picture in a glass frame",
+    "Pick a different picture for the lock screen and the sign-in screen",
+    "Steadier Wi-Fi on the MacBook Air 2017, also after sleep",
+    "Setup after installing is full screen, and Install mOS sits on the live USB desktop"
   ],
   "prerelease": true
 }

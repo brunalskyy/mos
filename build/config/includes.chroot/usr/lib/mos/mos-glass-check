@@ -1,0 +1,16 @@
+#!/bin/sh
+# mOS Liquid Glass is built for one exact KWin. If a system update ever brings a
+# different KWin, park the effect (KWin could crash loading it) until an mOS update
+# brings a matching build. The login guard then switches KDE's normal blur on.
+set -u
+built="$(cat /usr/share/mos/glass-kwin-version 2>/dev/null || true)"
+now="$(dpkg-query -W -f '${Version}' kwin-wayland 2>/dev/null | sed 's/^[0-9]*://; s/-[^-]*$//')"
+for so in /usr/lib/*/qt6/plugins/kwin/effects/plugins/mosglass.so; do
+	[ -e "${so}" ] || [ -e "${so}.off" ] || continue
+	if [ -n "${built}" ] && [ -n "${now}" ] && [ "${built#*:}" != "${now}" ]; then
+		[ -e "${so}" ] && mv -f "${so}" "${so}.off" && echo "mOS Liquid Glass parked: built for KWin ${built}, this is ${now}"
+	elif [ -e "${so}.off" ] && [ ! -e "${so}" ]; then
+		mv -f "${so}.off" "${so}" && echo "mOS Liquid Glass back on (KWin ${now})"
+	fi
+done
+exit 0
